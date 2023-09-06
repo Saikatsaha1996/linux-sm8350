@@ -514,6 +514,13 @@ config DRM_PANEL_RONBO_RB070D30
 	  Say Y here if you want to enable support for Ronbo Electronics
 	  RB070D30 1024x600 DSI panel.
 
+config DRM_PANEL_SAMSUNG_AMS662ZS01
+        tristate "samsung ams662zs01 dvt dsc cmd mode 60 Hz panel"
+        depends on OF
+        depends on DRM_MIPI_DSI
+        depends on BACKLIGHT_CLASS_DEVICE
+        select VIDEOMODE_HELPERS
+
 config DRM_PANEL_SAMSUNG_ATNA33XC20
 	tristate "Samsung ATNA33XC20 eDP panel"
 	depends on OF

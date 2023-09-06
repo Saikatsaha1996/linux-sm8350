@@ -706,6 +706,32 @@
 		bias-disable;
 	};
 
+	qup_uart18_sleep: qup-uart18-sleep-state {
+		cts-pins {
+			pins = "gpio68";
+			function = "gpio";
+                        bias-bus-hold;
+		};
+
+		rts-pins {
+			pins = "gpio69";
+			function = "gpio";
+                        bias-pull-down;
+		};
+
+                tx-pins {
+                        pins = "gpio70";
+                        function = "gpio";
+                        bias-pull-up;
+                };
+
+		rx-pins {
+			pins = "gpio71";
+			function = "gpio";
+                        bias-pull-up;
+		};
+	};
+
 	pcie0_default_state: pcie0-default-state {
 		perst-pins {
 			pins = "gpio94";

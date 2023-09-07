@@ -197,13 +197,13 @@
                 };
         };
 
-        bat: battery {
+        /*bat: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-polymer";
                 voltage-min-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <23000000>;
                 charge-full-design-microamp-hours = <5000000>;
-        };
+        };*/
 };
 
 &apps_rsc {
@@ -587,7 +587,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -595,7 +595,7 @@
                 reg = <0x55>;
                 monitored-battery = <&bat>;
         };
-};
+};*/
 
 &i2c13 {
 	status = "okay";
@@ -604,10 +604,11 @@
 	typec-mux@42 {
 		compatible = "fcs,fsa4480";
 		reg = <0x42>;
-                irq-gpio = <&tlmm 116 0x00>;
+                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                //irq-gpio = <&tlmm 116 0x00>;
 		vcc-supply = <&vreg_bob>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&fsa_default>;
+                //pinctrl-names = "default";
+                //pinctrl-0 = <&fsa_default>;
 		mode-switch;
 		orientation-switch;
 
@@ -853,13 +854,13 @@
                 bias-pull-down;
         };
 
-        fsa_default: fsa-default-state {
+        /*fsa_default: fsa-default-state {
                 pins = "gpio116";
                 function = "gpio";
                 drive-strength = <2>;
                 bias-disable;
                 output-high;
-        };
+        };*/
 
 	speaker_top_default: speaker-top-default-state {
 		active-pins {
@@ -1045,7 +1046,7 @@
         status = "okay";
 };
 
-/*&usb_1_qmpphy {
+&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
         status = "okay";
@@ -1066,4 +1067,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};*/
+};

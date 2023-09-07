@@ -567,30 +567,30 @@
        status ="okay";
        clock-frequency = <400000>;
        tfa9897@34 {
-               compatible = "nxp,tfa9895";
+               compatible = "nxp,tfa9897";
                reg = <0x34>;
                vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 15 0x00>;
+               rcv-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
 	       tfa_min_range = <5000>;
 	       tfa_max_range = <8000>;
 	       tfa_channel = <0>;
-               pinctrl-names = "default", "sleep";
-               pinctrl-0 = <&speaker_top_default>, <&speaker_top_sleep>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&speaker_top_default>;
                sound-name-prefix = "Speaker Top";
                #sound-dai-cells = <0>;
                status = "okay";
        };
 
        tfa9897@35 {
-               compatible = "nxp,tfa9895";
+               compatible = "nxp,tfa9897";
                reg = <0x35>;
                vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 42 0x00>;
+               rcv-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
 	       tfa_min_range = <5000>;
 	       tfa_max_range = <8000>;
 	       tfa_channel = <1>;
-               pinctrl-names = "default", "sleep";
-               pinctrl-0 = <&speaker_bottom_default>, <&speaker_bottom_sleep>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&speaker_bottom_default>;
                sound-name-prefix = "Speaker Bottom";
                #sound-dai-cells = <0>;
                status = "okay";
@@ -803,36 +803,40 @@
                 bias-pull-down;
         };
 
-        speaker_top_sleep: speaker_top_sleep {
-                pins = "gpio15";
-                function = "gpio";
-                drive-strength = <2>;
-                bias-pull-down;
-                input-enable;
+	speaker_top_default: speaker-top-default-state {
+		active-pins {
+			pins = "gpio15";
+			function = "gpio";
+			drive-strength = <16>;
+			bias-disable;
+                        output-high;
+		};
+
+		sleep-pins {
+			pins = "gpio15";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
+                        input-enable;
+		};
         };
 
-        speaker_top_default: speaker_top_default {
-                pins = "gpio15";
-                function = "gpio";
-                drive-strength = <16>;
-                bias-disable;
-                output-high;
-        };
+	speaker_bottom_default: speaker-bottom-default-state {
+		active-pins {
+			pins = "gpio42";
+			function = "gpio";
+			drive-strength = <16>;
+			bias-disable;
+                        output-high;
+		};
 
-        speaker_bottom_sleep: speaker_bottom_sleep {
-                pins = "gpio42";
-                function = "gpio";
-                drive-strength = <2>;
-                bias-pull-down;
-                input-enable;
-        };
-
-        speaker_bottom_default: speaker_bottom_default {
-                pins = "gpio42";
-                function = "gpio";
-                drive-strength = <16>;
-                bias-disable;
-                output-high;
+		sleep-pins {
+			pins = "gpio42";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
+                        input-enable;
+		};
         };
 };
 

@@ -571,9 +571,6 @@
                reg = <0x34>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
-	       tfa_min_range = <5000>;
-	       tfa_max_range = <8000>;
-	       tfa_channel = <0>;
                pinctrl-names = "default";
                pinctrl-0 = <&speaker_top_default>;
                sound-name-prefix = "Speaker Top";
@@ -586,9 +583,6 @@
                reg = <0x35>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
-	       tfa_min_range = <5000>;
-	       tfa_max_range = <8000>;
-	       tfa_channel = <1>;
                pinctrl-names = "default";
                pinctrl-0 = <&speaker_bottom_default>;
                sound-name-prefix = "Speaker Bottom";

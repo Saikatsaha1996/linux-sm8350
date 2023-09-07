@@ -167,28 +167,22 @@
                 compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
                 #address-cells = <1>;
                 #size-cells = <0>;
-
                 connector@0 {
                         compatible = "usb-c-connector";
                         reg = <0>;
                         power-role = "dual";
                         data-role = "dual";
-
                         ports {
                                 #address-cells = <1>;
                                 #size-cells = <0>;
-
                                 port@0 {
                                         reg = <0>;
-
                                         pmic_glink_hs_in: endpoint {
                                                 remote-endpoint = <&usb_1_dwc3_hs>;
                                         };
                                 };
-
                                 port@2 {
                                         reg = <2>;
-
                                         pmic_glink_sbu: endpoint {
                                                 remote-endpoint = <&fsa4480_sbu_mux>;
                                         };
@@ -197,13 +191,13 @@
                 };
         };
 
-        /*bat: battery {
+        bat: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-polymer";
                 voltage-min-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <23000000>;
                 charge-full-design-microamp-hours = <5000000>;
-        };*/
+        };
 };
 
 &apps_rsc {
@@ -587,7 +581,7 @@
 	status = "okay";
 };
 
-/*&i2c2 {
+&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -595,7 +589,7 @@
                 reg = <0x55>;
                 monitored-battery = <&bat>;
         };
-};*/
+};
 
 &i2c13 {
 	status = "okay";
@@ -604,11 +598,11 @@
 	typec-mux@42 {
 		compatible = "fcs,fsa4480";
 		reg = <0x42>;
-                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-                //irq-gpio = <&tlmm 116 0x00>;
+                //interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                irq-gpio = <&tlmm 116 0x00>;
 		vcc-supply = <&vreg_bob>;
-                //pinctrl-names = "default";
-                //pinctrl-0 = <&fsa_default>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&fsa_default>;
 		mode-switch;
 		orientation-switch;
 
@@ -854,13 +848,13 @@
                 bias-pull-down;
         };
 
-        /*fsa_default: fsa-default-state {
+        fsa_default: fsa-default-state {
                 pins = "gpio116";
                 function = "gpio";
                 drive-strength = <2>;
                 bias-disable;
                 output-high;
-        };*/
+        };
 
 	speaker_top_default: speaker-top-default-state {
 		active-pins {

@@ -565,14 +565,17 @@
 
 &i2c19 {
        status ="okay";
-       qcom,clk-freq-out = <400000>;
+       clock-frequency = <400000>;
        tfa9897@34 {
                compatible = "nxp,tfa9895";
                reg = <0x34>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 15 0x00>;
-               pinctrl-names = "default";
-               pinctrl-0 = <&speaker_top_default>;
+	       tfa_min_range = <5000>;
+	       tfa_max_range = <8000>;
+	       tfa_channel = <0>;
+               pinctrl-names = "default", "sleep";
+               pinctrl-0 = <&speaker_top_default>, <&speaker_top_sleep>;
                sound-name-prefix = "Speaker Top";
                #sound-dai-cells = <0>;
                status = "okay";
@@ -582,48 +585,16 @@
                compatible = "nxp,tfa9895";
                reg = <0x35>;
                vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 15 0x00>;
-               pinctrl-names = "default";
-               pinctrl-0 = <&speaker_bottom_default>;
+               rcv-gpios = <&tlmm 42 0x00>;
+	       tfa_min_range = <5000>;
+	       tfa_max_range = <8000>;
+	       tfa_channel = <1>;
+               pinctrl-names = "default", "sleep";
+               pinctrl-0 = <&speaker_bottom_default>, <&speaker_bottom_sleep>;
                sound-name-prefix = "Speaker Bottom";
                #sound-dai-cells = <0>;
                status = "okay";
        };
-};
-
-&i2c19 {
-	status = "okay";
-	clock-frequency = <400000>;
-
-	cs35l41_l: speaker-amp@34 {
-		compatible = "cirrus,cs35l41";
-		reg = <0x34>;
-		reset-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
-		VA-supply = <&pm8350_s10>;
-		VP-supply = <&vph_pwr>;
-		cirrus,boost-peak-milliamp = <4000>;
-		cirrus,boost-ind-nanohenry = <1000>;
-		cirrus,boost-cap-microfarad = <15>;
-		cirrus,gpio2-src-select = <2>;
-		cirrus,gpio2-output-enable;
-		cirrus,asp-sdout-hiz = <3>;
-		#sound-dai-cells = <1>;
-	};
-
-	cs35l41_r: speaker-amp@35 {
-		compatible = "cirrus,cs35l41";
-		reg = <0x35>;
-		reset-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
-		VA-supply = <&pm8350_s10>;
-		VP-supply = <&vph_pwr>;
-		cirrus,boost-peak-milliamp = <4000>;
-		cirrus,boost-ind-nanohenry = <1000>;
-		cirrus,boost-cap-microfarad = <15>;
-		cirrus,gpio2-src-select = <2>;
-		cirrus,gpio2-output-enable;
-                cirrus,asp-sdout-hiz = <3>;
-		#sound-dai-cells = <1>;
-	};
 };
 
 /* For bug we have to disabled crypto & bam */
@@ -830,6 +801,38 @@
                 pins = "gpio153";
                 function = "gpio";
                 bias-pull-down;
+        };
+
+        speaker_top_sleep: speaker_top_sleep {
+                pins = "gpio15";
+                function = "gpio";
+                drive-strength = <2>;
+                bias-pull-down;
+                input-enable;
+        };
+
+        speaker_top_default: speaker_top_default {
+                pins = "gpio15";
+                function = "gpio";
+                drive-strength = <16>;
+                bias-disable;
+                output-high;
+        };
+
+        speaker_bottom_sleep: speaker_bottom_sleep {
+                pins = "gpio42";
+                function = "gpio";
+                drive-strength = <2>;
+                bias-pull-down;
+                input-enable;
+        };
+
+        speaker_bottom_default: speaker_bottom_default {
+                pins = "gpio42";
+                function = "gpio";
+                drive-strength = <16>;
+                bias-disable;
+                output-high;
         };
 };
 

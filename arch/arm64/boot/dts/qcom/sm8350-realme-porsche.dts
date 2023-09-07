@@ -528,28 +528,28 @@
 
 &adsp {
 	status = "okay";
-	firmware-name = "qcom/sm8350/realme/porsche/modem/adsp.mdt";
+	//firmware-name = "qcom/sm8350/realme/porsche/modem/adsp.mdt";
 };
 
 &cdsp {
 	status = "okay";
-	firmware-name = "qcom/sm8350/realme/porsche/modem/cdsp.mdt";
+	//firmware-name = "qcom/sm8350/realme/porsche/modem/cdsp.mdt";
 };
 
 &slpi {
-	firmware-name = "qcom/sm8350/realme/porsche/modem/slpi.mdt";
+	//firmware-name = "qcom/sm8350/realme/porsche/modem/slpi.mdt";
 	status = "okay";
 };
 
 &ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/modem/ipa_fws.mdt";
+	//firmware-name = "qcom/sm8350/realme/porsche/modem/ipa_fws.mdt";
 	status = "okay";
 };
 
 &mpss {
-	firmware-name = "qcom/sm8350/realme/porsche/modem/modem.mdt";
+	//firmware-name = "qcom/sm8350/realme/porsche/modem/modem.mdt";
 	status = "okay";
 };
 

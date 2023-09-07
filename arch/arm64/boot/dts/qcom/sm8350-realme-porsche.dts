@@ -567,7 +567,7 @@
        status ="okay";
        clock-frequency = <400000>;
        audio-codec@34 {
-               compatible = "nxp,tfa9897";
+               compatible = "nxp,tfa9879";
                reg = <0x34>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
@@ -582,7 +582,7 @@
        };
 
        audio-codec@35 {
-               compatible = "nxp,tfa9897";
+               compatible = "nxp,tfa9879";
                reg = <0x35>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;

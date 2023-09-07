@@ -528,28 +528,28 @@
 
 &adsp {
 	status = "okay";
-	//firmware-name = "qcom/sm8350/realme/porsche/modem/adsp.mdt";
+	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
 &cdsp {
 	status = "okay";
-	//firmware-name = "qcom/sm8350/realme/porsche/modem/cdsp.mdt";
+	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
 &slpi {
-	//firmware-name = "qcom/sm8350/realme/porsche/modem/slpi.mdt";
+	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
 	status = "okay";
 };
 
 &ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
-	//firmware-name = "qcom/sm8350/realme/porsche/modem/ipa_fws.mdt";
+	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
 	status = "okay";
 };
 
 &mpss {
-	//firmware-name = "qcom/sm8350/realme/porsche/modem/modem.mdt";
+	firmware-name = "qcom/sm8350/porsche/modem.mbn";
 	status = "okay";
 };
 
@@ -561,6 +561,69 @@
                 reg = <0x55>;
                 monitored-battery = <&bat>;
         };
+};
+
+&i2c19 {
+       status ="okay";
+       qcom,clk-freq-out = <400000>;
+       tfa9897@34 {
+               compatible = "nxp,tfa9895";
+               reg = <0x34>;
+               vddd-supply = <&pm8350_s10>;
+               rcv-gpios = <&tlmm 15 0x00>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&speaker_top_default>;
+               sound-name-prefix = "Speaker Top";
+               #sound-dai-cells = <0>;
+               status = "okay";
+       };
+
+       tfa9897@35 {
+               compatible = "nxp,tfa9895";
+               reg = <0x35>;
+               vddd-supply = <&pm8350_s10>;
+               rcv-gpios = <&tlmm 15 0x00>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&speaker_bottom_default>;
+               sound-name-prefix = "Speaker Bottom";
+               #sound-dai-cells = <0>;
+               status = "okay";
+       };
+};
+
+&i2c19 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	cs35l41_l: speaker-amp@34 {
+		compatible = "cirrus,cs35l41";
+		reg = <0x34>;
+		reset-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+		VA-supply = <&pm8350_s10>;
+		VP-supply = <&vph_pwr>;
+		cirrus,boost-peak-milliamp = <4000>;
+		cirrus,boost-ind-nanohenry = <1000>;
+		cirrus,boost-cap-microfarad = <15>;
+		cirrus,gpio2-src-select = <2>;
+		cirrus,gpio2-output-enable;
+		cirrus,asp-sdout-hiz = <3>;
+		#sound-dai-cells = <1>;
+	};
+
+	cs35l41_r: speaker-amp@35 {
+		compatible = "cirrus,cs35l41";
+		reg = <0x35>;
+		reset-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+		VA-supply = <&pm8350_s10>;
+		VP-supply = <&vph_pwr>;
+		cirrus,boost-peak-milliamp = <4000>;
+		cirrus,boost-ind-nanohenry = <1000>;
+		cirrus,boost-cap-microfarad = <15>;
+		cirrus,gpio2-src-select = <2>;
+		cirrus,gpio2-output-enable;
+                cirrus,asp-sdout-hiz = <3>;
+		#sound-dai-cells = <1>;
+	};
 };
 
 /* For bug we have to disabled crypto & bam */

@@ -117,6 +117,23 @@
                 regulator-max-microvolt = <1800000>;
         };
 
+	qca639x: qca639x {
+		compatible = "qcom,qca6390";
+		#power-domain-cells = <0>;
+
+		vddaon-supply = <&pmr735a_s2>;   //s2e
+		vddpmu-supply = <&pmr735a_s2>;   //s2e
+		vddrfa1-supply = <&pmr735a_s2>;  //s2e
+		vddrfa2-supply = <&pm8350_s12>;  //s12b
+		vddrfa3-supply = <&pm8350c_s1>;  //s1c
+		vddpcie1-supply = <&pm8350_s12>; //s12b
+		vddpcie2-supply = <&pm8350c_s1>; //s1c
+		vddio-supply = <&pm8350_s10>;    //s10b
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_default>;
+		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+	};
+
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -594,18 +611,12 @@
 &i2c13 {
 	status = "okay";
 	clock-frequency = <400000>;
-
 	typec-mux@42 {
 		compatible = "fcs,fsa4480";
 		reg = <0x42>;
-                //interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-                irq-gpio = <&tlmm 116 0x00>;
 		vcc-supply = <&vreg_bob>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&fsa_default>;
 		mode-switch;
 		orientation-switch;
-
 		port {
 			fsa4480_sbu_mux: endpoint {
 				remote-endpoint = <&pmic_glink_sbu>;
@@ -617,26 +628,26 @@
 &i2c19 {
        status ="okay";
        clock-frequency = <400000>;
-       audio-codec@34 {
+       SpkrTop: audio-codec@34 {
                compatible = "nxp,tfa9879";
                reg = <0x34>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
                pinctrl-names = "default";
                pinctrl-0 = <&speaker_top_default>;
-               sound-name-prefix = "Speaker Top";
+               sound-name-prefix = "Top";
                #sound-dai-cells = <1>;
                status = "okay";
        };
 
-       audio-codec@35 {
+       SpkrBottom: audio-codec@35 {
                compatible = "nxp,tfa9879";
                reg = <0x35>;
                vddd-supply = <&pm8350_s10>;
                rcv-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
                pinctrl-names = "default";
                pinctrl-0 = <&speaker_bottom_default>;
-               sound-name-prefix = "Speaker Bottom";
+               sound-name-prefix = "Bottom";
                #sound-dai-cells = <1>;
                status = "okay";
        };
@@ -785,32 +796,6 @@
 		bias-disable;
 	};
 
-	qup_uart18_sleep: qup-uart18-sleep-state {
-		cts-pins {
-			pins = "gpio68";
-			function = "gpio";
-                        bias-bus-hold;
-		};
-
-		rts-pins {
-			pins = "gpio69";
-			function = "gpio";
-                        bias-pull-down;
-		};
-
-                tx-pins {
-                        pins = "gpio70";
-                        function = "gpio";
-                        bias-pull-up;
-                };
-
-		rx-pins {
-			pins = "gpio71";
-			function = "gpio";
-                        bias-pull-up;
-		};
-	};
-
 	pcie0_default_state: pcie0-default-state {
 		perst-pins {
 			pins = "gpio94";
@@ -837,23 +822,17 @@
         bt_en_default: bt-en-default {
                 pins = "gpio65";
                 function = "gpio";
-                drive-strength = <2>;
+                drive-strength = <16>;
                 output-low;
-                bias-disable;
+                bias-pull-up;
         };
 
-        swctrl_default: swctrl-default {
-                pins = "gpio153";
+        wn_en_default: wn-en-default {
+                pins = "gpio64";
                 function = "gpio";
-                bias-pull-down;
-        };
-
-        fsa_default: fsa-default-state {
-                pins = "gpio116";
-                function = "gpio";
-                drive-strength = <2>;
-                bias-disable;
-                output-high;
+                drive-strength = <16>;
+                output-low;
+                bias-pull-up;
         };
 
 	speaker_top_default: speaker-top-default-state {
@@ -956,26 +935,15 @@
 };
 
 &uart18 {
-        pinctrl-names = "default", "sleep";
-        pinctrl-0 = <&qup_uart18_default>;
-        pinctrl-1 = <&qup_uart18_sleep>;
-
         status = "okay";
+
         bluetooth {
-                compatible = "qcom,wcn6855-bt";
+                compatible = "qcom,qca6390-bt";
                 pinctrl-names = "default";
-                pinctrl-0 = <&bt_en_default>, <&swctrl_default>;
+                pinctrl-0 = <&bt_en_default>;
+                power-domains = <&qca639x>;
 
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
-                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
-
-                vddio-supply = <&pm8350c_s1>;
-                vddbtcxmx-supply = <&pm8350_s11>;
-		vddrfacmn-supply = <&pm8350_s11>;
-		vddrfa0p8-supply = <&pm8350_s11>;
-		vddrfa1p2-supply = <&pm8350_s12>;
-		vddrfa1p7-supply = <&pm8350c_s1>;
-                max-speed = <3200000>;
         };
 };
 

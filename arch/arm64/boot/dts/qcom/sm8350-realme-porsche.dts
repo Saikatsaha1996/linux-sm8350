@@ -1036,12 +1036,11 @@
                         compatible = "pci17cb,1103";
                         reg = <0x10000 0x0 0x0 0x0 0x0>;
                         //memory-region = <&cnss_wlan_mem>;
-
-                        pinctrl-names = "default", "sleep";
-                        pinctrl-0 = <&wlan_default_state>;
-                        pinctrl-0 = <&wlan_sleep_state>;
-                        wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-                        swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
+                        //pinctrl-names = "default", "sleep";
+                        //pinctrl-0 = <&wlan_default_state>;
+                        //pinctrl-0 = <&wlan_sleep_state>;
+                        //wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                        //swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
 
                         qcom,ath11k-calibration-variant = "REALME_PORSCHE";
                 };

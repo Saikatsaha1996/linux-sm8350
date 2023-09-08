@@ -2967,28 +2967,28 @@
 				cts-pins {
 					pins = "gpio68";
 					function = "qup18";
-					drive-strength = <2>;
-                                        bias-bus-hold;
+					//drive-strength = <2>;
+                                        //bias-bus-hold;
 				};
 
 				rts-pins {
 					pins = "gpio69";
 					function = "qup18";
-					drive-strength = <2>;
-                                        bias-disable;
+					//drive-strength = <2>;
+                                        //bias-disable;
 				};
 
 				rx-pins {
 					pins = "gpio71";
 					function = "qup18";
-                                        drive-strength = <2>;
-                                        bias-pull-up;
+                                        //drive-strength = <2>;
+                                        //bias-pull-up;
 				};
 				tx-pins {
 					pins = "gpio70";
 					function = "qup18";
-					drive-strength = <2>;
-                                        bias-disable;
+					//drive-strength = <2>;
+                                        //bias-disable;
 				};
 			};
 

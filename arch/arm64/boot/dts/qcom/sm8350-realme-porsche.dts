@@ -63,6 +63,14 @@
 	                phandle = <0x6f5>;
                         no-map;
                 };
+                /*cnss_wlan_region {
+                        compatible = "shared-dma-pool";
+                        alloc-ranges = <0x00 0x00 0x00 0xffffffff>;
+                        reusable;
+                        alignment = <0x00 0x400000>;
+                        #size = <0x00 0x1400000>;
+                        phandle = <0x291>;
+                };*/
 
         };
 
@@ -821,7 +829,7 @@
 		};
         };
 
-        pcie1_default_state: pcie1-default-state {
+        /*pcie1_default_state: pcie1-default-state {
                 perst-pins {
                         pins = "gpio97";
                         function = "gpio";
@@ -849,7 +857,7 @@
                         drive-strength = <2>;
                         bias-pull-down;
                 };
-        };
+        };*/
 
 	bt_sleep_state: bt-sleep-state {
 		bt-en {
@@ -1015,6 +1023,29 @@
 	perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
 	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
 	status = "okay";
+        pcie@0 {
+                device_type = "pci";
+                reg = <0x0 0x0 0x0 0x0 0x0>;
+                #address-cells = <3>;
+                #size-cells = <2>;
+                ranges;
+
+                bus-range = <0x01 0xff>;
+
+                wifi@0 {
+                        compatible = "pci17cb,1103";
+                        reg = <0x10000 0x0 0x0 0x0 0x0>;
+                        //memory-region = <&cnss_wlan_mem>;
+
+                        pinctrl-names = "default", "sleep";
+                        pinctrl-0 = <&wlan_default_state>;
+                        pinctrl-0 = <&wlan_sleep_state>;
+                        wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                        swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
+
+                        qcom,ath11k-calibration-variant = "REALME_PORSCHE";
+                };
+        };
 };
 
 &pcie0_phy {

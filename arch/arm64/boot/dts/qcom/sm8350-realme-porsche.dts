@@ -821,6 +821,36 @@
 		};
         };
 
+        pcie1_default_state: pcie1-default-state {
+                perst-pins {
+                        pins = "gpio97";
+                        function = "gpio";
+                        drive-strength = <2>;
+                        bias-pull-down;
+                };
+
+                clkreq-pins {
+                        pins = "gpio98";
+                        function = "pcie1_clkreqn";
+                        drive-strength = <2>;
+                        bias-pull-up;
+                };
+
+                wake-pins {
+                        pins = "gpio99";
+                        function = "gpio";
+                        drive-strength = <2>;
+                        bias-pull-up;
+                };
+
+                wil6210_refclk_en_pin {
+                        pins = "gpio67";
+                        function = "gpio";
+                        drive-strength = <2>;
+                        bias-pull-down;
+                };
+        };
+
 	bt_sleep_state: bt-sleep-state {
 		bt-en {
 			pins = "gpio65";

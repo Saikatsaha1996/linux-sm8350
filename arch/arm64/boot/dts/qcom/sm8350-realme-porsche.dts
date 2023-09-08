@@ -827,7 +827,7 @@
                 bias-pull-up;
         };
 
-        wn_en_default: wn-en-default {
+        wlan_en_default: wlan-en-default {
                 pins = "gpio64";
                 function = "gpio";
                 drive-strength = <16>;

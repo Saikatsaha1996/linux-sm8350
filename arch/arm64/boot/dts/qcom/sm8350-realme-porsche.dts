@@ -63,15 +63,6 @@
 	                phandle = <0x6f5>;
                         no-map;
                 };
-                /*cnss_wlan_region {
-                        compatible = "shared-dma-pool";
-                        alloc-ranges = <0x00 0x00 0x00 0xffffffff>;
-                        reusable;
-                        alignment = <0x00 0x400000>;
-                        #size = <0x00 0x1400000>;
-                        phandle = <0x291>;
-                };*/
-
         };
 
 	vph_pwr: vph-pwr-regulator {
@@ -125,7 +116,7 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-        wlan_supply_vddpe: wlan-gpio-regulator@1 {
+        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "wlan_supply_vddpe";
                 regulator-min-microvolt = <3300000>;
@@ -136,7 +127,7 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&wlan_default_state>;
 
-        };
+        };*/
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -873,7 +864,7 @@
 		};
 	};
 
-	/*wlan_sleep_state: wlan-sleep-state {
+	wlan_sleep_state: wlan-sleep-state {
 		wlan-en {
 			pins = "gpio64";
 			function = "gpio";
@@ -881,7 +872,7 @@
 			output-low;
 			bias-pull-up;
 		};
-	};*/
+	};
 
 	wlan_default_state: wlan-default-state {
 		wlan-en {
@@ -1012,11 +1003,12 @@
 };
 
 &pcie0 {
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+        //vddpe-3v3-supply = <&wlan_supply_vddpe>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie0_default_state>;
-	perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        vddpe-3v3-supply = <&wlan_supply_vddpe>;
+
 	status = "okay";
         pcie@0 {
                 device_type = "pci";

@@ -2965,7 +2965,7 @@
 
 			qup_uart18_default: qup-uart18-default-state {
 				cts-rx-pins {
-					pins = "gpio68", "gpio71"
+					pins = "gpio68", "gpio71";
 					function = "qup18";
 					drive-strength = <2>;
                                         bias-disable;

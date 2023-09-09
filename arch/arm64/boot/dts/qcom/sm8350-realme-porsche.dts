@@ -589,6 +589,8 @@
 };
 
 &mpss {
+        pinctrl-names = "default";
+        pinctrl-0 = <&modem_cable_default>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
 	status = "okay";
 };
@@ -791,6 +793,37 @@
 		bias-disable;
 	};
 
+	modem_cable_default: modem-cable-default-state {
+	        pins = "gpio99";
+		function = "gpio";
+		drive-strength = <2>;
+		input-enable;
+		bias-pull-up;
+	};
+
+	qup_uart18_active: qup-uart18-active-state {
+		cts-pins {
+			pins = "gpio68";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-disable;
+		};
+
+		rts-rx-pins {
+			pins = "gpio69", "gpio71";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+
+		tx-pins {
+			pins = "gpio70";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+        };
+
 	pcie0_default_state: pcie0-default-state {
 		perst-pins {
 			pins = "gpio94";
@@ -814,7 +847,7 @@
 		};
         };
 
-        /*pcie1_default_state: pcie1-default-state {
+        pcie1_default_state: pcie1-default-state {
                 perst-pins {
                         pins = "gpio97";
                         function = "gpio";
@@ -842,7 +875,7 @@
                         drive-strength = <2>;
                         bias-pull-down;
                 };
-        };*/
+        };
 
 	bt_sleep_state: bt-sleep-state {
 		bt-en {
@@ -984,6 +1017,9 @@
 };
 
 &uart18 {
+        pinctrl-names = "default", "active";
+        pinctrl-0 = <&qup_uart18_default>;
+        pinctrl-1 = <&qup_uart18_active>;
         status = "okay";
         bluetooth {
                 compatible = "qcom,wcn6855-bt";
@@ -1010,6 +1046,20 @@
 	pinctrl-0 = <&pcie0_default_state>;
 
 	status = "okay";
+};
+
+&pcie0_phy {
+	vdda-phy-supply = <&pm8350_l5>;
+	vdda-pll-supply = <&pm8350_l6>;
+	status = "okay";
+};
+
+&pcie1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie1_default_state>;
+	perst-gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
+	wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+	status = "okay";
         pcie@0 {
                 device_type = "pci";
                 reg = <0x0 0x0 0x0 0x0 0x0>;
@@ -1025,9 +1075,9 @@
         };
 };
 
-&pcie0_phy {
+&pcie1_phy {
 	vdda-phy-supply = <&pm8350_l5>;
-	vdda-pll-supply = <&pm8350_l6>;
+	vdda-pll-supply = <&pm8350_l6>;	
 	status = "okay";
 };
 

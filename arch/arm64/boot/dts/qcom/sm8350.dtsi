@@ -2964,22 +2964,29 @@
 			};
 
 			qup_uart18_default: qup-uart18-default-state {
-				cts-rx-pins {
-					pins = "gpio68", "gpio71";
+				cts-pins {
+					pins = "gpio68";
 					function = "qup18";
 					drive-strength = <2>;
-                                        bias-disable;
+                                        bias-bus-hold;
 				};
 
 				rts-pins {
 					pins = "gpio69";
 					function = "qup18";
 					drive-strength = <2>;
-                                        bias-pull-down;
+                                        bias-disable;
 				};
 
 				tx-pins {
 					pins = "gpio70";
+					function = "qup18";
+					drive-strength = <2>;
+                                        bias-disable;
+				};
+
+				rx-pins {
+					pins = "gpio71";
 					function = "qup18";
 					drive-strength = <2>;
                                         bias-pull-up;

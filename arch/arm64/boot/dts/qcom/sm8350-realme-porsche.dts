@@ -589,8 +589,6 @@
 };
 
 &mpss {
-        pinctrl-names = "default";
-        pinctrl-0 = <&modem_cable_default>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
 	status = "okay";
 };
@@ -791,14 +789,6 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-	};
-
-	modem_cable_default: modem-cable-default-state {
-	        pins = "gpio99";
-		function = "gpio";
-		drive-strength = <2>;
-		input-enable;
-		bias-pull-up;
 	};
 
 	qup_uart18_active: qup-uart18-active-state {

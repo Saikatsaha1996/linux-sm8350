@@ -116,7 +116,7 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
+        wlan_supply_vddpe: wlan-gpio-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "wlan_supply_vddpe";
                 regulator-min-microvolt = <3300000>;
@@ -127,7 +127,7 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&wlan_default_state>;
 
-        };*/
+        };
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";

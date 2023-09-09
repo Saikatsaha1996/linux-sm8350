@@ -589,6 +589,8 @@
 };
 
 &mpss {
+        pinctrl-names = "default";
+        pinctrl-0 = <&modem_cable_default>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
 	status = "okay";
 };
@@ -837,7 +839,15 @@
 		};
         };
 
-        pcie1_default_state: pcie1-default-state {
+	modem_cable_default: modem-cable-default-state {
+	        pins = "gpio99";
+		function = "gpio";
+		drive-strength = <2>;
+		input-enable;
+		bias-pull-up;
+	};
+
+        /*pcie1_default_state: pcie1-default-state {
                 perst-pins {
                         pins = "gpio97";
                         function = "gpio";
@@ -865,7 +875,7 @@
                         drive-strength = <2>;
                         bias-pull-down;
                 };
-        };
+        };*/
 
 	bt_sleep_state: bt-sleep-state {
 		bt-en {
@@ -1031,24 +1041,10 @@
 &pcie0 {
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
 	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        //vddpe-3v3-supply = <&wlan_supply_vddpe>;
+        vddpe-3v3-supply = <&wlan_supply_vddpe>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie0_default_state>;
 
-	status = "okay";
-};
-
-&pcie0_phy {
-	vdda-phy-supply = <&pm8350_l5>;
-	vdda-pll-supply = <&pm8350_l6>;
-	status = "okay";
-};
-
-&pcie1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pcie1_default_state>;
-	perst-gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
-	wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
 	status = "okay";
         pcie@0 {
                 device_type = "pci";
@@ -1065,11 +1061,25 @@
         };
 };
 
+&pcie0_phy {
+	vdda-phy-supply = <&pm8350_l5>;
+	vdda-pll-supply = <&pm8350_l6>;
+	status = "okay";
+};
+
+/*&pcie1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie1_default_state>;
+	perst-gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
+	wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
 &pcie1_phy {
 	vdda-phy-supply = <&pm8350_l5>;
 	vdda-pll-supply = <&pm8350_l6>;	
 	status = "okay";
-};
+};*/
 
 &ufs_mem_hc {
 	reset-gpios = <&tlmm 203 GPIO_ACTIVE_LOW>;

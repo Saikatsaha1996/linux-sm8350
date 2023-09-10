@@ -31,8 +31,8 @@
         chassis-type = "handset";
 
 	aliases {
-                hsuart0 = &uart18;
                 display0 = &panel0;
+                hsuart0 = &uart18;
 	};
 
 	chosen {
@@ -79,11 +79,9 @@
                 regulator-name = "panel_supply_vddr";
                 regulator-min-microvolt = <1800000>;
                 regulator-max-microvolt = <1800000>;
-
                 gpio = <&tlmm 163 0x0>;
                 enable-active-high;
                 regulator-boot-on;
-
                 pinctrl-names = "default";
                 pinctrl-0 = <&panel_vddr_default>;
 
@@ -116,20 +114,7 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-        extcon_usb: extcon_usb {
-                compatible = "linux,extcon-usb-gpio";
-                vbus-gpio =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
-                id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
-                vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-                usb-otg-gpio = <&pm8350c_gpios 1 GPIO_ACTIVE_HIGH>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&vbus_det>, 
-                            <&usb2_id_det_default>, 
-                            <&otg_en_active>, 
-                            <&vbus_boost>;
-        };
-
-        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
+        wlan_supply_vddpe: wlan-gpio-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "wlan_supply_vddpe";
                 regulator-min-microvolt = <3300000>;
@@ -140,7 +125,35 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&wlan_default>;
 
-        };*/
+        };
+
+        pmic-glink {
+                compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                connector@0 {
+                        compatible = "usb-c-connector";
+                        reg = <0>;
+                        power-role = "dual";
+                        data-role = "dual";
+                        ports {
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+                                port@0 {
+                                        reg = <0>;
+                                        pmic_glink_hs_in: endpoint {
+                                                remote-endpoint = <&usb_1_dwc3_hs>;
+                                        };
+                                };
+                                port@1 {
+                                        reg = <1>;
+                                        pmic_glink_sbu: endpoint {
+                                                remote-endpoint = <&fsa4480_sbu_mux>;
+                                        };
+                                };
+                        };
+                };
+        };
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -589,6 +602,24 @@
         };
 };
 
+&i2c13 {
+        clock-frequency = <100000>;
+        status = "okay";
+        typec-mux@42 {
+                compatible = "fcs,fsa4480";
+                reg = <0x42>;
+                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                vcc-supply = <&vreg_bob>;
+                mode-switch;
+                orientation-switch;
+                port {
+                        fsa4480_sbu_mux: endpoint {
+                                remote-endpoint = <&pmic_glink_sbu>;
+                        };
+                };
+        };
+};
+
 &i2c19 {
        status ="okay";
        clock-frequency = <400000>;
@@ -681,25 +712,6 @@
 			power-source = <1>;
 		};
 	};
-
-        vbus_boost_default {
-                vbus_boost: vbus_boost {
-                        pins = "gpio8";
-                        function = "normal";
-                        output-low;
-                        power-source = <0>;
-                };
-        };
-
-        vbus_det_default {
-                vbus_det: vbus_det {
-                        pins = "gpio9";
-                        function = "normal";
-                        input-enable;
-                        bias-disable;
-                        power-source = <0>;
-                };
-        };
 };
 
 &pm8350c_gpios {
@@ -710,29 +722,9 @@
                         input-disable;
                         output-high;
                         bias-disable;
-                        power-source = <1>; /* 1.8V */
-                        qcom,drive-strength = <2>;
-                };
-
-                /*otg_en_sleep: otg_en_sleep {
-                        pins = "gpio1";
-                        function = "normal";
-                        input-disable;
-                        output-low;
-                        bias-disable;
                         power-source = <1>;
                         qcom,drive-strength = <2>;
                 };
-
-                otg_en_default: otg_en_default {
-                        pins = "gpio1";
-                        function = "normal";
-                        input-disable;
-                        output-low;
-                        bias-disable;
-                        power-source = <1>;
-                        qcom,drive-strength = <2>;
-                };*/
         };
 };
 
@@ -813,13 +805,6 @@
 		bias-disable;
 	};
 
-        usb2_id_det_default: usb2_id_det_default {
-                pins = "gpio51";
-                function = "gpio";
-                input-enable;
-                bias-pull-up;
-        };
-
 	pcie0_default: pcie0-default-state {
 		perst-pins {
 			pins = "gpio94";
@@ -894,11 +879,11 @@
 			drive-strength = <16>;
 			bias-disable;
 		};
-		sw-ctrl-pin {
+		/*sw-ctrl-pin {
 			pins = "gpio153";
 			function = "gpio";
 			bias-pull-down;
-		};
+		};*/
 	};
 
 	speaker_top_default: speaker-top-default-state {
@@ -966,7 +951,6 @@
 &mdss_dsi0 {
         status = "okay";
         vdda-supply = <&pm8350_l6>;
-
         panel0: panel@0 {
                 compatible = "mdss,samsung-ams662zs01";
                 reg = <0>;
@@ -974,14 +958,11 @@
                 vddr-supply = <&panel_supply_vddr>;
                 vddi-supply = <&panel_supply_vddi>;
                 vdd-supply = <&panel_supply_vdd>;
-
                 reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
-
                 pinctrl-names = "default", "sleep";
                 pinctrl-0 = <&sde_dsi_active &sde_te_active>;
                 pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
                 status = "okay";
-
                 port {
                         panel_in: endpoint {
                                 remote-endpoint = <&mdss_dsi0_out>;
@@ -1006,7 +987,6 @@
         status = "okay";
         bluetooth {
                 compatible = "qcom,wcn6855-bt";
-
                 vddio-supply = <&pm8350c_s1>;
                 vddbtcxmx-supply = <&pm8350_s11>;
 		vddrfacmn-supply = <&pm8350_s11>;
@@ -1040,7 +1020,7 @@
 	pinctrl-0 = <&pcie1_default>;
 	perst-gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
 	wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-        //vddpe-3v3-supply = <&wlan_supply_vddpe>;
+        vddpe-3v3-supply = <&wlan_supply_vddpe>;
 	status = "okay";
         pcie@0 {
                 device_type = "pci";
@@ -1088,16 +1068,18 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
-        extcon = <&extcon_usb>;
         status = "okay";
 };
 
 &usb_1_dwc3 {
-        dr_mode = "otg";
-        //usb-role-switch;
-        maximum-speed = "high-speed";
+        dr_mode = "otg", "peripheral";
+        usb-role-switch;
         phys = <&usb_1_hsphy>;
         phy-names = "usb2-phy";
+};
+
+&usb_1_dwc3_hs {
+        remote-endpoint = <&pmic_glink_hs_in>;
 };
 
 &usb_1_hsphy {

@@ -123,10 +123,10 @@
                 vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
                 usb-otg-gpio = <&pm8350c_gpios 1 GPIO_ACTIVE_HIGH>;
                 pinctrl-names = "default";
-                pinctrl-0 = <&vbus_det_default
-                             &usb2_id_det_default
-                             &otg_en_ctrl_default
-                             &vbus_boost_default>;
+                pinctrl-0 = <&vbus_det_default>, 
+                            <&usb2_id_det_default>, 
+                            <&otg_en_ctrl_default>, 
+                            <&vbus_boost_default>;
         };
 
         /*wlan_supply_vddpe: wlan-gpio-regulator@1 {

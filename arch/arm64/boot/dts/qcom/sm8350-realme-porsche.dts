@@ -135,7 +135,7 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&sim_no_pull>;
                 pinctrl-1 = <&sim_pull_high>;
-                pinctrl-2 = <&sim_no_low>;
+                pinctrl-2 = <&sim_pull_low>;
         };
 
 	touchscreen_gpio_i2c {

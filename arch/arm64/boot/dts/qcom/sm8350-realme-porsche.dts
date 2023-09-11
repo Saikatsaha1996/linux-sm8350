@@ -126,7 +126,7 @@
 
         };
 
-        pm8350_gpio8 {
+        pm8350_gpio: gpio@8 {
                 compatible = "qcom,pm8350-gpio";
                 gpio-ranges = <&pm8350_gpio 8 0x0>;
                 function = "normal";

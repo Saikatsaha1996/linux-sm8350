@@ -126,7 +126,7 @@
 
         };
 
-        pm8350_gpio: gpio@8 {
+        /*pm8350_gpio: gpio@8 {
                 compatible = "qcom,pm8350-gpio";
                 gpio-ranges = <&pm8350_gpio 8 0x0>;
                 function = "normal";
@@ -136,7 +136,7 @@
                 pinctrl-0 = <&sim_no_pull>;
                 pinctrl-1 = <&sim_pull_high>;
                 pinctrl-2 = <&sim_pull_low>;
-        };
+        };*/
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -572,10 +572,10 @@
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
-        interrupt-parent = <&tlmm>;
-        gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+        rf-gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+        sim-gpio = <&pm8350_gpio 8 GPIO_ACTIVE_HIGH>;
         pinctrl-names = "default";
-        pinctrl-0 = <&rf_cable0_active>;
+        pinctrl-0 = <&rf_cable0_active &sim_pull_high>;
 	status = "okay";
 };
 

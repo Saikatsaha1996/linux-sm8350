@@ -129,10 +129,13 @@
         pm8350_gpio8 {
                 compatible = "qcom,pm8350-gpio";
                 gpio-ranges = <&pm8350_gpio 8 0x0>;
+                function = "normal";
+                input-enable;
+                power-source = <1>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&sim_no_pull>;
-                pinctrl-0 = <&sim_pull_high>;
-                pinctrl-0 = <&sim_no_low>;
+                pinctrl-1 = <&sim_pull_high>;
+                pinctrl-2 = <&sim_no_low>;
         };
 
 	touchscreen_gpio_i2c {

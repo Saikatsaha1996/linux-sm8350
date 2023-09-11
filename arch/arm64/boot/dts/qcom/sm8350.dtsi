@@ -2963,7 +2963,7 @@
 				bias-disable;
 			};
 
-			qup_uart18_default: qup-uart18-default-state {
+			/*qup_uart18_default: qup-uart18-default-state {
 				cts-pins {
 					pins = "gpio68";
 					function = "qup18";
@@ -2991,7 +2991,30 @@
 					drive-strength = <2>;
                                         bias-pull-up;
 				};
-			};
+			};*/
+
+			qup_uart18_default: qup-uart18-default-state {
+				cts-rx-pins {
+					pins = "gpio68", "gpio71";
+					function = "qup18";
+					drive-strength = <2>;
+                                        bias-disable;
+				};
+
+				rts-pins {
+					pins = "gpio69";
+					function = "qup18";
+					drive-strength = <2>;
+                                        bias-disable;
+				};
+
+				tx-pins {
+					pins = "gpio70";
+					function = "qup18";
+					drive-strength = <2>;
+                                        bias-pull-up;
+				};
+                        };
 
 			qup_i2c0_default: qup-i2c0-default-state {
 				pins = "gpio4", "gpio5";

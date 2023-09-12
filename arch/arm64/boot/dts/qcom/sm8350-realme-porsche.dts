@@ -580,10 +580,6 @@
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
-        rf-gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-        sim-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&rf_cable0_active &sim_pull_high>;
 	status = "okay";
 };
 
@@ -687,30 +683,6 @@
 		bias-pull-up;
 		power-source = <1>;
 	};
-
-        sim_no_pull: sim_no_pull {
-                pins = "gpio8";
-                function = "normal";
-                input-enable;
-                power-source = <1>;
-                bias-disable;
-        };
-
-        sim_pull_high: sim_pull_high {
-                pins = "gpio8";
-                function = "normal";
-                input-enable;
-                power-source = <1>;
-                bias-pull-up;
-        };
-
-        sim_pull_low: sim_pull_low {
-                pins = "gpio8";
-                function = "normal";
-                input-enable;
-                power-source = <1>;
-                bias-pull-down;
-        };
 };
 
 &pm8350c_gpios {
@@ -902,13 +874,6 @@
 			bias-pull-down;
                         input-enable;
 		};
-        };
-
-        rf_cable0_active: rf_cable0_active {
-                pins = "gpio99";
-                drive-strength = <2>;
-                input-enable;
-                bias-pull-up;
         };
 };
 

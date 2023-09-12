@@ -132,7 +132,7 @@
                 wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };*/
 
-        wlan_supply_vddpe: wlan-gpio-regulator@1 {
+        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "wlan_supply_vddpe";
                 regulator-min-microvolt = <3300000>;
@@ -144,7 +144,7 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&wlan_en_state>;
 
-        };
+        };*/
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -825,6 +825,29 @@
 		};
         };
 
+	pcie1_default: pcie1-default-state {
+		perst-pins {
+			pins = "gpio97";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
+		};
+
+		clkreq-pins {
+			pins = "gpio98";
+			function = "pcie0_clkreqn";
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+
+		wake-pins {
+			pins = "gpio99";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-up;
+		};
+        };
+
         bt_en_state: bt-en-state {
                 bt-en {
                         pins = "gpio65";
@@ -962,15 +985,28 @@
 };
 
 &pcie0 {
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_HIGH>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        vddpe-3v3-supply = <&wlan_supply_vddpe>;
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
         status = "okay";
 };
 
 &pcie0_phy {
+	vdda-phy-supply = <&pm8350_l5>;
+	vdda-pll-supply = <&pm8350_l6>;
+	status = "okay";
+};
+
+&pcie1 {
+        perst-gpios = <&tlmm 97 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie1_default>;
+        status = "okay";
+};
+
+&pcie1_phy {
 	vdda-phy-supply = <&pm8350_l5>;
 	vdda-pll-supply = <&pm8350_l6>;
 	status = "okay";

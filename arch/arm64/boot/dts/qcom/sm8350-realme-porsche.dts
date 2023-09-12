@@ -114,7 +114,7 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-        qca639x: qca639x {
+        /*qca639x: qca639x {
                 compatible = "qcom,qca6390";
                 #power-domain-cells = <0>;
                 vddaon-supply = <&pmr735a_s2>; //0p95 s2e
@@ -130,7 +130,21 @@
                 pinctrl-0 = <&wlan_en_state>;
 
                 wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-        };
+        };*/
+
+        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
+                compatible = "regulator-fixed";
+                regulator-name = "wlan_supply_vddpe";
+                regulator-min-microvolt = <3300000>;
+                regulator-max-microvolt = <3300000>;
+                wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
+                enable-active-high;
+                regulator-boot-on;
+                pinctrl-names = "default";
+                pinctrl-0 = <&wlan_en_state>;
+
+        };*/
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -939,14 +953,15 @@
                 compatible = "qcom,qca6390-bt";
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>;
-                power-domains = <&qca639x>;
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
+                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
         };
 };
 
 &pcie0 {
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_HIGH>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+        //vddpe-3v3-supply = <&wlan_supply_vddpe>;
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
         status = "okay";
@@ -960,8 +975,11 @@
                 wifi@0 {
                         compatible = "pci17cb,1101";
                         reg = <0x10000 0x0 0x0 0x0 0x0>;
-                        power-domains = <&qca639x>;
+                        enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                        swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
                         qcom,ath11k-calibration-variant = "realme_porsche";
+                        pinctrl-names = "default";
+                        pinctrl-0 = <&wlan_en_state>;
                 };
         };
 };

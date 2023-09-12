@@ -986,7 +986,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pcie0_default>;
 	status = "okay";
-        pcie@0 {
+        /*pcie@0 {
                 device_type = "pci";
                 reg = <0x0 0x0 0x0 0x0 0x0>;
                 #address-cells = <3>;
@@ -999,12 +999,12 @@
                         power-domains = <&wcn6855>;
                         qcom,ath11k-calibration-variant = "realme_porsche";
                 };
-        };
+        };*/
 };
 
 &pcie0_phy {
-	vdda-phy-supply = <&pm8350_l5>;
-	vdda-pll-supply = <&pm8350_l6>;
+	//vdda-phy-supply = <&pm8350_l5>;
+	//vdda-pll-supply = <&pm8350_l6>;
 	status = "okay";
 };
 

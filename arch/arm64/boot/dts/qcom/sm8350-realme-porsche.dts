@@ -952,7 +952,7 @@
         pinctrl-0 = <&qup_uart18_default>;
         status = "okay";
         bluetooth {
-                compatible = "qcom,qca6390-bt";
+                compatible = "qcom,wcn6855-bt";
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>;
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;

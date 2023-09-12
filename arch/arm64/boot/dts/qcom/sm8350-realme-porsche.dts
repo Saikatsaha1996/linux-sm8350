@@ -132,7 +132,7 @@
                 wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };*/
 
-        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
+        wlan_supply_vddpe: wlan-gpio-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "wlan_supply_vddpe";
                 regulator-min-microvolt = <3300000>;
@@ -144,7 +144,7 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&wlan_en_state>;
 
-        };*/
+        };
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -964,7 +964,7 @@
 &pcie0 {
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_HIGH>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        //vddpe-3v3-supply = <&wlan_supply_vddpe>;
+        vddpe-3v3-supply = <&wlan_supply_vddpe>;
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
         status = "okay";

@@ -114,64 +114,25 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-        /*qca639x: qca639x {
-                compatible = "qcom,qca6390";
-                #power-domain-cells = <0>;
-                vddaon-supply = <&pmr735a_s2>; //0p95 s2e
-                vddpmu-supply = <&pmr735a_s2>; //0p95 s2e
-                vddrfa1-supply = <&pmr735a_s2>; //0p95 s2e
-                vddrfa2-supply = <&pm8350_s12>; //1p3 s12b
-                vddrfa3-supply = <&pm8350c_s1>; //1p9 s1c
-                vddpcie1-supply = <&pm8350_s12>; //1p3 s12b
-                vddpcie2-supply = <&pm8350c_s1>; //1p9 s1c
-                vddio-supply = <&pm8350_s10>; //1p8 s10b
+	wlan_clk_regulator: wlan-clk-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "xo-clk-regulator";
+		gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
+		startup-delay-us = <1000>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&wcnss_en>;
+		vin-supply = <&pmr735a_s3>;
+	};
 
-                pinctrl-names = "default";
-                pinctrl-0 = <&wlan_en_state>;
-
-                wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-        };*/
-
-        /*wlan_supply_vddpe: wlan-gpio-regulator@1 {
-                compatible = "regulator-fixed";
-                regulator-name = "wlan_supply_vddpe";
-                regulator-min-microvolt = <3300000>;
-                regulator-max-microvolt = <3300000>;
-                wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
-                enable-active-high;
-                regulator-boot-on;
-                pinctrl-names = "default";
-                pinctrl-0 = <&wlan_en_state>;
-
-        };*/
-
-	pmic-glink {
-		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
-		#address-cells = <1>;
-		#size-cells = <0>;
-		connector@0 {
-			compatible = "usb-c-connector";
-			reg = <0>;
-			power-role = "dual";
-			data-role = "dual";
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				port@0 {
-					reg = <0>;
-					pmic_glink_dwc3_hs_in: endpoint {
-						remote-endpoint = <&usb_1_dwc3_hs>;
-					};
-				};
-				port@1 {
-					reg = <1>;
-					pmic_glink_dwc3_ss_in: endpoint {
-						remote-endpoint = <&usb_1_dwc3_ss>;
-					};
-				};
-			};
-		};
+	vreg_wlan: wlan-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vreg_wlan";
+		gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_state>;
+		vin-supply = <&wlan_clk_regulator>;
 	};
 
 	touchscreen_gpio_i2c {
@@ -825,35 +786,12 @@
 		};
         };
 
-	pcie1_default: pcie1-default-state {
-		perst-pins {
-			pins = "gpio97";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-down;
-		};
-
-		clkreq-pins {
-			pins = "gpio98";
-			function = "pcie1_clkreqn";
-			drive-strength = <2>;
-			bias-pull-up;
-		};
-
-		wake-pins {
-			pins = "gpio99";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-up;
-		};
-        };
-
         bt_en_state: bt-en-state {
                 bt-en {
                         pins = "gpio65";
                         function = "gpio";
                         drive-strength = <16>;
-                        output-low;
+                        output-high;
                         bias-pull-up;
                 };
         };
@@ -863,10 +801,18 @@
                         pins = "gpio64";
                         function = "gpio";
                         drive-strength = <16>;
-                        output-low;
+                        output-high;
                         bias-pull-up;
                 };
         };
+
+	wcnss_en: wcnss-en-state {
+		pins = "gpio201";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-pull-down;
+		output-low;
+	};
 
 	speaker_top_default: speaker-top-default-state {
 		active-pins {
@@ -968,7 +914,7 @@
         pinctrl-0 = <&qup_uart18_default>;
         status = "okay";
         bluetooth {
-                compatible = "qcom,qca6390-bt";
+                compatible = "qcom,wcn6855-bt";
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>;
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
@@ -980,26 +926,26 @@
 &pcie0 {
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
+        vddpe-3v3-supply = <&vreg_wlan>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
         status = "okay";
+	pcie@0 {
+		device_type = "pci";
+		reg = <0x0 0x0 0x0 0x0 0x0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+		ranges;
+		bus-range = <0x01 0xff>;
+		wifi@0 {
+			compatible = "pci17cb,1103";
+			reg = <0x10000 0x0 0x0 0x0 0x0>;
+			qcom,ath11k-calibration-variant = "realme_porsche";
+		};
+	};
 };
 
 &pcie0_phy {
-	vdda-phy-supply = <&pm8350_l5>;
-	vdda-pll-supply = <&pm8350_l6>;
-	status = "okay";
-};
-
-&pcie1 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie1_default>;
-        perst-gpios = <&tlmm 97 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-        status = "okay";
-};
-
-&pcie1_phy {
 	vdda-phy-supply = <&pm8350_l5>;
 	vdda-pll-supply = <&pm8350_l6>;
 	status = "okay";
@@ -1033,32 +979,11 @@
         status = "okay";
 };
 
-/*&usb_1_dwc3 {
+&usb_1_dwc3 {
         dr_mode = "peripheral";
         phys = <&usb_1_hsphy>;
         phy-names = "usb2-phy";
         status = "okay";
-};*/
-
-&usb_1_dwc3 {
-	dr_mode = "otg";
-	usb-role-switch;
-	ports {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		port@0 {
-			reg = <0>;
-			usb_1_dwc3_hs: endpoint {
-				remote-endpoint = <&pmic_glink_dwc3_hs_in>;
-			};
-		};
-		port@1 {
-			reg = <1>;
-			usb_1_dwc3_ss: endpoint {
-				remote-endpoint = <&pmic_glink_dwc3_ss_in>;
-			};
-		};
-	};
 };
 
 &usb_1_hsphy {
@@ -1074,7 +999,7 @@
         status = "okay";
 };
 
-/*&usb_2 {
+&usb_2 {
 	status = "okay";
 };
 
@@ -1089,4 +1014,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};*/
+};

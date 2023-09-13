@@ -807,7 +807,7 @@
 
 		clkreq-pins {
 			pins = "gpio98";
-			function = "pcie0_clkreqn";
+			function = "pcie1_clkreqn";
 			drive-strength = <2>;
 			bias-pull-up;
 		};

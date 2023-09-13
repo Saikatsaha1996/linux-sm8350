@@ -940,7 +940,7 @@
         pinctrl-0 = <&qup_uart18_default>;
         status = "okay";
         bluetooth {
-                compatible = "qcom,wcn6855-bt";
+                compatible = "qcom,qca6390-bt";
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>;
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
@@ -950,10 +950,10 @@
 };
 
 &pcie0 {
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
         status = "okay";
 };
 
@@ -964,10 +964,10 @@
 };
 
 &pcie1 {
-        perst-gpios = <&tlmm 97 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
         pinctrl-names = "default";
         pinctrl-0 = <&pcie1_default>;
+        perst-gpios = <&tlmm 97 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
         status = "okay";
 };
 

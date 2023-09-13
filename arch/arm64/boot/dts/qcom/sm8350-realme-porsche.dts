@@ -56,6 +56,15 @@
                         no-map;
                 };
 
+                cnss_wlan_region {
+                        compatible = "shared-dma-pool";
+                        alloc-ranges = <0x00 0x00 0x00 0xffffffff>;
+                        reusable;
+                        alignment = <0x00 0x400000>;
+                        #size = <0x00 0x1400000>;
+                        phandle = <0x290>;
+                };
+
                 kboot_uboot_logmem@9fe00000 {
                         compatible = "oppo,xbl_uefi_kbootlog";
 	                xbluefi-offset = <0x1f7000>;

@@ -1560,7 +1560,7 @@
 
 			power-domains = <&gcc PCIE_0_GDSC>;
 
-			phys = <&pcie0_lane>;
+			phys = <&pcie0_phy>;
 			phy-names = "pciephy";
 
 			status = "disabled";
@@ -1582,24 +1582,12 @@
 			assigned-clocks = <&gcc GCC_PCIE0_PHY_RCHNG_CLK>;
 			assigned-clock-rates = <100000000>;
 
-			//#clock-cells = <0>;
-			//clock-output-names = "pcie_0_pipe_clk";
-			//#phy-cells = <0>;
+			#clock-cells = <0>;
+			clock-output-names = "pcie_0_pipe_clk";
+
+			#phy-cells = <0>;
 
 			status = "disabled";
-
-			pcie0_lane: phy@1c06200 {
-				reg = <0 0x01c06e00 0 0x2000>, /* tx */
-				      <0 0x01c07000 0 0x2000>, /* rx */
-				      <0 0x01c06200 0 0x2000>, /* pcs */
-				      <0 0x01c06600 0 0x2000>; /* pcs_pcie */
-				clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
-				clock-names = "pipe0";
-
-				#clock-cells = <0>;
-				clock-output-names = "pcie_0_pipe_clk";
-				#phy-cells = <0>;
-			};
 		};
 
 		pcie1: pci@1c08000 {

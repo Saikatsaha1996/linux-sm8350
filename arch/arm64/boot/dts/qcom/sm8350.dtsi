@@ -1580,7 +1580,7 @@
 			clocks = <&gcc GCC_PCIE_0_AUX_CLK>,
 				 <&gcc GCC_PCIE_0_CFG_AHB_CLK>,
 				 <&gcc GCC_PCIE_0_CLKREF_EN>,
-				 <&gcc GCC_PCIE_0_PHY_RCHNG_CLK>;
+				 <&gcc GCC_PCIE0_PHY_RCHNG_CLK>;
 			clock-names = "aux", "cfg_ahb", "ref", "refgen";
 
 			resets = <&gcc GCC_PCIE_0_PHY_BCR>;

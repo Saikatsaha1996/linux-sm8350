@@ -1535,6 +1535,7 @@
 
                         clocks = <&gcc GCC_PCIE_0_PIPE_CLK>,
                                  <&gcc GCC_PCIE_0_PIPE_CLK_SRC>,
+                                 <&pcie0_lane>,
                                  <&rpmhcc RPMH_CXO_CLK>,
                                  <&gcc GCC_PCIE_0_AUX_CLK>,
                                  <&gcc GCC_PCIE_0_CFG_AHB_CLK>,
@@ -1547,6 +1548,7 @@
                                  <&gcc GCC_AGGRE_NOC_PCIE_0_AXI_CLK>;
                         clock-names = "pipe",
                                       "pipe_mux",
+                                      "phy_pipe",
                                       "ref",
                                       "aux",
                                       "cfg",
@@ -1566,13 +1568,43 @@
 
 			power-domains = <&gcc PCIE_0_GDSC>;
 
-			phys = <&pcie0_phy>;
+			phys = <&pcie0_lane>;
 			phy-names = "pciephy";
 
 			status = "disabled";
 		};
 
-		pcie0_phy: phy@1c06000 {
+                pcie0_phy: phy@1c06000 {
+                        compatible = "qcom,sm8350-qmp-gen3x1-pcie-phy";
+                        reg = <0 0x01c06000 0 0x2000>;
+                        clocks = <&gcc GCC_PCIE_0_AUX_CLK>,
+                                 <&gcc GCC_PCIE_0_CFG_AHB_CLK>,
+                                 <&gcc GCC_PCIE_0_CLKREF_EN>,
+                                 <&gcc GCC_PCIE0_PHY_RCHNG_CLK>;
+                        clock-names = "aux", "cfg_ahb", "ref", "rchng";
+
+                        resets = <&gcc GCC_PCIE_0_PHY_BCR>;
+                        reset-names = "phy";
+
+                        assigned-clocks = <&gcc GCC_PCIE0_PHY_RCHNG_CLK>;
+                        assigned-clock-rates = <100000000>;
+
+                        status = "disabled";
+                        pcie0_lane: phy@1c06200 {
+                                reg = <0 0x01c06e00 0 0x2000>, /* tx */
+                                      <0 0x01c07000 0 0x2000>, /* rx */
+                                      <0 0x01c06200 0 0x2000>, /* pcs */
+                                      <0 0x01c06600 0 0x2000>; /* pcs_pcie */
+                                clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
+                                clock-names = "pipe0";
+
+                                #clock-cells = <0>;
+                                #phy-cells = <0>;
+                                clock-output-names = "pcie_0_pipe_clk";
+                        };
+                };
+
+		/*pcie0_phy: phy@1c06000 {
 			compatible = "qcom,sm8350-qmp-gen3x1-pcie-phy";
 			reg = <0 0x01c06000 0 0x2000>;
 			clocks = <&gcc GCC_PCIE_0_AUX_CLK>,
@@ -1594,7 +1626,7 @@
 			#phy-cells = <0>;
 
 			status = "disabled";
-		};
+		};*/
 
 		pcie1: pci@1c08000 {
 			compatible = "qcom,pcie-sm8350";

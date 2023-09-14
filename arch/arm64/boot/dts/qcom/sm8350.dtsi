@@ -1586,7 +1586,7 @@
 			resets = <&gcc GCC_PCIE_0_PHY_BCR>;
 			reset-names = "phy";
 
-			assigned-clocks = <&gcc GCC_PCIE_0_PHY_RCHNG_CLK>;
+			assigned-clocks = <&gcc GCC_PCIE0_PHY_RCHNG_CLK>;
 			assigned-clock-rates = <100000000>;
 
 			status = "disabled";

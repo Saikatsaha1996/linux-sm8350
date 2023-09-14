@@ -1569,9 +1569,6 @@
 		pcie0_phy: phy@1c06000 {
 			compatible = "qcom,sm8350-qmp-gen3x1-pcie-phy";
 			reg = <0 0x01c06000 0 0x2000>;
-			//#address-cells = <2>;
-			//#size-cells = <2>;
-			//ranges;
 			clocks = <&gcc GCC_PCIE_0_AUX_CLK>,
 				 <&gcc GCC_PCIE_0_CFG_AHB_CLK>,
 				 <&gcc GCC_PCIE_0_CLKREF_EN>,
@@ -1600,8 +1597,8 @@
 				clock-names = "pipe0";
 
 				#clock-cells = <0>;
-				#phy-cells = <0>;
 				clock-output-names = "pcie_0_pipe_clk";
+				#phy-cells = <0>;
 			};
 		};
 

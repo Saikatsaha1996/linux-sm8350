@@ -123,26 +123,35 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-	wlan_clk_regulator: wlan-clk-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "wlan_clk_regulator";
-		gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
-		startup-delay-us = <1000>;
-		enable-active-high;
-		pinctrl-names = "default";
-		pinctrl-0 = <&wcnss_en>;
-		vin-supply = <&pm8350c_s1>;
-	};
+        wlan_clk_regulator: wlan-clk-regulator {
+                compatible = "regulator-fixed";
+                regulator-name = "wlan_clk_regulator";
+                regulator-min-microvolt = <2300000>;
+                regulator-max-microvolt = <2300000>;
+                enable-active-high;
+                regulator-boot-on;
+                gpio = <&tlmm 201 0x0>;
+                startup-delay-us = <1000>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&wcnss_en>;
+        };
 
-	vreg_wlan: wlan-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "vreg_wlan";
-		gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-		pinctrl-names = "default";
-		pinctrl-0 = <&wlan_en_state>;
-		vin-supply = <&wlan_clk_regulator>;
-	};
+        qca6391: qca6391 {
+                compatible = "qcom,qca6390";
+                #power-domain-cells = <0>;
+                wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                vddaon-supply = <&pmr735a_s2>; //0p95 s2e
+                vddpmu-supply = <&pmr735a_s2>; //0p95 s2e
+                vddrfa1-supply = <&pmr735a_s2>; //0p95 s2e
+                vddrfa2-supply = <&pm8350_s12>; //1p3 s12b
+                vddrfa3-supply = <&pm8350c_s1>; //1p9 s1c
+                vddpcie1-supply = <&pm8350_s12>; //1p3 s12b
+                vddpcie2-supply = <&pm8350c_s1>; //1p9 s1c
+                vddio-supply = <&pm8350_s10>; //1p8 s10
+
+                pinctrl-names = "default";
+                pinctrl-0 = <&wlan_en_state>;
+        };
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -676,16 +685,25 @@
 &pcie0 {
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
-        vddpe-3v3-supply = <&vreg_wlan>;
+        vddpe-3v3-supply = <&wlan_clk_regulator>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
         status = "okay";
+        bridge@0,0 {
+                compatible = "pci17cb,010c";
+                reg = <0 0 0 0 0>;
+
+                #address-cells = <3>;
+                #size-cells = <2>;
+                #interrupt-cells = <1>;
+                power-domains = <&qca6391>;
+        };
 };
 
 &pcie0_phy {
-	vdda-phy-supply = <&pm8350_l5>;
-	vdda-pll-supply = <&pm8350_l6>;
-	status = "okay";
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+        status = "okay";
 };
 
 &pm8350_gpios {

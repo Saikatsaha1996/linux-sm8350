@@ -673,7 +673,7 @@
 	reg = <0x0 0xd8800000 0x0 0x8e00000>;
 };
 
-/*&pcie0 {
+&pcie0 {
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
         vddpe-3v3-supply = <&vreg_wlan>;
@@ -686,20 +686,6 @@
 	vdda-phy-supply = <&pm8350_l5>;
 	vdda-pll-supply = <&pm8350_l6>;
 	status = "okay";
-};*/
-
-&pcie0 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        vddpe-3v3-supply = <&vreg_wlan>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        status = "okay";
-        pcie0_phy@0 {
-                vdda-phy-supply = <&pm8350_l5>;
-                vdda-pll-supply = <&pm8350_l6>;
-                status = "okay";
-        }
 };
 
 &pm8350_gpios {

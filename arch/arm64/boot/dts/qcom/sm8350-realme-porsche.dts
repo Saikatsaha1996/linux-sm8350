@@ -143,8 +143,8 @@
                 regulator-max-microvolt = <2300000>;
                 enable-active-high;
                 regulator-boot-on;
-                gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
-		gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
+		wlan-gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
                 startup-delay-us = <1000>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&wcnss_en &wlan_en_state>;

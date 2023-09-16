@@ -826,6 +826,7 @@
         status = "okay";
         bluetooth {
                 compatible = "qcom,qca6390-bt";
+                power-domains = <&qca639x>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>;
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;

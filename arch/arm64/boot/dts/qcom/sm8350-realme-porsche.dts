@@ -130,20 +130,23 @@
                 regulator-max-microvolt = <2300000>;
                 enable-active-high;
                 regulator-boot-on;
-                gpio = <&tlmm 201 0x0>;
+                gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
                 startup-delay-us = <1000>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&wcnss_en>;
         };
 
-	vreg_wlan: wlan-regulator {
+	wlan_regulator: wlan-regulator {
 		compatible = "regulator-fixed";
-		regulator-name = "vreg_wlan";
+		regulator-name = "wlan_regulator";
+                regulator-min-microvolt = <752000>;
+                regulator-max-microvolt = <752000>;
+                enable-active-high;
+                regulator-boot-on;
 		gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		pinctrl-names = "default";
 		pinctrl-0 = <&wlan_en_state>;
-		vin-supply = <&wlan_clk_regulator>;
 	};
 
 	touchscreen_gpio_i2c {
@@ -723,10 +726,24 @@
         status = "okay";
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
-        vdda-supply = <&pm8350_s11>;
-        vddpe-3v3-supply = <&vreg_wlan>;
+        vdda-supply = <&wlan_regulator>;
+        vddpe-3v3-supply = <&wlan_clk_regulator>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+        bridge@0 {
+                device_type = "pci";
+                reg = <0x0 0x0 0x0 0x0 0x0>;
+                #address-cells = <3>;
+                #size-cells = <2>;
+                ranges;
+
+                bus-range = <0x01 0xff>;
+
+                wifi@0 {
+                        compatible = "pci17cb,1101";
+                        reg = <0x10000 0x0 0x0 0x0 0x0>;
+                };
+        };
 };
 
 &pcie0_phy {

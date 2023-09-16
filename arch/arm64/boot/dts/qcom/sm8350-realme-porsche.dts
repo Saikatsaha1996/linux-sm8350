@@ -723,7 +723,7 @@
         status = "okay";
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
-        vdda-supply = <&pm8350c_s1>;
+        vdda-supply = <&pm8350_s11>;
         vddpe-3v3-supply = <&vreg_wlan>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;

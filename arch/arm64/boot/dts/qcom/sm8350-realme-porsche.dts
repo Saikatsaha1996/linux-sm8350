@@ -59,10 +59,10 @@
                 cnss_wlan_region {
                         compatible = "shared-dma-pool";
                         alloc-ranges = <0x00 0x00 0x00 0xffffffff>;
-                        reusable;
                         alignment = <0x00 0x400000>;
-                        #size = <0x00 0x1400000>;
+                        size = <0x00 0x1400000>;
                         phandle = <0x290>;
+                        no-map;
                 };
 
                 kboot_uboot_logmem@9fe00000 {
@@ -136,22 +136,15 @@
                 pinctrl-0 = <&wcnss_en>;
         };
 
-        qca6391: qca6391 {
-                compatible = "qcom,qca6390";
-                #power-domain-cells = <0>;
-                wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-                vddaon-supply = <&pmr735a_s2>; //0p95 s2e
-                vddpmu-supply = <&pmr735a_s2>; //0p95 s2e
-                vddrfa1-supply = <&pmr735a_s2>; //0p95 s2e
-                vddrfa2-supply = <&pm8350_s12>; //1p3 s12b
-                vddrfa3-supply = <&pm8350c_s1>; //1p9 s1c
-                vddpcie1-supply = <&pm8350_s12>; //1p3 s12b
-                vddpcie2-supply = <&pm8350c_s1>; //1p9 s1c
-                vddio-supply = <&pm8350_s10>; //1p8 s10
-
-                pinctrl-names = "default";
-                pinctrl-0 = <&wlan_en_state>;
-        };
+	vreg_wlan: wlan-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vreg_wlan";
+		gpio = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&wlan_en_state>;
+		vin-supply = <&wlan_clk_regulator>;
+	};
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
@@ -232,32 +225,22 @@
 		vdd-l6-l9-l10-supply = <&pm8350_s11>;
 		vdd-l8-supply = <&pm8350c_s2>;
 
-		/*
-		 * ARC regulators:
-		 * S5 - mx.lvl
-		 * S6 - gfx.lvl
-		 * S9 - mxc.lvl
-		 */
-
 		pm8350_s10: smps10 {
 			regulator-name = "pm8350_s10";
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pm8350_s11: smps11 {
 			regulator-name = "pm8350_s11";
 			regulator-min-microvolt = <752000>;
-			regulator-max-microvolt = <1000000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-max-microvolt = <1012000>;
 		};
 
 		pm8350_s12: smps12 {
 			regulator-name = "pm8350_s12";
 			regulator-min-microvolt = <1224000>;
 			regulator-max-microvolt = <1360000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pm8350_l1: ldo1 {
@@ -281,16 +264,11 @@
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
-		/* L4 - lmx.lvl (ARC) */
-
 		pm8350_l5: ldo5 {
 			regulator-name = "pm8350_l5";
 			regulator-min-microvolt = <880000>;
 			regulator-max-microvolt = <888000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-			regulator-allow-set-load;
-			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
-						   RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pm8350_l6: ldo6 {
@@ -298,9 +276,6 @@
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1208000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-			regulator-allow-set-load;
-			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
-						   RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pm8350_l7: ldo7 {
@@ -308,21 +283,13 @@
 			regulator-min-microvolt = <2400000>;
 			regulator-max-microvolt = <3008000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-			regulator-allow-set-load;
-			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
-						   RPMH_REGULATOR_MODE_HPM>;
 		};
-
-		/* L8 - lcx.lvl (ARC) */
 
 		pm8350_l9: ldo9 {
 			regulator-name = "pm8350_l9";
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-			regulator-allow-set-load;
-			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
-						   RPMH_REGULATOR_MODE_HPM>;
 		};
 	};
 
@@ -354,35 +321,18 @@
 			regulator-name = "pm8350c_s1";
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1952000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
-		};
-
-                pm8350c_s2: smps2 {
-			regulator-name = "pm8350c_s2";
-			regulator-min-microvolt = <640000>;
-			regulator-max-microvolt = <1000000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pm8350c_s3: smps3 {
 			regulator-name = "pm8350c_s3";
 			regulator-min-microvolt = <300000>;
 			regulator-max-microvolt = <704000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
-
-		/*
-		 * ARC regulators:
-		 * S4 - mss.lvl
-		 * S6 - cx.lvl
-		 * S8 - mmcx.lvl
-		 */
 
 		pm8350c_s10: smps10 {
 			regulator-name = "pm8350c_s10";
 			regulator-min-microvolt = <1048000>;
 			regulator-max-microvolt = <1128000>;
-			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
                 vreg_bob: bob {
@@ -408,8 +358,8 @@
 
 		pm8350c_l3: ldo3 {
 			regulator-name = "pm8350c_l3";
-			regulator-min-microvolt = <3304000>;
-			regulator-max-microvolt = <3304000>;
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3300000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
@@ -514,7 +464,7 @@
 
 		pmr735a_s3: smps3 {
 			regulator-name = "pmr735a_s3";
-			regulator-min-microvolt = <2208000>;
+			regulator-min-microvolt = <2200000>;
 			regulator-max-microvolt = <2352000>;
 		};
 
@@ -522,42 +472,49 @@
 			regulator-name = "pmr735a_l1";
 			regulator-min-microvolt = <912000>;
 			regulator-max-microvolt = <912000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pmr735a_l2: ldo2 {
 			regulator-name = "pmr735a_l2";
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pmr735a_l3: ldo3 {
 			regulator-name = "pmr735a_l3";
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pmr735a_l4: ldo4 {
 			regulator-name = "pmr735a_l4";
 			regulator-min-microvolt = <1776000>;
 			regulator-max-microvolt = <1872000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pmr735a_l5: ldo5 {
 			regulator-name = "pmr735a_l5";
 			regulator-min-microvolt = <800000>;
 			regulator-max-microvolt = <800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pmr735a_l6: ldo6 {
 			regulator-name = "pmr735a_l6";
 			regulator-min-microvolt = <480000>;
 			regulator-max-microvolt = <904000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
 		pmr735a_l7: ldo7 {
 			regulator-name = "pmr735a_l7";
 			regulator-min-microvolt = <2800000>;
 			regulator-max-microvolt = <2800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 	};
 };
@@ -683,27 +640,19 @@
 };
 
 &pcie0 {
+        status = "okay";
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
-        vddpe-3v3-supply = <&wlan_clk_regulator>;
+        vddpe-3v3-supply = <&vreg_wlan>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        status = "okay";
-        bridge@0,0 {
-                compatible = "pci17cb,010c";
-                reg = <0 0 0 0 0>;
-
-                #address-cells = <3>;
-                #size-cells = <2>;
-                #interrupt-cells = <1>;
-                power-domains = <&qca6391>;
         };
 };
 
 &pcie0_phy {
+        status = "okay";
         vdda-phy-supply = <&pm8350_l5>;
         vdda-pll-supply = <&pm8350_l6>;
-        status = "okay";
 };
 
 &pm8350_gpios {

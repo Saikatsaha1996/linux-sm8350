@@ -646,7 +646,6 @@
         vddpe-3v3-supply = <&vreg_wlan>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        };
 };
 
 &pcie0_phy {

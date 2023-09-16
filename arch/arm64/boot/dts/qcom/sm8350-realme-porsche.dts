@@ -744,7 +744,7 @@
         vddpe-3v3-supply = <&wcnss_wlan_regulator>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        bridge@0 {
+        pcie@0 {
                 device_type = "pci";
                 reg = <0x0 0x0 0x0 0x0 0x0>;
                 #address-cells = <3>;

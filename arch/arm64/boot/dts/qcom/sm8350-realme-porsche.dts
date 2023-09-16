@@ -223,7 +223,6 @@
 		vdd-l2-l7-supply = <&vreg_bob>;
 		vdd-l3-l5-supply = <&vreg_bob>;
 		vdd-l6-l9-l10-supply = <&pm8350_s11>;
-		vdd-l8-supply = <&pm8350c_s2>;
 
 		pm8350_s10: smps10 {
 			regulator-name = "pm8350_s10";

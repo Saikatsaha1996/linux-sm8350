@@ -196,12 +196,13 @@
 		};
 	};
 
-        bat: battery {
+        battery: battery {
                 compatible = "simple-battery";
-                battery-type = "lithium-polymer";
-                voltage-min-design-microvolt = <4200000>;
-                energy-full-design-microwatt-hours = <23000000>;
-                charge-full-design-microamp-hours = <5000000>;
+                battery-type = "lithium-ion-polymer";
+                voltage-min-design-microvolt = <3200000>;
+                voltage-max-design-microvolt = <4200000>;
+                energy-full-design-microwatt-hours = <18900000>;
+                charge-full-design-microamp-hours = <4500000>;
         };
 };
 
@@ -637,7 +638,7 @@
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
-                monitored-battery = <&bat>;
+                monitored-battery = <&battery>;
         };
 };
 

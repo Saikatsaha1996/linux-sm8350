@@ -196,6 +196,34 @@
 		};
 	};
 
+        pmic-glink {
+                compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                connector@0 {
+                        compatible = "usb-c-connector";
+                        reg = <0>;
+                        power-role = "dual";
+                        data-role = "dual";
+                        ports {
+                                #address-cells = <1>;
+                                #size-cells = <0>;
+                                port@0 {
+                                        reg = <0>;
+                                        pmic_glink_hs_in: endpoint {
+                                                remote-endpoint = <&usb_1_dwc3_hs>;
+                                        };
+                                };
+                                port@2 {
+                                        reg = <2>;
+                                        pmic_glink_sbu: endpoint {
+                                                remote-endpoint = <&fsa4480_sbu_mux>;
+                                        };
+                                };
+                        };
+                };
+        };
+
         battery: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-ion-polymer";
@@ -632,7 +660,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -640,9 +668,27 @@
                 reg = <0x55>;
                 monitored-battery = <&battery>;
         };
-};
+};*/
 
 &i2c19 {
+        status = "okay";
+        clock-frequency = <400000>;
+        typec-mux@42 {
+                compatible = "fcs,fsa4480";
+                reg = <0x42>;
+                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                vcc-supply = <&vreg_bob>;
+                mode-switch;
+                orientation-switch;
+                port {
+                        fsa4480_sbu_mux: endpoint {
+                                remote-endpoint = <&pmic_glink_sbu>;
+                        };
+                };
+        };
+};
+
+/*&i2c19 {
        status ="okay";
        clock-frequency = <400000>;
        SpkrTop: audio-codec@34 {
@@ -668,7 +714,7 @@
                #sound-dai-cells = <1>;
                status = "okay";
        };
-};
+};*/
 
 /* For bug we have to disabled crypto & bam */
 &cryptobam {
@@ -1027,26 +1073,26 @@
 };
 
 &usb_1_dwc3 {
-        dr_mode = "peripheral";
+        dr_mode = "otg";
+        usb-role-switch;
+        maximum-speed = "high-speed";
         phys = <&usb_1_hsphy>;
         phy-names = "usb2-phy";
         status = "okay";
 };
 
+&usb_1_dwc3_hs {
+        remote-endpoint = <&pmic_glink_hs_in>;
+};
+
 &usb_1_hsphy {
-	vdda-pll-supply = <&pm8350_l5>;
-	vdda18-supply = <&pm8350c_l1>;
-	vdda33-supply = <&pm8350_l2>;
+        vdda-pll-supply = <&pm8350_l5>;
+        vdda18-supply = <&pm8350c_l1>;
+        vdda33-supply = <&pm8350_l2>;
         status = "okay";
 };
 
-&usb_1_qmpphy {
-	vdda-phy-supply = <&pm8350_l6>;
-	vdda-pll-supply = <&pm8350_l1>;
-        status = "okay";
-};
-
-&usb_2 {
+/*&usb_2 {
 	status = "okay";
 };
 
@@ -1061,4 +1107,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};
+};*/

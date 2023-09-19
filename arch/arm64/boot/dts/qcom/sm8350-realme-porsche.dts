@@ -150,27 +150,6 @@
 		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };
 
-        rf_cable_regulator: rf-cable-regulator {
-                compatible = "regulator-fixed";
-                regulator-name = "modem-pin-regulator";
-                gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-                startup-delay-us = <1000>;
-                enable-active-high;
-                pinctrl-names = "default";
-                pinctrl-0 = <&rf_cable0_active>;
-                vin-supply = <&pm8350c_s1>;
-        };
-
-        sim_regulator: sim-detcation-regulator {
-                compatible = "regulator-fixed";
-                regulator-name = "sim_regulator";
-                gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-                enable-active-high;
-                pinctrl-names = "default";
-                pinctrl-0 = <&sim2_high>;
-                vin-supply = <&rf_cable_regulator>;
-        };
-
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -650,6 +629,10 @@
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
+        rf-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+        sim-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&rf_cable0_default &sim2_high_default>;
 	status = "okay";
 };
 
@@ -761,7 +744,7 @@
 };
 
 &pm8350_gpios {
-        sim2_high: sim2_high {
+        sim2_high_default: sim2_high_default {
                 pins = "gpio8";
                 function = "normal";
                 input-enable;
@@ -990,7 +973,7 @@
 		output-low;
 	};
 
-        rf_cable0_active: rf_cable0_active {
+        rf_cable0_default: rf_cable0_default {
                 pins = "gpio99";
                 function = "gpio";
                 drive-strength = <2>;
@@ -1064,7 +1047,7 @@
 };
 
 &usb_1_dwc3 {
-        dr_mode = "otg";
+        dr_mode = "host";
         maximum-speed = "high-speed";
         phys = <&usb_1_hsphy>;
         phy-names = "usb2-phy";
@@ -1087,6 +1070,12 @@
 
 &usb_2 {
 	status = "okay";
+};
+
+&usb_2_dwc3 {
+        dr_mode = "peripheral";
+        maximum-speed = "super-speed";
+        status = "okay";
 };
 
 &usb_2_hsphy {

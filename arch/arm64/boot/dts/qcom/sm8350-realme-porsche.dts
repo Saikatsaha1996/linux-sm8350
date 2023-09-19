@@ -196,6 +196,18 @@
 		};
 	};
 
+        extcon_usb: extcon-usb {
+                compatible = "linux,extcon-usb-gpio";
+                vbus-gpio =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+                id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+                vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+
+                pinctrl-names = "default";
+                pinctrl-0 = <&usb2_vbus_det
+                             &usb2_id_det
+                             &usb2_vbus_boost>;
+        };
+
         battery: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-ion-polymer";
@@ -752,6 +764,21 @@
                 bias-pull-up;
         };
 
+        usb2_vbus_boost: usb2_vbus_boost {
+                pins = "gpio8";
+                function = "normal";
+                output-low;
+                power-source = <0>;
+        };
+
+        usb2_vbus_det: usb2_vbus_det {
+                pins = "gpio9";
+                function = "normal";
+                input-enable;
+                bias-disable;
+                power-source = <0>;
+        };
+
 	key_vol_down_default: key_vol_down_default {
 		pins = "gpio6";
 		function = "normal";
@@ -946,23 +973,19 @@
         };
 
         bt_en_state: bt-en-state {
-                bt-en {
-                        pins = "gpio65";
-                        function = "gpio";
-                        drive-strength = <16>;
-                        output-high;
-                        bias-pull-up;
-                };
+                pins = "gpio65";
+                function = "gpio";
+                drive-strength = <16>;
+                output-high;
+                bias-pull-up;
         };
 
         wlan_en_state: wlan-en-state {
-                wlan-en {
-                        pins = "gpio64";
-                        function = "gpio";
-                        drive-strength = <16>;
-                        output-high;
-                        bias-pull-up;
-                };
+                pins = "gpio64";
+                function = "gpio";
+                drive-strength = <16>;
+                output-high;
+                bias-pull-up;
         };
 
 	wcnss_en: wcnss-en-state {
@@ -972,6 +995,13 @@
 		bias-pull-down;
 		output-low;
 	};
+
+        usb2_id_det: usb2_id_det {
+                pins = "gpio51";
+                function = "gpio";
+                input-enable;
+                bias-pull-up;
+        };
 
         rf_cable0_default: rf_cable0_default {
                 pins = "gpio99";
@@ -1047,11 +1077,10 @@
 };
 
 &usb_1_dwc3 {
-        dr_mode = "host";
+        dr_mode = "peripheral";
         maximum-speed = "high-speed";
         phys = <&usb_1_hsphy>;
         phy-names = "usb2-phy";
-        status = "okay";
 };
 
 &usb_1_hsphy {
@@ -1073,9 +1102,9 @@
 };
 
 &usb_2_dwc3 {
-        dr_mode = "peripheral";
+        dr_mode = "host";
         maximum-speed = "super-speed";
-        status = "okay";
+        extcon = <&extcon_usb>;
 };
 
 &usb_2_hsphy {

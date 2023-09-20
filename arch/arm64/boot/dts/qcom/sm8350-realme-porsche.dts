@@ -196,29 +196,57 @@
 		};
 	};
 
+	pmic-glink {
+		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		connector@0 {
+			compatible = "usb-c-connector";
+			reg = <0>;
+			power-role = "dual";
+			data-role = "dual";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					pmic_glink_dwc3_hs_in: endpoint {
+						remote-endpoint = <&usb_1_dwc3_hs>;
+					};
+				};
+				port@1 {
+					reg = <1>;
+					pmic_glink_dwc3_ss_in: endpoint {
+						remote-endpoint = <&usb_1_dwc3_ss>;
+					};
+				};
+			};
+		};
+	};
+
         battery: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-ion-polymer";
                 over-voltage-threshold-microvolt = <4500000>;      // 4.5 vol
-                re-charge-voltage-microvolt = <250000>;            // 0.25 V
+                //re-charge-voltage-microvolt = <250000>;            // 0.25 V
                 voltage-min-design-microvolt = <3200000>;          // 3.2 V
                 voltage-max-design-microvolt = <4200000>;          // 4.2 V
                 energy-full-design-microwatt-hours = <18900000>;   // 18.9 Watt per hours
                 charge-full-design-microamp-hours = <4500000>;     // 4.5 amp
-                precharge-current-microamp = <256000>;             // 0.256 A
-                precharge-upper-limit-microvolt = <2500000>;       // 2.5 V
-                charge-term-current-microamp = <128000>;
-                constant-charge-current-max-microamp = <900000>;
-                constant-charge-voltage-max-microvolt = <4200000>;
-                factory-internal-resistance-micro-ohms = <250000>;
-                ocv-capacity-celsius = <(-10) 0 10>;
-                ocv-capacity-table-0 = <4185000 100>, <4113000 95>, <4066000 90>;
-                ocv-capacity-table-1 = <4200000 100>, <4185000 95>, <4113000 90>;
-                ocv-capacity-table-2 = <4250000 100>, <4200000 95>, <4185000 90>;
-                resistance-temp-table = <20 100>, <10 90>, <0 80>, <(-10) 60>;
-                operating-range-celsius = <(-30) 50>;
-                ambient-celsius = <(-5) 30>;
-                alert-celsius = <0 35>;
+                //precharge-current-microamp = <256000>;             // 0.256 A
+                //precharge-upper-limit-microvolt = <2500000>;       // 2.5 V
+                //charge-term-current-microamp = <128000>;
+                //constant-charge-current-max-microamp = <900000>;
+                //constant-charge-voltage-max-microvolt = <4200000>;
+                //factory-internal-resistance-micro-ohms = <250000>;
+                //ocv-capacity-celsius = <(-10) 0 10>;
+                //ocv-capacity-table-0 = <4185000 100>, <4113000 95>, <4066000 90>;
+                //ocv-capacity-table-1 = <4200000 100>, <4185000 95>, <4113000 90>;
+                //ocv-capacity-table-2 = <4250000 100>, <4200000 95>, <4185000 90>;
+                //resistance-temp-table = <20 100>, <10 90>, <0 80>, <(-10) 60>;
+                //operating-range-celsius = <(-30) 50>;
+                //ambient-celsius = <(-5) 30>;
+                //alert-celsius = <0 35>;
         };
 };
 
@@ -1054,15 +1082,29 @@
 };
 
 &usb_1 {
-        qcom,select-utmi-as-pipe-clk;
+        //qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
 
 &usb_1_dwc3 {
-        dr_mode = "peripheral";
-        maximum-speed = "high-speed";
-        phys = <&usb_1_hsphy>;
-        phy-names = "usb2-phy";
+	dr_mode = "otg";
+	usb-role-switch;
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		port@0 {
+			reg = <0>;
+			usb_1_dwc3_hs: endpoint {
+				remote-endpoint = <&pmic_glink_dwc3_hs_in>;
+			};
+		};
+		port@1 {
+			reg = <1>;
+			usb_1_dwc3_ss: endpoint {
+				remote-endpoint = <&pmic_glink_dwc3_ss_in>;
+			};
+		};
+	};
 };
 
 &usb_1_hsphy {
@@ -1079,7 +1121,7 @@
 	status = "okay";
 };
 
-&usb_2 {
+/*&usb_2 {
 	status = "okay";
 };
 
@@ -1099,4 +1141,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};
+};*/

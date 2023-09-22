@@ -123,61 +123,20 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-        wcnss_regulator: wcnss-wlan-regulator {
-                compatible = "regulator-fixed";
-                regulator-name = "wcnss_regulator";
-                regulator-min-microvolt = <1900000>;
-                regulator-max-microvolt = <1900000>;
-                enable-active-high;
-                wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&wcnss_en>;
-        };
-
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
                 #power-domain-cells = <0>;
                 vddaon-supply = <&pmr735a_s2>;
-                vddpmu-supply = <&pmr735a_s2>;
-                vddrfa1-supply = <&pmr735a_s2>;
+                vddpmu-supply = <&pm8350_s11>;
+                vddrfa1-supply = <&pm8350_s11>;
                 vddrfa2-supply = <&pm8350_s12>;
                 vddrfa3-supply = <&pm8350c_s1>;
-                vddpcie1-supply = <&wcnss_regulator>;
+                vddpcie1-supply = <&pm8350_s12>;
                 vddpcie2-supply = <&pm8350c_s1>;
                 vddio-supply = <&pm8350_s10>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&wlan_en_state>;
 		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-        };
-
-	touchscreen_gpio_i2c {
-		compatible = "i2c-gpio";
-		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
-		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
-		#address-cells = <1>;
-		#size-cells = <0>;
-	        dmas =  <&gpi_dma0 0 4 QCOM_GPI_I2C>,
-		        <&gpi_dma0 1 4 QCOM_GPI_I2C>;
-	        dma-names = "tx", "rx";
-		pinctrl-names = "default";
-		pinctrl-0 = <&i2c4_default>;
-	        touchscreen: focaltech@38 {
-		        compatible = "focaltech,ft3658u";
-		        reg = <0x38>;
-                        wakeup-source;
-		        interrupt-parent = <&tlmm>;
-                        interrupts = <23 0x2002>;
-		        reset-gpio = <&tlmm 22 0x00>;
-		        irq-gpio = <&tlmm 23 0x2002>;
-		        vdd-supply = <&pm8350c_l11>;
-		        vcc-i2c-supply = <&pm8350c_l12>;
-                        pinctrl-names = "default", "suspend";
-		        pinctrl-0 = <&ts_int_default &ts_reset_default>;
-		        pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
-		        touchscreen-size-x = <1080>;
-		        touchscreen-size-y = <2400>;
-		        focaltech,max-touch-number = <5>;
-                };
         };
 
         gpio_keys {
@@ -210,44 +169,29 @@
 				#size-cells = <0>;
 				port@0 {
 					reg = <0>;
-					pmic_glink_dwc3_hs_in: endpoint {
+					pmic_glink_hs_in: endpoint {
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
-				port@1 {
-					reg = <1>;
-					pmic_glink_dwc3_ss_in: endpoint {
-						remote-endpoint = <&usb_1_dwc3_ss>;
+				port@2 {
+					reg = <2>;
+					pmic_glink_sbu: endpoint {
+						remote-endpoint = <&fsa4480_sbu_mux>;
 					};
 				};
 			};
 		};
 	};
 
-        battery: battery {
+        /*battery: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-ion-polymer";
-                over-voltage-threshold-microvolt = <4500000>;      // 4.5 vol
-                //re-charge-voltage-microvolt = <250000>;            // 0.25 V
-                voltage-min-design-microvolt = <3200000>;          // 3.2 V
-                voltage-max-design-microvolt = <4200000>;          // 4.2 V
-                energy-full-design-microwatt-hours = <18900000>;   // 18.9 Watt per hours
-                charge-full-design-microamp-hours = <4500000>;     // 4.5 amp
-                //precharge-current-microamp = <256000>;             // 0.256 A
-                //precharge-upper-limit-microvolt = <2500000>;       // 2.5 V
-                //charge-term-current-microamp = <128000>;
-                //constant-charge-current-max-microamp = <900000>;
-                //constant-charge-voltage-max-microvolt = <4200000>;
-                //factory-internal-resistance-micro-ohms = <250000>;
-                //ocv-capacity-celsius = <(-10) 0 10>;
-                //ocv-capacity-table-0 = <4185000 100>, <4113000 95>, <4066000 90>;
-                //ocv-capacity-table-1 = <4200000 100>, <4185000 95>, <4113000 90>;
-                //ocv-capacity-table-2 = <4250000 100>, <4200000 95>, <4185000 90>;
-                //resistance-temp-table = <20 100>, <10 90>, <0 80>, <(-10) 60>;
-                //operating-range-celsius = <(-30) 50>;
-                //ambient-celsius = <(-5) 30>;
-                //alert-celsius = <0 35>;
-        };
+                over-voltage-threshold-microvolt = <4500000>;
+                voltage-min-design-microvolt = <3200000>;
+                voltage-max-design-microvolt = <4200000>;
+                energy-full-design-microwatt-hours = <18900000>;
+                charge-full-design-microamp-hours = <4500000>;
+        };*/
 };
 
 &apps_rsc {
@@ -680,7 +624,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -688,34 +632,72 @@
                 reg = <0x55>;
                 monitored-battery = <&battery>;
         };
+};*/
+
+&i2c4 {
+        status = "okay";
+        clock-frequency = <400000>;
+        touchscreen: focaltech@38 {
+                compatible = "focaltech,ft3658u";
+	        reg = <0x38>;
+                wakeup-source;
+	        interrupt-parent = <&tlmm>;
+                interrupts = <23 0x2002>;
+	        reset-gpio = <&tlmm 22 0x00>;
+	        irq-gpio = <&tlmm 23 0x2002>;
+	        vdd-supply = <&pm8350c_l11>;
+	        vcc-i2c-supply = <&pm8350c_l12>;
+                pinctrl-names = "default", "suspend";
+	        pinctrl-0 = <&ts_int_default &ts_reset_default>;
+	        pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+	        touchscreen-size-x = <1080>;
+	        touchscreen-size-y = <2400>;
+	        focaltech,max-touch-number = <5>;
+	};
 };
 
-&i2c19 {
-       status ="okay";
+&i2c13 {
+       status = "okay";
        clock-frequency = <400000>;
        SpkrTop: audio-codec@34 {
-               compatible = "nxp,tfa9879";
+               compatible = "nxp,tfa9874";
                reg = <0x34>;
                vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+               reset-gpio = <&tlmm 15 0x00>;
                pinctrl-names = "default";
-               pinctrl-0 = <&speaker_top_default>;
+               pinctrl-0 = <&top_default>;
                sound-name-prefix = "Top";
                #sound-dai-cells = <1>;
-               status = "okay";
        };
 
        SpkrBottom: audio-codec@35 {
-               compatible = "nxp,tfa9879";
+               compatible = "nxp,tfa9874";
                reg = <0x35>;
                vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+               reset-gpio = <&tlmm 42 0x00>;
                pinctrl-names = "default";
-               pinctrl-0 = <&speaker_bottom_default>;
+               pinctrl-0 = <&bottom_default>;
                sound-name-prefix = "Bottom";
                #sound-dai-cells = <1>;
-               status = "okay";
        };
+};
+
+&i2c19 {
+	clock-frequency = <400000>;
+	status = "okay";
+	typec-mux@42 {
+		compatible = "fcs,fsa4480";
+		reg = <0x42>;
+		interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+		vcc-supply = <&vreg_bob>;
+		mode-switch;
+		orientation-switch;
+		port {
+			fsa4480_sbu_mux: endpoint {
+				remote-endpoint = <&pmic_glink_sbu>;
+			};
+		};
+	};
 };
 
 /* For bug we have to disabled crypto & bam */
@@ -1005,14 +987,6 @@
                 bias-pull-up;
         };
 
-	wcnss_en: wcnss-en-state {
-		pins = "gpio201";
-		function = "gpio";
-		drive-strength = <16>;
-		bias-pull-down;
-		output-low;
-	};
-
         rf_cable0_default: rf_cable0_default {
                 pins = "gpio99";
                 function = "gpio";
@@ -1021,7 +995,7 @@
                 bias-pull-up;
         };
 
-	speaker_top_default: speaker-top-default-state {
+	top_default: top-default-state {
 		active-pins {
 			pins = "gpio15";
 			function = "gpio";
@@ -1039,7 +1013,7 @@
 		};
         };
 
-	speaker_bottom_default: speaker-bottom-default-state {
+	bottom_default: bottom-default-state {
 		active-pins {
 			pins = "gpio42";
 			function = "gpio";
@@ -1082,29 +1056,20 @@
 };
 
 &usb_1 {
-        //qcom,select-utmi-as-pipe-clk;
-        status = "okay";
+	qcom,select-utmi-as-pipe-clk;
+	status = "okay";
 };
 
 &usb_1_dwc3 {
 	dr_mode = "otg";
 	usb-role-switch;
-	ports {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		port@0 {
-			reg = <0>;
-			usb_1_dwc3_hs: endpoint {
-				remote-endpoint = <&pmic_glink_dwc3_hs_in>;
-			};
-		};
-		port@1 {
-			reg = <1>;
-			usb_1_dwc3_ss: endpoint {
-				remote-endpoint = <&pmic_glink_dwc3_ss_in>;
-			};
-		};
-	};
+	maximum-speed = "high-speed";
+	phys = <&usb_1_hsphy>;
+	phy-names = "usb2-phy";
+};
+
+&usb_1_dwc3_hs {
+	remote-endpoint = <&pmic_glink_hs_in>;
 };
 
 &usb_1_hsphy {
@@ -1114,14 +1079,14 @@
         status = "okay";
 };
 
-&usb_1_qmpphy {
+/*&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
 
 	status = "okay";
 };
 
-/*&usb_2 {
+&usb_2 {
 	status = "okay";
 };
 

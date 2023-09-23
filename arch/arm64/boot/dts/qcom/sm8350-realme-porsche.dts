@@ -213,7 +213,7 @@
 		};
 	};
 
-        /*battery: battery {
+        battery: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-ion-polymer";
                 over-voltage-threshold-microvolt = <4500000>;
@@ -221,7 +221,7 @@
                 voltage-max-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <18900000>;
                 charge-full-design-microamp-hours = <4500000>;
-        };*/
+        };
 };
 
 &apps_rsc {
@@ -654,7 +654,7 @@
 	status = "okay";
 };
 
-/*&i2c2 {
+&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -662,31 +662,33 @@
                 reg = <0x55>;
                 monitored-battery = <&battery>;
         };
-};*/
+};
 
 &i2c13 {
        status = "okay";
+       #address-cells = <1>;
+       #size-cells = <0>;
        clock-frequency = <400000>;
        SpkrTop: audio-codec@34 {
-               compatible = "nxp,tfa9874";
+               compatible = "nxp,tfa9895";
                reg = <0x34>;
-               vddd-supply = <&pm8350_s10>;
-               reset-gpio = <&tlmm 15 0x00>;
-               pinctrl-names = "default";
-               pinctrl-0 = <&top_default>;
+               //vddd-supply = <&pm8350_s10>;
+               //reset-gpio = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+               //pinctrl-names = "default";
+               //pinctrl-0 = <&top_default>;
                sound-name-prefix = "Top";
-               #sound-dai-cells = <1>;
+               #sound-dai-cells = <0>;
        };
 
        SpkrBottom: audio-codec@35 {
-               compatible = "nxp,tfa9874";
+               compatible = "nxp,tfa9895";
                reg = <0x35>;
-               vddd-supply = <&pm8350_s10>;
-               reset-gpio = <&tlmm 42 0x00>;
-               pinctrl-names = "default";
-               pinctrl-0 = <&bottom_default>;
+               //vddd-supply = <&pm8350_s10>;
+               //reset-gpio = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+               //pinctrl-names = "default";
+               //pinctrl-0 = <&bottom_default>;
                sound-name-prefix = "Bottom";
-               #sound-dai-cells = <1>;
+               #sound-dai-cells = <0>;
        };
 };
 
@@ -1069,7 +1071,7 @@
 };
 
 &usb_1_dwc3 {
-	dr_mode = "otg";
+	dr_mode = "peripheral";
 	usb-role-switch;
 	maximum-speed = "high-speed";
 	phys = <&usb_1_hsphy>;

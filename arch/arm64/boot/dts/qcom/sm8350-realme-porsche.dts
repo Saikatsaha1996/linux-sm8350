@@ -770,8 +770,9 @@
 
 &pmk8350_sdam_2 {
 	status = "okay";
-	rtc_offset: rtc-offset@bc {
-		reg = <0xbc 0x4>;
+	rtc_offset: rtc-offset@7c {
+		reg = <0x7c 0x1>;
+		bits = <0 8>;
 	};
 };
 

@@ -680,15 +680,19 @@
 &i2c19 {
         status = "okay";
         clock-frequency = <400000>;
-        SpkrTop: audio-codec@34 {
+        amplifier@34 {
                 compatible = "nxp,tfa9879";
                 reg = <0x34>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&tp_default>;
                 #sound-dai-cells = <0>;
         };
 
-        SpkrBottom: audio-codec@35 {
+        amplifier@35 {
                 compatible = "nxp,tfa9879";
                 reg = <0x35>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&btm_default>;
                 #sound-dai-cells = <0>;
         };
 };
@@ -1102,6 +1106,42 @@
                 drive-strength = <2>;
                 input-enable;
                 bias-pull-up;
+        };
+
+	tp_default: tp-default-state {
+		ae-pins {
+			pins = "gpio15";
+			function = "gpio";
+			drive-strength = <16>;
+			bias-disable;
+                        output-high;
+		};
+
+		sp-pins {
+			pins = "gpio15";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
+                        input-enable;
+		};
+        };
+
+	btm_default: btm-default-state {
+		ae-pins {
+			pins = "gpio42";
+			function = "gpio";
+			drive-strength = <16>;
+			bias-disable;
+                        output-high;
+		};
+
+		sp-pins {
+			pins = "gpio42";
+			function = "gpio";
+			drive-strength = <2>;
+			bias-pull-down;
+                        input-enable;
+		};
         };
 };
 

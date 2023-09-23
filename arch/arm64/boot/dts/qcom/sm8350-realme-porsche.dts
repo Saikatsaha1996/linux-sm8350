@@ -659,14 +659,12 @@
         };
 };
 
-&i2c13 {
+&i2c19 {
         clock-frequency = <400000>;
         status = "okay";
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
-                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-                vcc-supply = <&vreg_bob>;
                 mode-switch;
                 orientation-switch;
                 port {
@@ -675,11 +673,7 @@
                         };
                 };
         };
-};
 
-&i2c19 {
-        status = "okay";
-        clock-frequency = <400000>;
         amplifier@34 {
                 compatible = "nxp,tfa9879";
                 reg = <0x34>;
@@ -1109,39 +1103,19 @@
         };
 
 	tp_default: tp-default-state {
-		ae-pins {
-			pins = "gpio15";
-			function = "gpio";
-			drive-strength = <16>;
-			bias-disable;
-                        output-high;
-		};
-
-		sp-pins {
-			pins = "gpio15";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-down;
-                        input-enable;
-		};
+		pins = "gpio15";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+                output-high;
         };
 
 	btm_default: btm-default-state {
-		ae-pins {
-			pins = "gpio42";
-			function = "gpio";
-			drive-strength = <16>;
-			bias-disable;
-                        output-high;
-		};
-
-		sp-pins {
-			pins = "gpio42";
-			function = "gpio";
-			drive-strength = <2>;
-			bias-pull-down;
-                        input-enable;
-		};
+		pins = "gpio42";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+                output-high;
         };
 };
 

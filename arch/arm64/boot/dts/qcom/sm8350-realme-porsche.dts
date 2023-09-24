@@ -56,15 +56,6 @@
                         no-map;
                 };
 
-                cnss_wlan_region {
-                        compatible = "shared-dma-pool";
-                        alloc-ranges = <0x00 0x00 0x00 0xffffffff>;
-                        alignment = <0x00 0x400000>;
-                        size = <0x00 0x1400000>;
-                        phandle = <0x290>;
-                        no-map;
-                };
-
                 kboot_uboot_logmem@9fe00000 {
                         compatible = "oppo,xbl_uefi_kbootlog";
 	                xbluefi-offset = <0x1f7000>;
@@ -700,12 +691,7 @@
 	status = "disabled";
 };
 
-&pon_pwrkey {
-	status = "okay";
-};
-
-&pon_resin {
-	linux,code = <KEY_VOLUMEUP>;
+&pmk8350_rtc {
 	status = "okay";
 };
 
@@ -762,20 +748,12 @@
 	};
 };
 
-&pmk8350_rtc {
-	nvmem-cells = <&rtc_offset>;
-	nvmem-cell-names = "offset";
-	status = "okay";
-};
-
-&pmk8350_sdam_2 {
-	status = "okay";
-	rtc_offset: rtc-offset@bc {
-		reg = <0xbc 0x4>;
-	};
-};
-
 &pmk8350_vadc {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pm8350_gpio2_default
+                     &pmk8350_pa5_therm_default
+                     &pm8350b_pa6_therm_default>;
 	channel@324 {
 		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
 		qcom,ratiometric;
@@ -833,6 +811,15 @@
 	};
 };
 
+&pon_pwrkey {
+	status = "okay";
+};
+
+&pon_resin {
+	linux,code = <KEY_VOLUMEUP>;
+	status = "okay";
+};
+
 &qupv3_id_0 {
 	status = "okay";
 };
@@ -876,6 +863,20 @@
 	power-domains = <&qca639x>;
 };
 
+&pmk8350_gpios {
+        pmk8350_pa5_therm_default: pmk8350_pa5_therm_default {
+                pins = "gpio3";
+                bias-high-impedance;
+        };
+};
+
+&pm8350b_gpios {
+        pm8350b_pa6_therm_default: pm8350b_pa6_therm_default {
+                pins = "gpio1";
+                bias-high-impedance;
+        };
+};
+
 &pm8350_gpios {
         sim2_high_default: sim2_high_default {
                 pins = "gpio8";
@@ -892,6 +893,11 @@
 		bias-pull-up;
 		power-source = <1>;
 	};
+
+        pm8350_gpio2_default: pm8350_gpio2_default {
+                pins = "gpio2";
+                bias-high-impedance;
+        };
 };
 
 &pm8350c_gpios {

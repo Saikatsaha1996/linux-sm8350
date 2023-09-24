@@ -47,7 +47,7 @@
 		#size-cells = <2>;
 		ranges;
 
-                splash_memory:splash_region {
+                splash_memory: splash_region@e4d00000 {
                         reg = <0x0 0xe4d00000 0x0 0x02300000>;
                         no-map;
                         label = "cont_splash_region";
@@ -282,6 +282,15 @@
 			};
 		};
 	};
+
+        battery: battery {
+                compatible = "simple-battery";
+                battery-type = "lithium-ion-polymer";
+                voltage-min-design-microvolt = <3200000>;
+                voltage-max-design-microvolt = <4200000>;
+                energy-full-design-microwatt-hours = <18900000>;
+                charge-full-design-microamp-hours = <4500000>;
+        };
 
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
@@ -733,15 +742,6 @@
                 compatible = "ti,bq27541";
                 reg = <0x55>;
                 monitored-battery = <&battery>;
-        };
-
-        battery: battery {
-                compatible = "simple-battery";
-                battery-type = "lithium-ion-polymer";
-                voltage-min-design-microvolt = <3200000>;
-                voltage-max-design-microvolt = <4200000>;
-                energy-full-design-microwatt-hours = <18900000>;
-                charge-full-design-microamp-hours = <4500000>;
         };
 };
 

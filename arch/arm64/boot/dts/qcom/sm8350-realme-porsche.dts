@@ -727,10 +727,6 @@
 	status = "okay";
 };
 
-&removed_mem {
-	reg = <0x0 0xd8800000 0x0 0x8e00000>;
-};
-
 &pcie0 {
         status = "okay";
         pinctrl-names = "default";

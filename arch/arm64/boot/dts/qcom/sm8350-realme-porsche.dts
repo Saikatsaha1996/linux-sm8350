@@ -682,7 +682,12 @@
 	status = "disabled";
 };
 
-&pmk8350_rtc {
+&pon_pwrkey {
+	status = "okay";
+};
+
+&pon_resin {
+	linux,code = <KEY_VOLUMEUP>;
 	status = "okay";
 };
 
@@ -690,16 +695,7 @@
 	status = "okay";
 };
 
-&pmk8350_vadc {
-        status = "okay";
-};
-
-&pon_pwrkey {
-	status = "okay";
-};
-
-&pon_resin {
-	linux,code = <KEY_VOLUMEUP>;
+&pmk8350_rtc {
 	status = "okay";
 };
 
@@ -725,6 +721,10 @@
 
 &gpi_dma2 {
 	status = "okay";
+};
+
+&removed_mem {
+	reg = <0x0 0xd8800000 0x0 0x8e00000>;
 };
 
 &pcie0 {

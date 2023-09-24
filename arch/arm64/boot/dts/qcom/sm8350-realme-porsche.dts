@@ -47,15 +47,6 @@
 		#size-cells = <2>;
 		ranges;
 
-                memshare_region {
-                        alignment = <0x00 0x100000>;
-                        alloc-ranges = <0x00 0x00 0x00 0xdfffffff>;
-                        compatible = "shared-dma-pool";
-                        size = <0x00 0x800000>;
-                        phandle = <0x30>;
-                        no-map;
-                };
-
                 kboot_uboot_logmem@9fe00000 {
                         compatible = "oppo,xbl_uefi_kbootlog";
 	                xbluefi-offset = <0x1f7000>;
@@ -697,118 +688,10 @@
 
 &pmk8350_adc_tm {
 	status = "okay";
-
-	pm8350-skin-therm@0 {
-		reg = <0>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-cam-flash-therm@1 {
-		reg = <1>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-usb-con-therm@2 {
-		reg = <2>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_AMUX_THM1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-quiet-therm@3 {
-		reg = <3>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pmr735a-pa-therm@4 {
-		reg = <4>;
-		io-channels = <&pmk8350_vadc PMR735A_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-wl-chg-therm@5 {
-		reg = <5>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-wifi-therm@6 {
-		reg = <6>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
 };
 
 &pmk8350_vadc {
         status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pm8350_gpio2_default
-                     &pmk8350_pa5_therm_default
-                     &pm8350b_pa6_therm_default>;
-	channel@324 {
-		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_skin_therm";
-	};
-
-	channel@325 {
-		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_cam_flash_therm";
-	};
-
-	channel@327 {
-		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_quiet_therm";
-	};
-
-	channel@836 {
-		reg = <PM8350B_ADC7_AMUX_THM1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_usb_con_therm";
-	};
-
-	channel@842 {
-		reg = <PM8350B_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_wifi_therm";
-	};
-
-	channel@843 {
-		reg = <PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_wl_chg_therm";
-	};
-
-	channel@1098 {
-		reg = <PMR735A_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_pa_therm";
-	};
 };
 
 &pon_pwrkey {
@@ -863,20 +746,6 @@
 	power-domains = <&qca639x>;
 };
 
-&pmk8350_gpios {
-        pmk8350_pa5_therm_default: pmk8350_pa5_therm_default {
-                pins = "gpio3";
-                bias-high-impedance;
-        };
-};
-
-&pm8350b_gpios {
-        pm8350b_pa6_therm_default: pm8350b_pa6_therm_default {
-                pins = "gpio1";
-                bias-high-impedance;
-        };
-};
-
 &pm8350_gpios {
         sim2_high_default: sim2_high_default {
                 pins = "gpio8";
@@ -893,11 +762,6 @@
 		bias-pull-up;
 		power-source = <1>;
 	};
-
-        pm8350_gpio2_default: pm8350_gpio2_default {
-                pins = "gpio2";
-                bias-high-impedance;
-        };
 };
 
 &pm8350c_gpios {

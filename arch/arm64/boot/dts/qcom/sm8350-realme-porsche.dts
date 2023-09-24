@@ -47,6 +47,17 @@
 		#size-cells = <2>;
 		ranges;
 
+                splash_memory:splash_region {
+                        reg = <0x0 0xe4d00000 0x0 0x02300000>;
+                        no-map;
+                        label = "cont_splash_region";
+                };
+
+                removed_mem: memory@d8800000 {
+                        reg = <0x0 0xd8800000 0x0 0x8e00000>;
+                        no-map;
+                };
+
                 kboot_uboot_logmem@9fe00000 {
                         compatible = "oppo,xbl_uefi_kbootlog";
 	                xbluefi-offset = <0x1f7000>;
@@ -133,22 +144,6 @@
 		        touchscreen-size-y = <2400>;
 		        focaltech,max-touch-number = <5>;
                 };
-        };
-
-        qca639x: qca639x {
-                compatible = "qcom,qca6390";
-                #power-domain-cells = <0>;
-                vddaon-supply = <&pmr735a_s2>;
-                vddpmu-supply = <&pm8350_s11>;
-                vddrfa1-supply = <&pm8350_s11>;
-                vddrfa2-supply = <&pm8350_s12>;
-                vddrfa3-supply = <&pm8350c_s1>;
-                vddpcie1-supply = <&pm8350_s12>;
-                vddpcie2-supply = <&pm8350c_s1>;
-                vddio-supply = <&pm8350_s10>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&wlan_en_state>;
-		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };
 
 	thermal-zones {
@@ -288,13 +283,20 @@
 		};
 	};
 
-        battery: battery {
-                compatible = "simple-battery";
-                battery-type = "lithium-ion-polymer";
-                voltage-min-design-microvolt = <3200000>;
-                voltage-max-design-microvolt = <4200000>;
-                energy-full-design-microwatt-hours = <18900000>;
-                charge-full-design-microamp-hours = <4500000>;
+        qca639x: qca639x {
+                compatible = "qcom,qca6390";
+                #power-domain-cells = <0>;
+                vddaon-supply = <&pmr735a_s2>;
+                vddpmu-supply = <&pm8350_s11>;
+                vddrfa1-supply = <&pm8350_s11>;
+                vddrfa2-supply = <&pm8350_s12>;
+                vddrfa3-supply = <&pm8350c_s1>;
+                vddpcie1-supply = <&pm8350_s12>;
+                vddpcie2-supply = <&pm8350c_s1>;
+                vddio-supply = <&pm8350_s10>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&wlan_en_state>;
+		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };
 };
 
@@ -732,6 +734,15 @@
                 reg = <0x55>;
                 monitored-battery = <&battery>;
         };
+
+        battery: battery {
+                compatible = "simple-battery";
+                battery-type = "lithium-ion-polymer";
+                voltage-min-design-microvolt = <3200000>;
+                voltage-max-design-microvolt = <4200000>;
+                energy-full-design-microwatt-hours = <18900000>;
+                charge-full-design-microamp-hours = <4500000>;
+        };
 };
 
 &i2c19 {
@@ -829,16 +840,7 @@
 };
 
 &pmk8350_rtc {
-	nvmem-cells = <&rtc_offset>;
-	nvmem-cell-names = "offset";
 	status = "okay";
-};
-
-&pmk8350_sdam_2 {
-	status = "okay";
-	rtc_offset: rtc-offset@bc {
-		reg = <0xbc 0x4>;
-	};
 };
 
 &pmk8350_vadc {
@@ -930,25 +932,6 @@
 
 &gpi_dma2 {
 	status = "okay";
-};
-
-&removed_mem {
-	reg = <0x0 0xd8800000 0x0 0x8e00000>;
-};
-
-&pcie0 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-};
-
-&pcie0_phy {
-        status = "okay";
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-	power-domains = <&qca639x>;
 };
 
 &pm8350_gpios {
@@ -1051,6 +1034,21 @@
                 enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
                 max-speed = <3200000>;
         };
+};
+
+&pcie0 {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+};
+
+&pcie0_phy {
+        status = "okay";
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+	power-domains = <&qca639x>;
 };
 
 &tlmm {

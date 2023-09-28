@@ -255,7 +255,7 @@
 		};
 	};
 
-	/*pmic-glink {
+	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -281,7 +281,7 @@
 				};
 			};
 		};
-	};*/
+	};
 
         battery: battery {
                 compatible = "simple-battery";
@@ -753,11 +753,11 @@
                 reg = <0x42>;
                 mode-switch;
                 orientation-switch;
-                /*port {
+                port {
                         fsa4480_sbu_mux: endpoint {
                                 remote-endpoint = <&pmic_glink_sbu>;
                         };
-                };*/
+                };
         };
 
         amplifier@34 {
@@ -1228,9 +1228,9 @@
 	phy-names = "usb2-phy";
 };
 
-/*&usb_1_dwc3_hs {
+&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};*/
+};
 
 &usb_1_hsphy {
         vdda-pll-supply = <&pm8350_l5>;

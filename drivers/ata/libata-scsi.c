@@ -1835,6 +1835,9 @@ static unsigned int ata_scsiop_inq_std(struct ata_scsi_args *args, u8 *rbuf)
 		hdr[2] = 0x7; /* claim SPC-5 version compatibility */
 	}
 
+	if (args->dev->flags & ATA_DFLAG_CDL)
+		hdr[2] = 0xd; /* claim SPC-6 version compatibility */
+
 	memcpy(rbuf, hdr, sizeof(hdr));
 	memcpy(&rbuf[8], "ATA     ", 8);
 	ata_id_string(args->id, &rbuf[16], ATA_ID_PROD, 16);
@@ -4752,7 +4755,7 @@ void ata_scsi_dev_rescan(struct work_struct *work)
 			}
 
 			spin_unlock_irqrestore(ap->lock, flags);
-			scsi_rescan_device(&(sdev->sdev_gendev));
+			scsi_rescan_device(sdev);
 			scsi_device_put(sdev);
 			spin_lock_irqsave(ap->lock, flags);
 		}

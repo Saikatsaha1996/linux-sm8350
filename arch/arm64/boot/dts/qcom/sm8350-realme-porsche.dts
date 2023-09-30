@@ -715,7 +715,7 @@
                 //reg = <0x4b>;
                 reg = <0x5c 0>;
                 interrupt-controller;
-                interrupt-parent = <&gpio2>;
+                interrupt-parent = <&pm8350_gpios>;
                 #interrupt-cells = <2>;
                 interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
         };

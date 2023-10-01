@@ -258,10 +258,18 @@
         battery: battery {
                 compatible = "simple-battery";
                 battery-type = "lithium-ion-polymer";
+                over-voltage-threshold-microvolt = <4500000>;
+                re-charge-voltage-microvolt = <250000>;
                 voltage-min-design-microvolt = <3200000>;
                 voltage-max-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <18900000>;
                 charge-full-design-microamp-hours = <4500000>;
+                precharge-current-microamp = <256000>;
+                precharge-upper-limit-microvolt = <2500000>;
+                charge-term-current-microamp = <128000>;
+                constant-charge-current-max-microamp = <900000>;
+                constant-charge-voltage-max-microvolt = <4200000>;
+                operating-range-celsius = <0 50>;
         };
 
         qca639x: qca639x {
@@ -707,20 +715,6 @@
 	status = "okay";
 };
 
-&i2c0 {
-        status = "okay";
-        clock-frequency = <100000>;
-        pmic@5c {
-                compatible = "mps,mp2629";
-                //reg = <0x4b>;
-                reg = <0x5c 0>;
-                interrupt-controller;
-                interrupt-parent = <&pm8350_gpios>;
-                #interrupt-cells = <2>;
-                interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-        };
-};
-
 &i2c2 {
         status = "okay";
         clock-frequency = <100000>;
@@ -759,7 +753,7 @@
                 reg = <0x35>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&btm_default>;
-                #sound-dai-cells = <0>;
+                #sound-dai-cells = <1>;
         };
 };
 

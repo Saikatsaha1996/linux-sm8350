@@ -200,7 +200,7 @@
 				};
 			};
 		};
-		wl-chg-thermal {
+		/*wl-chg-thermal {
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
 			thermal-sensors = <&pmk8350_adc_tm 5>;
@@ -211,7 +211,7 @@
 					type = "passive";
 				};
 			};
-		};
+		};*/
 		wifi-thermal {
 			polling-delay-passive = <0>;
 			polling-delay = <0>;
@@ -814,12 +814,12 @@
 		qcom,hw-settle-time-us = <200>;
 	};
 
-	pm8350b-wl-chg-therm@5 {
+	/*pm8350b-wl-chg-therm@5 {
 		reg = <5>;
 		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO2_100K_PU>;
 		qcom,ratiometric;
 		qcom,hw-settle-time-us = <200>;
-	};
+	};*/
 
 	pm8350b-wifi-therm@6 {
 		reg = <6>;
@@ -877,13 +877,13 @@
 		label = "pm8350b_wifi_therm";
 	};
 
-	channel@843 {
+	/*channel@843 {
 		reg = <PM8350B_ADC7_GPIO2_100K_PU>;
 		qcom,ratiometric;
 		qcom,hw-settle-time = <200>;
 		qcom,pre-scaling = <1 1>;
 		label = "pm8350b_wl_chg_therm";
-	};
+	};*/
 
 	channel@1098 {
 		reg = <PMR735A_ADC7_GPIO1_100K_PU>;

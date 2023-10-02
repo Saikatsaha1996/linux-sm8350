@@ -730,6 +730,21 @@
 	status = "okay";
 };
 
+&i2c0 {
+        status = "okay";
+        clock-frequency = <100000>;
+        pmic@5c {
+                compatible = "mps,mp2629";
+                //reg = <0x4b>;
+                reg = <0x5c 0>;
+                interrupt-controller;
+                interrupt-parent = <&pm8350_gpios>;
+                #interrupt-cells = <2>;
+                interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+                monitored-battery = <&battery>;
+        };
+};
+
 &i2c2 {
         status = "okay";
         clock-frequency = <100000>;

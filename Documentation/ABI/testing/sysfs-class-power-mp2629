@@ -7,3 +7,20 @@ Description:
                 Access: Read, Write
 
                 Valid values: Represented in milli-ohms. Valid range is [0, 140].
+
+What:		/sys/class/power_supply/mp2629_battery/usb_fast_charge
+Date:		November 2022
+KernelVersion:	6.1
+Description:
+		Represents a USB device fast charge settings.Altering this
+		value resets USB existing connection
+		USB DP:DM[0:0] 0.6V : Hi-Z
+		USB DP:DM[0:1] 3.3V : 0.6V
+		USB DP:DM[1:0] 0.6V : 0.6V
+		USB DP:DM[1:1] 0.6V : 3.3V
+
+                Access: Read, Write
+
+                Valid values: Represented in bit DP & DM setting. Valid
+			      range is [0, 3].
+

@@ -258,35 +258,6 @@
                 operating-range-celsius = <0 50>;
         };
 
-        pmic-glink {
-                compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
-                #address-cells = <1>;
-                #size-cells = <0>;
-                connector@0 {
-                        compatible = "usb-c-connector";
-                        reg = <0>;
-                        power-role = "dual";
-                        data-role = "dual";
-                        ports {
-                                #address-cells = <1>;
-                                #size-cells = <0>;
-                                port@0 {
-                                        reg = <0>;
-                                        pmic_glink_hs_in: endpoint {
-                                                remote-endpoint = <&usb_1_dwc3_hs>;
-                                        };
-                                };
-				port@1 {
-					reg = <1>;
-
-					pmic_glink_ss_in: endpoint {
-						remote-endpoint = <&usb_1_dwc3_ss>;
-					};
-				};
-                        };
-                };
-        };
-
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
                 #power-domain-cells = <0>;
@@ -730,21 +701,6 @@
 	status = "okay";
 };
 
-/*&i2c0 {
-        status = "okay";
-        clock-frequency = <100000>;
-        pmic@5c {
-                compatible = "mps,mp2629";
-                //reg = <0x4b>;
-                reg = <0x5c 0>;
-                interrupt-controller;
-                interrupt-parent = <&pm8350_gpios>;
-                #interrupt-cells = <2>;
-                interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-                monitored-battery = <&battery>;
-        };
-};*/
-
 &i2c2 {
         status = "okay";
         clock-frequency = <100000>;
@@ -758,19 +714,12 @@
 &i2c19 {
         clock-frequency = <400000>;
         status = "okay";
-        typec-mux@42 {
-                compatible = "fcs,fsa4480";
-                reg = <0x42>;
-                mode-switch;
-                orientation-switch;
-        };
-
         amplifier@34 {
                 compatible = "nxp,tfa9879";
                 reg = <0x34>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&tp_default>;
-                #sound-dai-cells = <0>;
+                #sound-dai-cells = <1>;
         };
 
         amplifier@35 {
@@ -778,7 +727,14 @@
                 reg = <0x35>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&btm_default>;
-                #sound-dai-cells = <1>;
+                #sound-dai-cells = <0>;
+        };
+
+        typec-mux@42 {
+                compatible = "fcs,fsa4480";
+                reg = <0x42>;
+                mode-switch;
+                orientation-switch;
         };
 };
 
@@ -1261,24 +1217,7 @@
 };
 
 &usb_1_dwc3 {
-	dr_mode = "otg";
-	usb-role-switch;
-	ports {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		port@0 {
-			reg = <0>;
-			usb_1_dwc3_hs: endpoint {
-				remote-endpoint = <&pmic_glink_hs_in>;
-			};
-		};
-		port@1 {
-			reg = <1>;
-			usb_1_dwc3_ss: endpoint {
-				remote-endpoint = <&pmic_glink_ss_in>;
-			};
-		};
-	};
+	dr_mode = "host";
 };
 
 &usb_1_hsphy {

@@ -30,8 +30,22 @@
         chassis-type = "handset";
 
 	aliases {
-                display0 = &panel0;
                 hsuart0 = &uart18;
+	};
+
+	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		framebuffer0: framebuffer@e4d00000 {
+			compatible = "simple-framebuffer";
+			reg = <0x0 0xe4d00000 0x0 0x02300000>;
+			width = <1080>;
+			height = <2400>;
+			stride = <(1080 * 4)>;
+			format = "a8r8g8b8";
+		};
 	};
 
         reserved_memory: reserved-memory {
@@ -258,6 +272,14 @@
                 operating-range-celsius = <0 50>;
         };
 
+	extcon_usb: extcon-usb {
+		compatible = "linux,extcon-usb-gpio";
+		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		vbus-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&usb2_vbus_default &usb2_id_default>;
+		pinctrl-names = "default";
+	};
+
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
                 #power-domain-cells = <0>;
@@ -273,6 +295,11 @@
                 pinctrl-0 = <&wlan_en_state>;
 		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };
+};
+
+&adsp {
+	status = "okay";
+	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
 &apps_rsc {
@@ -669,11 +696,6 @@
 	};
 };
 
-&adsp {
-	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
-};
-
 &cdsp {
 	status = "okay";
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
@@ -947,6 +969,15 @@
 		bias-pull-up;
 		power-source = <1>;
 	};
+
+	usb2_vbus_default: usb2_vbus_default {
+		pins = "gpio9";
+		function = "normal";
+		input-enable;
+		//bias-disable;
+                bias-pull-down;
+		power-source = <1>;
+	};
 };
 
 &pm8350c_gpios {
@@ -1187,6 +1218,13 @@
 		bias-disable;
                 output-high;
         };
+
+	usb2_id_default: usb2_id_default {
+		pins = "gpio51";
+		function = "gpio";
+		input-enable;
+		bias-pull-up;
+	};
 };
 
 &ufs_mem_hc {
@@ -1213,11 +1251,15 @@
 };
 
 &usb_1 {
+	qcom,select-utmi-as-pipe-clk;
 	status = "okay";
 };
 
 &usb_1_dwc3 {
-	dr_mode = "host";
+	dr_mode = "peripheral";
+	maximum-speed = "high-speed";
+	phys = <&usb_1_hsphy>;
+	phy-names = "usb2-phy";
 };
 
 &usb_1_hsphy {
@@ -1227,8 +1269,31 @@
         status = "okay";
 };
 
-&usb_1_qmpphy {
+/*&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
 	status = "okay";
+};*/
+
+&usb_2 {
+	status = "okay";
+};
+
+&usb_2_dwc3 {
+	dr_mode = "host";
+	maximum-speed = "super-speed";
+	extcon = <&extcon_usb>;
+};
+
+&usb_2_hsphy {
+	vdda-pll-supply = <&pm8350_l5>;
+	vdda18-supply = <&pm8350c_l1>;
+	vdda33-supply = <&pm8350_l2>;
+        status = "okay";
+};
+
+&usb_2_qmpphy {
+	vdda-phy-supply = <&pm8350_l6>;
+	vdda-pll-supply = <&pm8350_l5>;
+        status = "okay";
 };

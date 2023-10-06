@@ -767,7 +767,7 @@
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
 		vcc-supply = <&vreg_bob>;
-                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
+                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&fsa_hs_det>;
                 mode-switch;

@@ -73,21 +73,21 @@
                 };
 
                 ramoops@e9700000 {
+			compatible = "ramoops";
+			reg = <0x00 0xe9700000 0x00 0x5b8000>;
+			record-size = <0x40000>;
+			console-size = <0x40000>;
                         rsv03info-size = <0x8000>;
 			devinfo-size = <0x8000>;
 			ecc-size = <0x00>;
 			rsv04info-size = <0x8000>;
-			record-size = <0x40000>;
 			rsv05info-size = <0x8000>;
 			pmsg-size = <0x200000>;
 			dumpinfo-size = <0x8000>;
 			rsv01info-size = <0x8000>;
-			compatible = "ramoops";
-			console-size = <0x40000>;
-			reg = <0x00 0xe9700000 0x00 0x5b8000>;
-			phandle = <0x6f6>;
 			rsv02info-size = <0x8000>;
 			ftrace-size = <0x200000>;
+                        no-map;
                 };
         };
 

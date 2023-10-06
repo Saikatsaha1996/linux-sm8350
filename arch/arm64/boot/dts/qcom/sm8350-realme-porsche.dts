@@ -72,21 +72,11 @@
                         no-map;
                 };
 
-                ramoops@e9700000 {
+                ramoops_mem: ramoops@e9700000 {
 			compatible = "ramoops";
 			reg = <0x00 0xe9700000 0x00 0x5b8000>;
 			record-size = <0x40000>;
 			console-size = <0x40000>;
-                        rsv03info-size = <0x8000>;
-			devinfo-size = <0x8000>;
-			ecc-size = <0x00>;
-			rsv04info-size = <0x8000>;
-			rsv05info-size = <0x8000>;
-			pmsg-size = <0x200000>;
-			dumpinfo-size = <0x8000>;
-			rsv01info-size = <0x8000>;
-			rsv02info-size = <0x8000>;
-			ftrace-size = <0x200000>;
                         no-map;
                 };
         };
@@ -188,12 +178,12 @@
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
-				port@2 {
+				/*port@2 {
 					reg = <2>;
 					pmic_glink_sbu: endpoint {
 						remote-endpoint = <&fsa4480_sbu_mux>;
 					};
-				};
+				};*/
 			};
 		};
 	};
@@ -784,15 +774,15 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
-		interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-		vcc-supply = <&vreg_bob>;
+		//interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+		//vcc-supply = <&vreg_bob>;
 		mode-switch;
 		orientation-switch;
-		port {
+		/*port {
 			fsa4480_sbu_mux: endpoint {
 				remote-endpoint = <&pmic_glink_sbu>;
 			};
-		};
+		};*/
         };
 };
 

@@ -178,12 +178,12 @@
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
-				/*port@2 {
+				port@2 {
 					reg = <2>;
 					pmic_glink_sbu: endpoint {
 						remote-endpoint = <&fsa4480_sbu_mux>;
 					};
-				};*/
+				};
 			};
 		};
 	};
@@ -291,13 +291,13 @@
 		};
 	};
 
-	/*extcon_usb: extcon-usb {
+	extcon_usb: extcon-usb {
 		compatible = "linux,extcon-usb-gpio";
 		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
 		vbus-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		pinctrl-0 = <&usb2_vbus_default &usb2_id_default>;
 		pinctrl-names = "default";
-	};*/
+	};
 
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
@@ -314,11 +314,6 @@
                 pinctrl-0 = <&wlan_en_state>;
 		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };
-};
-
-&adsp {
-	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
 &apps_rsc {
@@ -715,6 +710,11 @@
 	};
 };
 
+&adsp {
+	status = "okay";
+	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
+};
+
 &cdsp {
 	status = "okay";
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
@@ -742,15 +742,14 @@
 	status = "okay";
 };
 
-/*&i2c2 {
+&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
-                //monitored-battery = <&battery>;
         };
-};*/
+};
 
 &i2c19 {
         clock-frequency = <400000>;
@@ -774,15 +773,13 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
-		//interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-		//vcc-supply = <&vreg_bob>;
 		mode-switch;
 		orientation-switch;
-		/*port {
+		port {
 			fsa4480_sbu_mux: endpoint {
 				remote-endpoint = <&pmic_glink_sbu>;
 			};
-		};*/
+		};
         };
 };
 
@@ -1299,7 +1296,13 @@
         status = "okay";
 };
 
-/*&usb_2 {
+&usb_1_qmpphy {
+	status = "okay";
+	vdda-phy-supply = <&pm8350_l6>;
+	vdda-pll-supply = <&pm8350_l1>;
+};
+
+&usb_2 {
 	status = "okay";
 };
 
@@ -1320,4 +1323,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};*/
+};

@@ -71,6 +71,24 @@
 	                phandle = <0x6f5>;
                         no-map;
                 };
+
+                ramoops@e9700000 {
+                        rsv03info-size = <0x8000>;
+			devinfo-size = <0x8000>;
+			ecc-size = <0x00>;
+			rsv04info-size = <0x8000>;
+			record-size = <0x40000>;
+			rsv05info-size = <0x8000>;
+			pmsg-size = <0x200000>;
+			dumpinfo-size = <0x8000>;
+			rsv01info-size = <0x8000>;
+			compatible = "ramoops";
+			console-size = <0x40000>;
+			reg = <0x00 0xe9700000 0x00 0x5b8000>;
+			phandle = <0x6f6>;
+			rsv02info-size = <0x8000>;
+			ftrace-size = <0x200000>;
+                };
         };
 
 	vph_pwr: vph-pwr-regulator {
@@ -766,12 +784,10 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
+		interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
 		vcc-supply = <&vreg_bob>;
-                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&fsa_hs_det>;
-                mode-switch;
-                orientation-switch;
+		mode-switch;
+		orientation-switch;
 		port {
 			fsa4480_sbu_mux: endpoint {
 				remote-endpoint = <&pmic_glink_sbu>;
@@ -1237,14 +1253,6 @@
 		bias-disable;
                 output-high;
         };
-
-	fsa_hs_det: fsa_hs_det  {
-		pins = "gpio116";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-		output-high;
-	};
 
 	usb2_id_default: usb2_id_default {
 		pins = "gpio51";

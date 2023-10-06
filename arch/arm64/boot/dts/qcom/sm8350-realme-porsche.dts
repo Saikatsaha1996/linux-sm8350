@@ -742,14 +742,14 @@
 	status = "okay";
 };
 
-/*&i2c2 {
+&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
         };
-};*/
+};
 
 &i2c19 {
         clock-frequency = <400000>;
@@ -848,7 +848,16 @@
 };
 
 &pmk8350_rtc {
+	nvmem-cells = <&rtc_offset>;
+	nvmem-cell-names = "offset";
 	status = "okay";
+};
+
+&pmk8350_sdam_2 {
+	status = "okay";
+	rtc_offset: rtc-offset@bc {
+		reg = <0xbc 0x4>;
+	};
 };
 
 &pmk8350_vadc {

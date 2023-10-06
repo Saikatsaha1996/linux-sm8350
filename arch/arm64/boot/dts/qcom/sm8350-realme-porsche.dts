@@ -734,7 +734,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -742,7 +742,7 @@
                 reg = <0x55>;
                 //monitored-battery = <&battery>;
         };
-};
+};*/
 
 &i2c19 {
         clock-frequency = <400000>;

@@ -740,7 +740,7 @@
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
-                monitored-battery = <&battery>;
+                //monitored-battery = <&battery>;
         };
 };
 

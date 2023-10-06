@@ -283,13 +283,13 @@
 		};
 	};
 
-	extcon_usb: extcon-usb {
+	/*extcon_usb: extcon-usb {
 		compatible = "linux,extcon-usb-gpio";
 		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
 		vbus-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		pinctrl-0 = <&usb2_vbus_default &usb2_id_default>;
 		pinctrl-names = "default";
-	};
+	};*/
 
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
@@ -767,7 +767,7 @@
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
 		vcc-supply = <&vreg_bob>;
-                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_HIGH>;
+                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&fsa_hs_det>;
                 mode-switch;
@@ -1301,7 +1301,7 @@
         status = "okay";
 };
 
-&usb_2 {
+/*&usb_2 {
 	status = "okay";
 };
 
@@ -1322,4 +1322,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};
+};*/

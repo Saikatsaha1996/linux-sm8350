@@ -790,6 +790,24 @@
         };
 };
 
+/* For bug we have to disabled crypto & bam */
+&cryptobam {
+	status = "disabled";
+};
+
+&crypto {
+	status = "disabled";
+};
+
+&pon_pwrkey {
+	status = "okay";
+};
+
+&pon_resin {
+	linux,code = <KEY_VOLUMEUP>;
+	status = "okay";
+};
+
 &pmk8350_adc_tm {
 	status = "okay";
 	pm8350-skin-therm@0 {
@@ -905,24 +923,6 @@
 		qcom,pre-scaling = <1 1>;
 		label = "pmr735a_pa_therm";
 	};
-};
-
-&pon_pwrkey {
-	status = "okay";
-};
-
-&pon_resin {
-	linux,code = <KEY_VOLUMEUP>;
-	status = "okay";
-};
-
-/* For bug we have to disabled crypto & bam */
-&cryptobam {
-	status = "disabled";
-};
-
-&crypto {
-	status = "disabled";
 };
 
 &qupv3_id_0 {

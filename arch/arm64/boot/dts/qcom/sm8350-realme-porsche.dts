@@ -170,6 +170,12 @@
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
+				port@2 {
+					reg = <2>;
+					pmic_glink_sbu: endpoint {
+						remote-endpoint = <&fsa4480_sbu_mux>;
+					};
+				};
 			};
 		};
 	};
@@ -276,23 +282,6 @@
 			linux,can-disable;
 		};
 	};
-
-        battery: battery {
-                compatible = "simple-battery";
-                battery-type = "lithium-ion-polymer";
-                over-voltage-threshold-microvolt = <4500000>;
-                re-charge-voltage-microvolt = <250000>;
-                voltage-min-design-microvolt = <3200000>;
-                voltage-max-design-microvolt = <4200000>;
-                energy-full-design-microwatt-hours = <18900000>;
-                charge-full-design-microamp-hours = <4500000>;
-                precharge-current-microamp = <256000>;
-                precharge-upper-limit-microvolt = <2500000>;
-                charge-term-current-microamp = <128000>;
-                constant-charge-current-max-microamp = <900000>;
-                constant-charge-voltage-max-microvolt = <4200000>;
-                operating-range-celsius = <0 50>;
-        };
 
 	extcon_usb: extcon-usb {
 		compatible = "linux,extcon-usb-gpio";
@@ -777,8 +766,17 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
+		vcc-supply = <&vreg_bob>;
+                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&fsa_hs_det>;
                 mode-switch;
                 orientation-switch;
+		port {
+			fsa4480_sbu_mux: endpoint {
+				remote-endpoint = <&pmic_glink_sbu>;
+			};
+		};
         };
 };
 
@@ -996,7 +994,6 @@
 		pins = "gpio9";
 		function = "normal";
 		input-enable;
-		//bias-disable;
                 bias-pull-down;
 		power-source = <1>;
 	};
@@ -1240,6 +1237,14 @@
 		bias-disable;
                 output-high;
         };
+
+	fsa_hs_det: fsa_hs_det  {
+		pins = "gpio116";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-high;
+	};
 
 	usb2_id_default: usb2_id_default {
 		pins = "gpio51";

@@ -160,34 +160,6 @@
                 };
         };
 
-	pmic-glink {
-		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
-		#address-cells = <1>;
-		#size-cells = <0>;
-		connector@0 {
-			compatible = "usb-c-connector";
-			reg = <0>;
-			power-role = "dual";
-			data-role = "dual";
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				port@0 {
-					reg = <0>;
-					pmic_glink_hs_in: endpoint {
-						remote-endpoint = <&usb_1_dwc3_hs>;
-					};
-				};
-				port@2 {
-					reg = <2>;
-					pmic_glink_sbu: endpoint {
-						remote-endpoint = <&fsa4480_sbu_mux>;
-					};
-				};
-			};
-		};
-	};
-
 	thermal-zones {
 		skin-thermal {
 			polling-delay-passive = <0>;
@@ -297,6 +269,34 @@
 		vbus-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		pinctrl-0 = <&usb2_vbus_default &usb2_id_default>;
 		pinctrl-names = "default";
+	};
+
+	pmic-glink {
+		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		connector@0 {
+			compatible = "usb-c-connector";
+			reg = <0>;
+			power-role = "dual";
+			data-role = "dual";
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					pmic_glink_hs_in: endpoint {
+						remote-endpoint = <&usb_1_dwc3_hs>;
+					};
+				};
+				port@2 {
+					reg = <2>;
+					pmic_glink_sbu: endpoint {
+						remote-endpoint = <&fsa4480_sbu_mux>;
+					};
+				};
+			};
+		};
 	};
 
         qca639x: qca639x {
@@ -742,12 +742,31 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
+        };
+};*/
+
+&i2c13 {
+        clock-frequency = <100000>;
+        status = "okay";
+        typec-mux@42 {
+                compatible = "fcs,fsa4480";
+                reg = <0x42>;
+                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_HIGH>;
+		mode-switch;
+		orientation-switch;
+		pinctrl-names = "default";
+		pinctrl-0 = <&fsa_hs_det>;
+		port {
+			fsa4480_sbu_mux: endpoint {
+				remote-endpoint = <&pmic_glink_sbu>;
+			};
+		};
         };
 };
 
@@ -769,30 +788,6 @@
                 pinctrl-0 = <&btm_default>;
                 #sound-dai-cells = <0>;
         };
-
-        typec-mux@42 {
-                compatible = "fcs,fsa4480";
-                reg = <0x42>;
-                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_HIGH>;
-		mode-switch;
-		orientation-switch;
-		pinctrl-names = "default";
-		pinctrl-0 = <&fsa_hs_det>;
-		port {
-			fsa4480_sbu_mux: endpoint {
-				remote-endpoint = <&pmic_glink_sbu>;
-			};
-		};
-        };
-};
-
-/* For bug we have to disabled crypto & bam */
-&cryptobam {
-	status = "disabled";
-};
-
-&crypto {
-	status = "disabled";
 };
 
 &pmk8350_adc_tm {
@@ -921,38 +916,13 @@
 	status = "okay";
 };
 
-&pm8350_gpios {
-        pm8350_gpio2: pm8350_gpio2 {
-                pins = "gpio2";
-                bias-high-impedance;
-        };
+/* For bug we have to disabled crypto & bam */
+&cryptobam {
+	status = "disabled";
 };
 
-&pmk8350_gpios {
-        pmk8350_pa5: pmk8350_pa5 {
-                pins = "gpio3";
-                bias-high-impedance;
-        };
-};
-
-&pm8350b_gpios {
-        pm8350b_pa6: pm8350b_pa6 {
-                pins = "gpio1";
-                bias-high-impedance;
-        };
-};
-
-&pm8350_gpios {
-        usbtemp_l: usbtemp_l {
-                pins = "gpio1";
-                function = "normal";
-                bias-high-impedance;
-        };
-        usbtemp_r: usbtemp_r {
-                pins = "gpio3";
-                function = "normal";
-                bias-high-impedance;
-        };
+&crypto {
+	status = "disabled";
 };
 
 &qupv3_id_0 {
@@ -1003,6 +973,30 @@
                 bias-pull-down;
 		power-source = <1>;
 	};
+
+        pm8350_gpio2: pm8350_gpio2 {
+                pins = "gpio2";
+                bias-high-impedance;
+        };
+
+        usbtemp_l: usbtemp_l {
+                pins = "gpio1";
+                function = "normal";
+                bias-high-impedance;
+        };
+
+        usbtemp_r: usbtemp_r {
+                pins = "gpio3";
+                function = "normal";
+                bias-high-impedance;
+        };
+};
+
+&pm8350b_gpios {
+        pm8350b_pa6: pm8350b_pa6 {
+                pins = "gpio1";
+                bias-high-impedance;
+        };
 };
 
 &pm8350c_gpios {
@@ -1014,6 +1008,13 @@
                 bias-disable;
                 power-source = <1>;
                 drive-strength = <2>;
+        };
+};
+
+&pmk8350_gpios {
+        pmk8350_pa5: pmk8350_pa5 {
+                pins = "gpio3";
+                bias-high-impedance;
         };
 };
 

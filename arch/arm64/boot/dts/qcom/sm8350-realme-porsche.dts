@@ -745,10 +745,10 @@
 &i2c2 {
         status = "okay";
         clock-frequency = <100000>;
-        /*bq27541: fuel-gauge@55 {
+        bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
-        };*/
+        };
 };
 
 &i2c19 {
@@ -967,9 +967,9 @@
 	status = "okay";
 };
 
-/*&gpi_dma0 {
+&gpi_dma0 {
 	status = "okay";
-};*/
+};
 
 &gpi_dma1 {
 	status = "okay";

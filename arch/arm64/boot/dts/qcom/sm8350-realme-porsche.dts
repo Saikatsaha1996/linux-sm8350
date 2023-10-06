@@ -742,14 +742,14 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
         };
-};
+};*/
 
 &i2c19 {
         clock-frequency = <400000>;
@@ -773,8 +773,11 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
+                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_HIGH>;
 		mode-switch;
 		orientation-switch;
+		pinctrl-names = "default";
+		pinctrl-0 = <&fsa_hs_det>;
 		port {
 			fsa4480_sbu_mux: endpoint {
 				remote-endpoint = <&pmic_glink_sbu>;
@@ -1246,6 +1249,14 @@
 		function = "gpio";
 		input-enable;
 		bias-pull-up;
+	};
+
+	fsa_hs_det: fsa_hs_det  {
+		pins = "gpio116";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-high;
 	};
 };
 

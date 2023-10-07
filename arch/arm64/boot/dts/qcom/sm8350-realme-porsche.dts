@@ -21,7 +21,6 @@
 	compatible = "qcom,sm8350", "qcom,lahaina";
 	qcom,msm-id = <415 0x10000>, <456 0x10000>;
 	qcom,board-id = <0 0>;
-        oppo,dtsi_no = <0x5093>;
 	interrupt-parent = <&intc>;
 
 	#address-cells = <2>;
@@ -136,9 +135,6 @@
 		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-	        dmas =  <&gpi_dma0 0 4 QCOM_GPI_I2C>,
-		        <&gpi_dma0 1 4 QCOM_GPI_I2C>;
-	        dma-names = "tx", "rx";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c4_default>;
 	        touchscreen: focaltech@38 {
@@ -263,15 +259,7 @@
 		};
 	};
 
-	extcon_usb: extcon-usb {
-		compatible = "linux,extcon-usb-gpio";
-		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
-		vbus-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
-		pinctrl-0 = <&usb2_vbus_default &usb2_id_default>;
-		pinctrl-names = "default";
-	};
-
-	/*pmic-glink {
+	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -297,7 +285,7 @@
 				};
 			};
 		};
-	};*/
+	};
 
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
@@ -314,6 +302,11 @@
                 pinctrl-0 = <&wlan_en_state>;
 		wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
         };
+};
+
+&adsp {
+	status = "okay";
+	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
 &apps_rsc {
@@ -710,44 +703,33 @@
 	};
 };
 
-&adsp {
-	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
-};
-
 &cdsp {
 	status = "okay";
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
-&slpi {
-	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
+&gpi_dma0 {
 	status = "okay";
 };
 
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
+&gpi_dma1 {
 	status = "okay";
 };
 
-&mpss {
-        memory-region = <&pil_modem_mem>;
-	firmware-name = "qcom/sm8350/porsche/modem.mbn";
-        rf-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-        sim-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&rf_cable0_default &sim2_high_default>;
+&gpi_dma2 {
 	status = "okay";
 };
 
-/*&i2c2 {
+&gmu {
         status = "okay";
-        clock-frequency = <100000>;
-        bq27541: fuel-gauge@55 {
-                compatible = "ti,bq27541";
-                reg = <0x55>;
+        firmware-name = "qcom/a660_gmu.bin";
+};
+
+&gpu {
+        status = "okay";
+        zap-shader {
+                memory-region = <&pil_gpu_mem>;
+                firmware-name = "qcom/a660_zap.mbn";
         };
 };
 
@@ -768,7 +750,7 @@
 			};
 		};
         };
-};*/
+};
 
 &i2c19 {
         clock-frequency = <400000>;
@@ -790,163 +772,76 @@
         };
 };
 
-/* For bug we have to disabled crypto & bam */
-&cryptobam {
-	status = "disabled";
-};
-
-&crypto {
-	status = "disabled";
-};
-
-&pon_pwrkey {
+&ipa {
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
 	status = "okay";
 };
 
-&pon_resin {
-	linux,code = <KEY_VOLUMEUP>;
+&mdss {
+        status = "okay";
+};
+
+&mdss_mdp {
+        status = "okay";
+};
+
+&mdss_dp {
+        status = "disabled";
+};
+
+&mdss_dsi0 {
+        status = "okay";
+        vdda-supply = <&pm8350_l6>;
+        panel0: panel@0 {
+                compatible = "mdss,samsung-ams662zs01";
+                reg = <0>;
+                vddio-supply = <&panel_supply_vddio>;
+                vddr-supply = <&panel_supply_vddr>;
+                vddi-supply = <&panel_supply_vddi>;
+                vdd-supply = <&panel_supply_vdd>;
+                reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+                pinctrl-names = "default", "sleep";
+                pinctrl-0 = <&sde_dsi_active &sde_te_active>;
+                pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
+                status = "okay";
+                port {
+                        panel_in: endpoint {
+                                remote-endpoint = <&mdss_dsi0_out>;
+                        };
+                };
+        };
+};
+
+&mdss_dsi0_out {
+        data-lanes = <0 1 2 3>;
+        remote-endpoint = <&panel_in>;
+};
+
+&mdss_dsi0_phy {
+        status = "okay";
+        vdds-supply = <&pm8350_l5>;
+};
+
+&mpss {
+	firmware-name = "qcom/sm8350/porsche/modem.mbn";
 	status = "okay";
 };
 
-&pmk8350_adc_tm {
-	status = "okay";
-	pm8350-skin-therm@0 {
-		reg = <0>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-cam-flash-therm@1 {
-		reg = <1>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-usb-con-therm@2 {
-		reg = <2>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_AMUX_THM1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-quiet-therm@3 {
-		reg = <3>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pmr735a-pa-therm@4 {
-		reg = <4>;
-		io-channels = <&pmk8350_vadc PMR735A_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-wl-chg-therm@5 {
-		reg = <5>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-wifi-therm@6 {
-		reg = <6>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-};
-
-&pmk8350_rtc {
-	status = "okay";
-};
-
-&pmk8350_vadc {
+&pcie0 {
+        status = "okay";
         pinctrl-names = "default";
-        pinctrl-0 = <&pm8350_gpio2 &pmk8350_pa5 &pm8350b_pa6>;
-
-	channel@324 {
-		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_skin_therm";
-	};
-
-	channel@325 {
-		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_cam_flash_therm";
-	};
-
-	channel@327 {
-		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_quiet_therm";
-	};
-
-	channel@836 {
-		reg = <PM8350B_ADC7_AMUX_THM1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_usb_con_therm";
-	};
-
-	channel@842 {
-		reg = <PM8350B_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_wifi_therm";
-	};
-
-	channel@843 {
-		reg = <PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_wl_chg_therm";
-	};
-
-	channel@1098 {
-		reg = <PMR735A_ADC7_GPIO1_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_pa_therm";
-	};
+        pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
 };
 
-&qupv3_id_0 {
-	status = "okay";
-};
-
-&qupv3_id_1 {
-	status = "okay";
-};
-
-&qupv3_id_2 {
-	status = "okay";
-};
-
-&gpi_dma0 {
-	status = "okay";
-};
-
-&gpi_dma1 {
-	status = "okay";
-};
-
-&gpi_dma2 {
-	status = "okay";
+&pcie0_phy {
+        status = "okay";
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+	power-domains = <&qca639x>;
 };
 
 &pm8350_gpios {
@@ -1018,91 +913,148 @@
         };
 };
 
-&gmu {
-        status = "okay";
-        firmware-name = "qcom/a660_gmu.bin";
+&pmk8350_adc_tm {
+	status = "okay";
+	pm8350-skin-therm@0 {
+		reg = <0>;
+		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	pm8350-cam-flash-therm@1 {
+		reg = <1>;
+		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	pm8350b-usb-con-therm@2 {
+		reg = <2>;
+		io-channels = <&pmk8350_vadc PM8350B_ADC7_AMUX_THM1_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	pm8350-quiet-therm@3 {
+		reg = <3>;
+		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	pmr735a-pa-therm@4 {
+		reg = <4>;
+		io-channels = <&pmk8350_vadc PMR735A_ADC7_GPIO1_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	pm8350b-wl-chg-therm@5 {
+		reg = <5>;
+		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO2_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	pm8350b-wifi-therm@6 {
+		reg = <6>;
+		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO1_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
 };
 
-&gpu {
-        status = "okay";
-        zap-shader {
-                memory-region = <&pil_gpu_mem>;
-                firmware-name = "qcom/a660_zap.mbn";
-        };
+&pmk8350_rtc {
+	status = "okay";
 };
 
-&mdss {
-        status = "okay";
+&pmk8350_sdam_2 {
+	status = "okay";
 };
 
-&mdss_mdp {
-        status = "okay";
+&pmk8350_vadc {
+	channel@324 {
+		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pm8350_skin_therm";
+	};
+
+	channel@325 {
+		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pm8350_cam_flash_therm";
+	};
+
+	channel@327 {
+		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pm8350_quiet_therm";
+	};
+
+	channel@836 {
+		reg = <PM8350B_ADC7_AMUX_THM1_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pm8350b_usb_con_therm";
+	};
+
+	channel@842 {
+		reg = <PM8350B_ADC7_GPIO1_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pm8350b_wifi_therm";
+	};
+
+	channel@843 {
+		reg = <PM8350B_ADC7_GPIO2_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pm8350b_wl_chg_therm";
+	};
+
+	channel@1098 {
+		reg = <PMR735A_ADC7_GPIO1_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+		qcom,pre-scaling = <1 1>;
+		label = "pmr735a_pa_therm";
+	};
 };
 
-&mdss_dp {
-        status = "disabled";
+&pon_pwrkey {
+	status = "okay";
 };
 
-&mdss_dsi0 {
-        status = "okay";
-        vdda-supply = <&pm8350_l6>;
-        panel0: panel@0 {
-                compatible = "mdss,samsung-ams662zs01";
-                reg = <0>;
-                vddio-supply = <&panel_supply_vddio>;
-                vddr-supply = <&panel_supply_vddr>;
-                vddi-supply = <&panel_supply_vddi>;
-                vdd-supply = <&panel_supply_vdd>;
-                reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
-                pinctrl-names = "default", "sleep";
-                pinctrl-0 = <&sde_dsi_active &sde_te_active>;
-                pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
-                status = "okay";
-                port {
-                        panel_in: endpoint {
-                                remote-endpoint = <&mdss_dsi0_out>;
-                        };
-                };
-        };
+&pon_resin {
+	linux,code = <KEY_VOLUMEUP>;
+	status = "okay";
 };
 
-&mdss_dsi0_out {
-        data-lanes = <0 1 2 3>;
-        remote-endpoint = <&panel_in>;
+&qupv3_id_0 {
+	status = "okay";
 };
 
-&mdss_dsi0_phy {
-        status = "okay";
-        vdds-supply = <&pm8350_l5>;
+&qupv3_id_1 {
+	status = "okay";
 };
 
-&uart18 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_default>;
-        status = "okay";
-        bluetooth {
-                compatible = "qcom,qca6390-bt";
-                power-domains = <&qca639x>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&bt_en_state>;
-                enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
-                max-speed = <3200000>;
-        };
+&qupv3_id_2 {
+	status = "okay";
 };
 
-&pcie0 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-};
-
-&pcie0_phy {
-        status = "okay";
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-	power-domains = <&qca639x>;
+&slpi {
+	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
+	status = "okay";
 };
 
 &tlmm {
@@ -1261,6 +1213,20 @@
 	};
 };
 
+&uart18 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&qup_uart18_default>;
+        status = "okay";
+        bluetooth {
+                compatible = "qcom,qca6390-bt";
+                power-domains = <&qca639x>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&bt_en_state>;
+                enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
+                max-speed = <3200000>;
+        };
+};
+
 &ufs_mem_hc {
 	reset-gpios = <&tlmm 203 GPIO_ACTIVE_LOW>;
 	vcc-supply = <&pm8350_l7>;
@@ -1291,15 +1257,15 @@
 
 &usb_1_dwc3 {
 	dr_mode = "otg";
-        //usb-role-switch;
+        usb-role-switch;
 	maximum-speed = "high-speed";
 	phys = <&usb_1_hsphy>;
 	phy-names = "usb2-phy";
 };
 
-/*&usb_1_dwc3_hs {
+&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};*/
+};
 
 &usb_1_hsphy {
         vdda-pll-supply = <&pm8350_l5>;
@@ -1312,27 +1278,4 @@
 	status = "okay";
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
-};
-
-&usb_2 {
-	status = "okay";
-};
-
-&usb_2_dwc3 {
-	dr_mode = "host";
-	maximum-speed = "super-speed";
-	extcon = <&extcon_usb>;
-};
-
-&usb_2_hsphy {
-	vdda-pll-supply = <&pm8350_l5>;
-	vdda18-supply = <&pm8350c_l1>;
-	vdda33-supply = <&pm8350_l2>;
-        status = "okay";
-};
-
-&usb_2_qmpphy {
-	vdda-phy-supply = <&pm8350_l6>;
-	vdda-pll-supply = <&pm8350_l5>;
-        status = "okay";
 };

@@ -271,7 +271,7 @@
 		pinctrl-names = "default";
 	};
 
-	pmic-glink {
+	/*pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -297,7 +297,7 @@
 				};
 			};
 		};
-	};
+	};*/
 
         qca639x: qca639x {
                 compatible = "qcom,qca6390";
@@ -742,7 +742,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -768,7 +768,7 @@
 			};
 		};
         };
-};
+};*/
 
 &i2c19 {
         clock-frequency = <400000>;
@@ -1291,15 +1291,15 @@
 
 &usb_1_dwc3 {
 	dr_mode = "otg";
-        usb-role-switch;
+        //usb-role-switch;
 	maximum-speed = "high-speed";
 	phys = <&usb_1_hsphy>;
 	phy-names = "usb2-phy";
 };
 
-&usb_1_dwc3_hs {
+/*&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};
+};*/
 
 &usb_1_hsphy {
         vdda-pll-supply = <&pm8350_l5>;

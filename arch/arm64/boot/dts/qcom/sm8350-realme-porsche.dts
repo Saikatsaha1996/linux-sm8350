@@ -58,10 +58,10 @@
                         label = "cont_splash_region";
                 };
 
-                removed_mem: memory@d8800000 {
+                /*removed_mem: memory@d8800000 {
                         reg = <0x0 0xd8800000 0x0 0x8e00000>;
                         no-map;
-                };
+                };*/
 
                 kboot_uboot_logmem@9fe00000 {
                         compatible = "oppo,xbl_uefi_kbootlog";
@@ -277,12 +277,12 @@
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
-				port@2 {
+				/*port@2 {
 					reg = <2>;
 					pmic_glink_sbu: endpoint {
 						remote-endpoint = <&fsa4480_sbu_mux>;
 					};
-				};
+				};*/
 			};
 		};
 	};
@@ -733,31 +733,23 @@
         };
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
         };
-};
+};*/
 
 &i2c13 {
-        clock-frequency = <100000>;
+        clock-frequency = <400000>;
         status = "okay";
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
-                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_HIGH>;
 		mode-switch;
 		orientation-switch;
-		pinctrl-names = "default";
-		pinctrl-0 = <&fsa_hs_det>;
-		port {
-			fsa4480_sbu_mux: endpoint {
-				remote-endpoint = <&pmic_glink_sbu>;
-			};
-		};
         };
 };
 
@@ -854,14 +846,6 @@
 };
 
 &pm8350_gpios {
-        sim2_high_default: sim2_high_default {
-                pins = "gpio8";
-                function = "normal";
-                input-enable;
-                power-source = <1>;
-                bias-pull-up;
-        };
-
 	vol_down: vol_down {
 		pins = "gpio6";
 		function = "normal";
@@ -869,57 +853,6 @@
 		bias-pull-up;
 		power-source = <1>;
 	};
-
-	usb2_vbus_default: usb2_vbus_default {
-		pins = "gpio9";
-		function = "normal";
-		input-enable;
-                bias-pull-down;
-		power-source = <1>;
-	};
-
-        pm8350_gpio2: pm8350_gpio2 {
-                pins = "gpio2";
-                bias-high-impedance;
-        };
-
-        usbtemp_l: usbtemp_l {
-                pins = "gpio1";
-                function = "normal";
-                bias-high-impedance;
-        };
-
-        usbtemp_r: usbtemp_r {
-                pins = "gpio3";
-                function = "normal";
-                bias-high-impedance;
-        };
-};
-
-&pm8350b_gpios {
-        pm8350b_pa6: pm8350b_pa6 {
-                pins = "gpio1";
-                bias-high-impedance;
-        };
-};
-
-&pm8350c_gpios {
-        otg_en_active: otg_en_active {
-                pins = "gpio1";
-                function = "normal";
-                input-disable;
-                output-high;
-                bias-disable;
-                power-source = <1>;
-                drive-strength = <2>;
-        };
-};
-
-&pmk8350_gpios {
-        pmk8350_pa5: pmk8350_pa5 {
-                pins = "gpio3";
-                bias-high-impedance;
-        };
 };
 
 &pmk8350_adc_tm {
@@ -1182,14 +1115,6 @@
                 bias-pull-up;
         };
 
-        rf_cable0_default: rf_cable0_default {
-                pins = "gpio99";
-                function = "gpio";
-                drive-strength = <2>;
-                input-enable;
-                bias-pull-up;
-        };
-
 	tp_default: tp-default-state {
 		pins = "gpio15";
 		function = "gpio";
@@ -1205,21 +1130,6 @@
 		bias-disable;
                 output-high;
         };
-
-	usb2_id_default: usb2_id_default {
-		pins = "gpio51";
-		function = "gpio";
-		input-enable;
-		bias-pull-up;
-	};
-
-	fsa_hs_det: fsa_hs_det  {
-		pins = "gpio116";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-		output-high;
-	};
 };
 
 &uart18 {

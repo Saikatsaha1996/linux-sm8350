@@ -759,7 +759,7 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
-                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
                 mode-switch;
                 orientation-switch;
                 port {

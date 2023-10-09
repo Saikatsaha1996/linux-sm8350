@@ -277,12 +277,12 @@
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
-				/*port@2 {
+				port@2 {
 					reg = <2>;
 					pmic_glink_sbu: endpoint {
 						remote-endpoint = <&fsa4480_sbu_mux>;
 					};
-				};*/
+				};
 			};
 		};
 	};
@@ -733,14 +733,14 @@
         };
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
         };
-};
+};*/
 
 &i2c13 {
         clock-frequency = <400000>;
@@ -748,8 +748,16 @@
         typec-mux@42 {
                 compatible = "fcs,fsa4480";
                 reg = <0x42>;
-		mode-switch;
-		orientation-switch;
+                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                mode-switch;
+                orientation-switch;
+                //pinctrl-names = "default";
+                //pinctrl-0 = <&fsa_hs_det>;
+                port {
+                        fsa4480_sbu_mux: endpoint {
+                                remote-endpoint = <&pmic_glink_sbu>;
+                        };
+                };
         };
 };
 
@@ -1130,6 +1138,14 @@
 		bias-disable;
                 output-high;
         };
+
+	/*fsa_hs_det: fsa_hs_det  {
+		pins = "gpio116";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-high;
+	};*/
 };
 
 &uart18 {

@@ -58,11 +58,6 @@
                         label = "cont_splash_region";
                 };
 
-                /*removed_mem: memory@d8800000 {
-                        reg = <0x0 0xd8800000 0x0 0x8e00000>;
-                        no-map;
-                };*/
-
                 kboot_uboot_logmem@9fe00000 {
                         compatible = "oppo,xbl_uefi_kbootlog";
 	                xbluefi-offset = <0x1f7000>;
@@ -733,31 +728,12 @@
         };
 };
 
-/*&i2c2 {
+&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
-        };
-};*/
-
-&i2c13 {
-        clock-frequency = <400000>;
-        status = "okay";
-        typec-mux@42 {
-                compatible = "fcs,fsa4480";
-                reg = <0x42>;
-                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-                mode-switch;
-                orientation-switch;
-                //pinctrl-names = "default";
-                //pinctrl-0 = <&fsa_hs_det>;
-                port {
-                        fsa4480_sbu_mux: endpoint {
-                                remote-endpoint = <&pmic_glink_sbu>;
-                        };
-                };
         };
 };
 
@@ -778,6 +754,19 @@
                 pinctrl-names = "default";
                 pinctrl-0 = <&btm_default>;
                 #sound-dai-cells = <0>;
+        };
+
+        typec-mux@42 {
+                compatible = "fcs,fsa4480";
+                reg = <0x42>;
+                interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+                mode-switch;
+                orientation-switch;
+                port {
+                        fsa4480_sbu_mux: endpoint {
+                                remote-endpoint = <&pmic_glink_sbu>;
+                        };
+                };
         };
 };
 
@@ -1138,14 +1127,6 @@
 		bias-disable;
                 output-high;
         };
-
-	/*fsa_hs_det: fsa_hs_det  {
-		pins = "gpio116";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-		output-high;
-	};*/
 };
 
 &uart18 {

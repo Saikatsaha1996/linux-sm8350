@@ -68,8 +68,16 @@
 			reg = <0x00 0xe9700000 0x00 0x5b8000>;
 			record-size = <0x200000>;
 			console-size = <0x200000>;
-                        ecc-size = <16>;
-                        no-map;
+                        ftrace-size = <0x200000>;
+                        pmsg-size = <0x200000>;
+                        devinfo-size = <0x08000>;
+                        dumpinfo-size = <0x08000>;
+                        rsv01info-size = <0x08000>;
+                        rsv02info-size = <0x08000>;
+                        rsv03info-size = <0x08000>;
+                        rsv04info-size = <0x08000>;
+                        rsv05info-size = <0x08000>;
+                        ecc-size = <0x0>;
                 };
         };
 

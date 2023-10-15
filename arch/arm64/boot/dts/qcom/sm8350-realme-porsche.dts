@@ -70,14 +70,8 @@
 			console-size = <0x200000>;
                         ftrace-size = <0x200000>;
                         pmsg-size = <0x200000>;
-                        devinfo-size = <0x08000>;
-                        dumpinfo-size = <0x08000>;
-                        rsv01info-size = <0x08000>;
-                        rsv02info-size = <0x08000>;
-                        rsv03info-size = <0x08000>;
-                        rsv04info-size = <0x08000>;
-                        rsv05info-size = <0x08000>;
                         ecc-size = <0x0>;
+                        no-map;
                 };
         };
 
@@ -734,14 +728,14 @@
         };
 };
 
-/*&i2c2 {
+&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
                 compatible = "ti,bq27541";
                 reg = <0x55>;
         };
-};*/
+};
 
 &i2c19 {
         clock-frequency = <400000>;
@@ -761,19 +755,6 @@
                 pinctrl-0 = <&btm_default>;
                 #sound-dai-cells = <0>;
         };
-
-        /*typec-mux@42 {
-                compatible = "fcs,fsa4480";
-                reg = <0x42>;
-                interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
-                mode-switch;
-                orientation-switch;
-                port {
-                        fsa4480_sbu_mux: endpoint {
-                                remote-endpoint = <&pmic_glink_sbu>;
-                        };
-                };
-        };*/
 };
 
 &ipa {

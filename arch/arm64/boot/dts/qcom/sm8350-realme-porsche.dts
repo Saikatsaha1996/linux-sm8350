@@ -66,8 +66,8 @@
                 ramoops_mem: ramoops@e9700000 {
 			compatible = "ramoops";
 			reg = <0 0xe9700000 0 0x05b8000>;
-			record-size = <0x200000>;
-			console-size = <0x200000>;
+                        record-size = <0x40000>;
+                        console-size = <0x40000>;
                         ftrace-size = <0x200000>;
                         pmsg-size = <0x200000>;
                         no-map;

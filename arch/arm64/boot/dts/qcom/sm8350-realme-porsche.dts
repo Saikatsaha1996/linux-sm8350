@@ -17,8 +17,8 @@
 #include "pmr735a.dtsi"
 
 / {
-	model = "Realme GT 2";
-	compatible = "qcom,sm8350", "realme,porsche";
+	model = "Qualcomm Technologies, Inc. lahaina v1 SoC";
+	compatible = "qcom,sm8350", "qcom,lahaina";
 	qcom,msm-id = <415 0x10000>, <456 0x10000>;
 	qcom,board-id = <0 0>;
 	interrupt-parent = <&intc>;

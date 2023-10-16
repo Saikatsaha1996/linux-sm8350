@@ -977,7 +977,7 @@
 };
 
 &tlmm {
-	//gpio-reserved-ranges = <52 8>;
+	gpio-reserved-ranges = <52 8>;
 
         panel_vddr_default: panel-vddr-default-state {
                 pins = "gpio163";

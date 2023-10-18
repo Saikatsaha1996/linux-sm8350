@@ -724,13 +724,15 @@
 &i2c0 {
         status = "okay";
         clock-frequency = <100000>;
+        #address-cells = <1>;
+        #size-cells = <0>;
         pmic@5c {
                 compatible = "mps,mp2650";
                 reg = <0x5c 0>;
                 interrupt-controller;
-                interrupt-parent = <&pm8350c_gpios>;
+                interrupt-parent = <&pm8350_gpios>;
                 #interrupt-cells = <2>;
-                interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+                interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
         };
 };
 
@@ -842,6 +844,38 @@
 		input-enable;
 		bias-pull-up;
 		power-source = <1>;
+	};
+
+	usbtemp_l_gpio_default: usbtemp_l_gpio_default {
+		pins = "gpio1";
+		function = "normal";
+		bias-high-impedance;
+        };
+
+	usbtemp_r_gpio_default: usbtemp_r_gpio_default {
+                pins = "gpio3";
+		function = "normal";
+                bias-high-impedance;
+        };
+};
+
+&pm8350c_gpios {
+	dischg_enable: dischg_enable {
+		pins = "gpio9";
+		function = "normal";
+		bias-disable;
+		power-source = <0>;
+		output-high;
+		drive-strength = <3>;
+	};
+
+	dischg_disable: dischg_disable {
+		pins = "gpio9";
+		function = "normal";
+		bias-disable;
+		power-source = <0>;
+		output-low;
+		drive-strength = <3>;
 	};
 };
 
@@ -1120,6 +1154,21 @@
 		bias-disable;
                 output-high;
         };
+
+	chg_qupv3_se3_2uart_active: chg_qupv3_se3_2uart_active {
+		pins = "gpio18", "gpio19";
+		function = "qup3";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	chg_qupv3_se3_2uart_sleep: chg_qupv3_se3_2uart_sleep {
+		pins = "gpio18", "gpio19";
+		function = "gpio";
+		drive-strength = <2>;
+		input-enable;
+		bias-pull-down;
+	};
 };
 
 &uart18 {

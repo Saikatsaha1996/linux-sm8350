@@ -170,7 +170,7 @@ obj-$(CONFIG_MFD_MAX8925)	+= max8925.o
 obj-$(CONFIG_MFD_MAX8997)	+= max8997.o max8997-irq.o
 obj-$(CONFIG_MFD_MAX8998)	+= max8998.o max8998-irq.o
 
-obj-$(CONFIG_MFD_MP2629)	+= mp2629.o
+obj-$(CONFIG_MFD_MP2650)	+= mp2650.o
 
 obj-$(CONFIG_MFD_MT6360)	+= mt6360-core.o
 obj-$(CONFIG_MFD_MT6370)	+= mt6370.o

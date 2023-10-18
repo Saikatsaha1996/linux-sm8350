@@ -849,11 +849,11 @@ config MESON_SARADC
 	  To compile this driver as a module, choose M here: the
 	  module will be called meson_saradc.
 
-config MP2629_ADC
-	tristate "Monolithic MP2629 ADC driver"
-	depends on MFD_MP2629
+config MP2650_ADC
+	tristate "Monolithic MP2650 ADC driver"
+	depends on MFD_MP2650
 	help
-	  Say yes to have support for battery charger IC MP2629 ADC device
+	  Say yes to have support for battery charger IC MP2650 ADC device
 	  accessed over I2C.
 
 	  This driver provides ADC conversion of system, input power supply

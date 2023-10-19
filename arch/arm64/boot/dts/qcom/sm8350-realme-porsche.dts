@@ -721,7 +721,7 @@
         };
 };
 
-&i2c0 {
+/*&i2c0 {
         status = "okay";
         clock-frequency = <100000>;
         #address-cells = <1>;
@@ -734,7 +734,7 @@
                 #interrupt-cells = <2>;
                 interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
         };
-};
+};*/
 
 &i2c2 {
         status = "okay";

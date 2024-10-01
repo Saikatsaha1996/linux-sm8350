@@ -1,0 +1,183 @@
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index ae002c7cf..99aff1629 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -250,6 +250,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sm8250-xiaomi-pipa.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8350-hdk.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8350-microsoft-surface-duo2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8350-mtp.dtb
++dtb-$(CONFIG_ARCH_QCOM) += sm8350-realme-porsche.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8350-sony-xperia-sagami-pdx214.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8350-sony-xperia-sagami-pdx215.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sm8450-hdk.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index 37a2aba0d..083716ee2 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -4503,7 +4503,7 @@ camera2_alert0: trip-point0 {
+ 		};
+ 	};
+ 
+-	timer {
++	arch_timer: timer {
+ 		compatible = "arm,armv8-timer";
+ 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+ 			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
+index d3a9a9faf..2763216ed 100644
+--- a/drivers/gpu/drm/panel/Kconfig
++++ b/drivers/gpu/drm/panel/Kconfig
+@@ -614,6 +614,13 @@ config DRM_PANEL_RONBO_RB070D30
+ 	  Say Y here if you want to enable support for Ronbo Electronics
+ 	  RB070D30 1024x600 DSI panel.
+ 
++config DRM_PANEL_SAMSUNG_AMS662ZS01
++        tristate "Samsung AMS662ZS01 DVT DSC CMD mode 60 Hz panel"
++        depends on OF
++        depends on DRM_MIPI_DSI
++        depends on BACKLIGHT_CLASS_DEVICE
++        select VIDEOMODE_HELPERS
++
+ config DRM_PANEL_SAMSUNG_S6E88A0_AMS452EF01
+ 	tristate "Samsung AMS452EF01 panel with S6E88A0 DSI video mode controller"
+ 	depends on OF
+diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
+index 987a08702..b11780c42 100644
+--- a/drivers/gpu/drm/panel/Makefile
++++ b/drivers/gpu/drm/panel/Makefile
+@@ -62,6 +62,7 @@ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM68200) += panel-raydium-rm68200.o
+ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM692E5) += panel-raydium-rm692e5.o
+ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM69380) += panel-raydium-rm69380.o
+ obj-$(CONFIG_DRM_PANEL_RONBO_RB070D30) += panel-ronbo-rb070d30.o
++obj-$(CONFIG_DRM_PANEL_SAMSUNG_AMS662ZS01) += panel-samsung-ams662zs01.o
+ obj-$(CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20) += panel-samsung-atna33xc20.o
+ obj-$(CONFIG_DRM_PANEL_SAMSUNG_DB7430) += panel-samsung-db7430.o
+ obj-$(CONFIG_DRM_PANEL_SAMSUNG_LD9040) += panel-samsung-ld9040.o
+diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+index 1ac26fc2e..9c8918d45 100644
+--- a/drivers/input/touchscreen/Kconfig
++++ b/drivers/input/touchscreen/Kconfig
+@@ -358,6 +358,16 @@ config TOUCHSCREEN_EXC3000
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called exc3000.
+ 
++config TOUCHSCREEN_FOCALTECH_FTS
++	tristate "Focaltech FTS Touchscreen"
++	depends on I2C
++	help
++	  Say Y here to enable support for I2C connected Focaltech FTS
++	  based touch panels, including the FT3658U, 5452 and 8917 panels.
++	  If unsure, say N.
++	  To compile this driver as a module, choose M here: the
++	  module will be called focaltech_fts.
++
+ config TOUCHSCREEN_FUJITSU
+ 	tristate "Fujitsu serial touchscreen"
+ 	select SERIO
+diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
+index 82bc837ca..9554b16b8 100644
+--- a/drivers/input/touchscreen/Makefile
++++ b/drivers/input/touchscreen/Makefile
+@@ -42,6 +42,7 @@ obj-$(CONFIG_TOUCHSCREEN_ELO)		+= elo.o
+ obj-$(CONFIG_TOUCHSCREEN_EGALAX)	+= egalax_ts.o
+ obj-$(CONFIG_TOUCHSCREEN_EGALAX_SERIAL)	+= egalax_ts_serial.o
+ obj-$(CONFIG_TOUCHSCREEN_EXC3000)	+= exc3000.o
++obj-$(CONFIG_TOUCHSCREEN_FOCALTECH_FTS)	+= focaltech_fts.o
+ obj-$(CONFIG_TOUCHSCREEN_FUJITSU)	+= fujitsu_ts.o
+ obj-$(CONFIG_TOUCHSCREEN_GOODIX)	+= goodix_ts.o
+ obj-$(CONFIG_TOUCHSCREEN_GOODIX_BERLIN_CORE)	+= goodix_berlin_core.o
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index f9325bcce..0dd7f554d 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -1147,6 +1147,17 @@ config MFD_PM8XXX
+ 	  Say M here if you want to include support for PM8xxx chips as a
+ 	  module. This will build a module called "pm8xxx-core".
+ 
++config MFD_QCOM_QCA639X
++	tristate "Qualcomm QCA639x WiFi/Bluetooth module support"
++	depends on REGULATOR && PM_GENERIC_DOMAINS
++	help
++	  If you say yes to this option, support will be included for Qualcomm
++	  QCA639x family of WiFi and Bluetooth SoCs. Note, this driver supports
++	  only power control for this SoC, you still have to enable individual
++	  Bluetooth and WiFi drivers.
++	  Say M here if you want to include support for QCA639x chips as a
++	  module. This will build a module called "qcom-qca639x".
++
+ config MFD_QCOM_RPM
+ 	tristate "Qualcomm Resource Power Manager (RPM)"
+ 	depends on ARCH_QCOM && OF
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 2a9f91e81..652a54c47 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -210,6 +210,7 @@ obj-$(CONFIG_MFD_SI476X_CORE)	+= si476x-core.o
+ obj-$(CONFIG_MFD_CS5535)	+= cs5535-mfd.o
+ obj-$(CONFIG_MFD_OMAP_USB_HOST)	+= omap-usb-host.o omap-usb-tll.o
+ obj-$(CONFIG_MFD_PM8XXX) 	+= qcom-pm8xxx.o ssbi.o
++obj-$(CONFIG_MFD_QCOM_QCA639X)	+= qcom-qca639x.o
+ obj-$(CONFIG_MFD_QCOM_RPM)	+= qcom_rpm.o
+ obj-$(CONFIG_MFD_SPMI_PMIC)	+= qcom-spmi-pmic.o
+ obj-$(CONFIG_TPS65911_COMPARATOR)	+= tps65911-comparator.o
+diff --git a/drivers/soc/qcom/pmic_glink.c b/drivers/soc/qcom/pmic_glink.c
+index 960622299..3eb65d22a 100644
+--- a/drivers/soc/qcom/pmic_glink.c
++++ b/drivers/soc/qcom/pmic_glink.c
+@@ -373,6 +373,7 @@ static const unsigned long pmic_glink_sm8450_client_mask = BIT(PMIC_GLINK_CLIENT
+ 
+ static const struct of_device_id pmic_glink_of_match[] = {
+ 	{ .compatible = "qcom,sc8280xp-pmic-glink", .data = &pmic_glink_sc8280xp_client_mask },
++        { .compatible = "qcom,sm8550-pmic-glink", .data = &pmic_glink_sm8450_client_mask },
+ 	{ .compatible = "qcom,pmic-glink", .data = &pmic_glink_sm8450_client_mask },
+ 	{}
+ };
+diff --git a/scripts/Makefile.dtbs b/scripts/Makefile.dtbs
+index 46009d5f1..99f3379c0 100644
+--- a/scripts/Makefile.dtbs
++++ b/scripts/Makefile.dtbs
+@@ -120,7 +120,7 @@ dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
+ quiet_cmd_dtc = DTC $(quiet_dtb_check_tag) $@
+       cmd_dtc = \
+ 	$(HOSTCC) -E $(dtc_cpp_flags) -x assembler-with-cpp -o $(dtc-tmp) $< ; \
+-	$(DTC) -o $@ -b 0 $(addprefix -i,$(dir $<) $(DTC_INCLUDE)) \
++	$(DTC) -@ -o $@ -b 0 $(addprefix -i,$(dir $<) $(DTC_INCLUDE)) \
+ 	       $(DTC_FLAGS) -d $(depfile).dtc.tmp $(dtc-tmp) ; \
+ 	cat $(depfile).pre.tmp $(depfile).dtc.tmp > $(depfile) \
+ 	$(cmd_dtb_check)
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 709284248..f614c90b9 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1992,6 +1992,11 @@ config SND_SOC_TDA7419
+ 	depends on I2C
+ 	select REGMAP_I2C
+ 
++config SND_SOC_TFA9872
++	tristate "NXP Semiconductors TFA9872 amplifier"
++	depends on I2C
++	select REGMAP_I2C
++
+ config SND_SOC_TFA9879
+ 	tristate "NXP Semiconductors TFA9879 amplifier"
+ 	depends on I2C
+diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+index 54cbc3fea..2b73b8be5 100644
+--- a/sound/soc/codecs/Makefile
++++ b/sound/soc/codecs/Makefile
+@@ -297,6 +297,7 @@ snd-soc-tas2770-y := tas2770.o
+ snd-soc-tas2781-comlib-y := tas2781-comlib.o
+ snd-soc-tas2781-fmwlib-y := tas2781-fmwlib.o
+ snd-soc-tas2781-i2c-y := tas2781-i2c.o
++snd-soc-tfa9872-objs := tfa9872.o
+ snd-soc-tfa9879-y := tfa9879.o
+ snd-soc-tfa989x-y := tfa989x.o
+ snd-soc-tlv320adc3xxx-y := tlv320adc3xxx.o
+@@ -701,6 +702,7 @@ obj-$(CONFIG_SND_SOC_TAS5805M)	+= snd-soc-tas5805m.o
+ obj-$(CONFIG_SND_SOC_TAS6424)	+= snd-soc-tas6424.o
+ obj-$(CONFIG_SND_SOC_TDA7419)	+= snd-soc-tda7419.o
+ obj-$(CONFIG_SND_SOC_TAS2770) += snd-soc-tas2770.o
++obj-$(CONFIG_SND_SOC_TFA9872)	+= snd-soc-tfa9872.o
+ obj-$(CONFIG_SND_SOC_TFA9879)	+= snd-soc-tfa9879.o
+ obj-$(CONFIG_SND_SOC_TFA989X)	+= snd-soc-tfa989x.o
+ obj-$(CONFIG_SND_SOC_TLV320ADC3XXX)	+= snd-soc-tlv320adc3xxx.o

@@ -231,7 +231,6 @@
 
                                 port@1 {
                                         reg = <1>;
-
                                         pmic_glink_ss_in: endpoint {
                                                 remote-endpoint = <&usb_1_qmpphy_out>;
                                         };
@@ -700,10 +699,11 @@
        status ="okay";
        clock-frequency = <400000>;
        SpkrTop: audio-codec@34 {
-               compatible = "nxp,tfa9879";
+               compatible = "nxp,tfa9874";
                reg = <0x34>;
-               vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+               reset-gpio = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+               first-boost-trip-lvl = <0x9>;
+               max-coil-current = <0xf>;
                pinctrl-names = "active", "sleep";
                pinctrl-0 = <&speaker_active_top>;
                pinctrl-1 = <&speaker_sleep_top>;
@@ -713,10 +713,11 @@
        };
 
        SpkrBottom: audio-codec@35 {
-               compatible = "nxp,tfa9879";
+               compatible = "nxp,tfa9874";
                reg = <0x35>;
-               vddd-supply = <&pm8350_s10>;
-               rcv-gpios = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+               reset-gpio = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+               first-boost-trip-lvl = <0x9>;
+               max-coil-current = <0xf>;
                pinctrl-names = "active", "sleep";
                pinctrl-0 = <&speaker_active_buttom>;
                pinctrl-1 = <&speaker_sleep_buttom>;

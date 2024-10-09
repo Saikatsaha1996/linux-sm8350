@@ -1088,7 +1088,7 @@
 		};
         };
 
-	fsa_default: fsa-default-state  {
+	fsa_default: fsa-default-state {
                 active-pins {
                         pins = "gpio116";
                         function = "gpio";

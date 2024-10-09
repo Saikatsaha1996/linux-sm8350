@@ -73,12 +73,6 @@
                         label = "dfps_data_region";
                 };
 
-                disp_rdump_memory {
-                        reg = <0xe4d00000 0x00800000>;
-                        label = "disp_rdump_region";
-
-                };
-
                 memshare_region {
                         alignment = <0x00 0x100000>;
                         alloc-ranges = <0x00 0x00 0x00 0xdfffffff>;
@@ -97,13 +91,13 @@
                         no-map;
                 };
 
-                ramoops@0xE9700000 {
+                ramoops: ramoops@0xe9700000 {
                         compatible = "ramoops";
-                        reg = <0 0xE9700000 0 0x05B8000>;
-                        record-size =  <0x40000>;
+                        reg = <0x0 0xe9700000 0x0 0x05B8000>;
+                        record-size = <0x40000>;
                         console-size = <0x40000>;
-                        ftrace-size =  <0x200000>;
-                        pmsg-size=     <0x200000>;
+                        ftrace-size = <0x200000>;
+                        pmsg-size = <0x200000>;
                 };
 
                 kboot_uboot_logmem@9fe00000 {
@@ -704,9 +698,8 @@
                reset-gpio = <&tlmm 15 GPIO_ACTIVE_HIGH>;
                first-boost-trip-lvl = <0x9>;
                max-coil-current = <0xf>;
-               pinctrl-names = "active", "sleep";
-               pinctrl-0 = <&speaker_active_top>;
-               pinctrl-1 = <&speaker_sleep_top>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&speaker_default_top>;
                sound-name-prefix = "Top";
                #sound-dai-cells = <1>;
                status = "okay";
@@ -718,9 +711,8 @@
                reset-gpio = <&tlmm 42 GPIO_ACTIVE_HIGH>;
                first-boost-trip-lvl = <0x9>;
                max-coil-current = <0xf>;
-               pinctrl-names = "active", "sleep";
-               pinctrl-0 = <&speaker_active_buttom>;
-               pinctrl-1 = <&speaker_sleep_buttom>;
+               pinctrl-names = "default";
+               pinctrl-0 = <&speaker_default_buttom>;
                sound-name-prefix = "Bottom";
                #sound-dai-cells = <1>;
                status = "okay";
@@ -1050,7 +1042,7 @@
 		output-low;
 	};
 
-	speaker_active_top: speaker-active-top-state {
+	speaker_default_top: speaker-top-state {
 		active-pins {
 			pins = "gpio15";
 			function = "gpio";
@@ -1058,8 +1050,7 @@
 			bias-disable;
                         output-high;
 		};
-        };
-        speaker_sleep_top: speaker-sleep-top-state {
+
 		sleep-pins {
 			pins = "gpio15";
 			function = "gpio";
@@ -1069,7 +1060,7 @@
 		};
         };
 
-	speaker_active_bottom: speaker-active-bottom-state {
+	speaker_default_buttom: speaker-bottom-state {
 		active-pins {
 			pins = "gpio42";
 			function = "gpio";
@@ -1077,8 +1068,7 @@
 			bias-disable;
                         output-high;
 		};
-        };
-        speaker_sleep_bottom: speaker-sleep-bottom-state {
+
 		sleep-pins {
 			pins = "gpio42";
 			function = "gpio";

@@ -1058,7 +1058,7 @@
 			bias-disable;
                         output-high;
 		};
-
+        };
         speaker_sleep_top: speaker-sleep-top-state {
 		sleep-pins {
 			pins = "gpio15";
@@ -1077,7 +1077,7 @@
 			bias-disable;
                         output-high;
 		};
-
+        };
         speaker_sleep_bottom: speaker-sleep-bottom-state {
 		sleep-pins {
 			pins = "gpio42";

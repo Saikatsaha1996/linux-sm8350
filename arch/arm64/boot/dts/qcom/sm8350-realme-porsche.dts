@@ -93,7 +93,7 @@
 
                 ramoops: ramoops@0xe9700000 {
                         compatible = "ramoops";
-                        reg = <0x0 0xe9700000 0x0 0x05B8000>;
+                        reg = <0x00 0xe9700000 0x00 0x05B8000>;
                         record-size = <0x40000>;
                         console-size = <0x40000>;
                         ftrace-size = <0x200000>;
@@ -694,29 +694,29 @@
 
 &adsp {
 	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
+	firmware-name = "qcom/sm8350/realme/porsche/adsp.mbn";
 };
 
 &cdsp {
 	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
+	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
 
 &slpi {
-	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
+	firmware-name = "qcom/sm8350/realme/porsche/slpi.mbn";
 	status = "okay";
 };
 
 &ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
+	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
 };
 
 &mpss {
         memory-region = <&pil_modem_mem>;
-	firmware-name = "qcom/sm8350/porsche/modem.mbn";
+	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";
 	status = "okay";
 };
 

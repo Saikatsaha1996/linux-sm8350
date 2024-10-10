@@ -32,7 +32,6 @@
 
 	aliases {
                 display0 = &panel0;
-                hsuart0 = &uart18;
 	};
 
 	chosen {
@@ -58,7 +57,7 @@
 		#size-cells = <2>;
 		ranges;
 
-                splash_memory:splash_region {
+                splash_memory: splash_region {
                         reg = <0x0 0xe4d00000 0x0 0x02300000>;
                         no-map;
                         label = "cont_splash_region";
@@ -93,7 +92,7 @@
 
                 ramoops: ramoops@0xe9700000 {
                         compatible = "ramoops";
-                        reg = <0x0 0xe9700000 0x0 0x05B8000>;
+                        reg = <0x00 0xe9700000 0x00 0x05B8000>;
                         record-size = <0x40000>;
                         console-size = <0x40000>;
                         ftrace-size = <0x200000>;

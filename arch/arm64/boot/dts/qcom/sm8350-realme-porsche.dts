@@ -1181,61 +1181,45 @@
 };
 
 &usb_1 {
-	/*
-	 * Bug in interconnect driver breaks USB; RPMh is unable to power on
-	 * USB regulators without this.
-	 */
-	/delete-property/ interconnects;
-	/delete-property/ interconnect-names;
-
-	/* USB3 seems broken (though it's enabled downstream?) */
-        qcom,select-utmi-as-pipe-clk;
-        status = "okay";
+	status = "okay";
+	qcom,select-utmi-as-pipe-clk;
 };
 
 &usb_1_dwc3 {
-	dr_mode = "otg";
+	dr_mode = "peripheral";
 	maximum-speed = "high-speed";
 	phys = <&usb_1_hsphy>;
 	phy-names = "usb2-phy";
-        /*usb-role-switch;*/
 };
 
-/*&usb_1_dwc3_hs {
-	remote-endpoint = <&pmic_glink_hs_in>;
-};*/
-
-
 &usb_1_hsphy {
+	status = "okay";
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
-        status = "okay";
 };
 
 &usb_1_qmpphy {
+	status = "okay";
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
-        status = "okay";
 };
-
-/*&usb_1_qmpphy_out {
-	remote-endpoint = <&pmic_glink_ss_in>;
-};*/
 
 &usb_2 {
 	status = "okay";
 };
 
 &usb_2_hsphy {
+	status = "okay";
+
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
-        status = "okay";
 };
 
 &usb_2_qmpphy {
+	status = "okay";
+
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
-        status = "okay";
 };

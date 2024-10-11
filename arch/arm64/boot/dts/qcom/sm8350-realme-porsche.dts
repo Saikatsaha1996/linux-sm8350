@@ -1214,6 +1214,15 @@
 };
 
 &usb_1 {
+	/*
+	 * Bug in interconnect driver breaks USB; RPMh is unable to power on
+	 * USB regulators without this.
+	 */
+	/delete-property/ interconnects;
+	/delete-property/ interconnect-names;
+
+	/* USB3 seems broken (though it's enabled downstream?) */
+	qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
 

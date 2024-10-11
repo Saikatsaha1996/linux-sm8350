@@ -32,6 +32,9 @@
 
 	aliases {
                 display0 = &panel0;
+		bluetooth = &bluetooth;
+		serial0 = &uart2;
+		serial1 = &uart18;
 	};
 
 	chosen {
@@ -63,10 +66,6 @@
                         label = "cont_splash_region";
                 };
 
-                removed_mem {
-                        reg = <0x0 0xd8800000 0x0 0x8e00000>;
-                };
-
                 dfps_data_memory {
                         reg = <0x0 0xe7000000 0x0 0x0100000>;
                         label = "dfps_data_region";
@@ -90,7 +89,7 @@
                         no-map;
                 };
 
-                ramoops: ramoops@0xe9700000 {
+                ramoops: ramoops@e9700000 {
                         compatible = "ramoops";
                         reg = <0x00 0xe9700000 0x00 0x05B8000>;
                         record-size = <0x40000>;
@@ -160,8 +159,8 @@
         wcnss_regulator: wcnss-wlan-regulator {
                 compatible = "regulator-fixed";
                 regulator-name = "wcnss_regulator";
-                regulator-min-microvolt = <1900000>;
-                regulator-max-microvolt = <1900000>;
+                regulator-min-microvolt = <1300000>;
+                regulator-max-microvolt = <1300000>;
                 enable-active-high;
                 wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
                 pinctrl-names = "default";
@@ -267,12 +266,13 @@
 					};
 				};
 
-                                port@1 {
+                                /* USB3 not working, so no port@1 */
+                                /*port@1 {
                                         reg = <1>;
                                         pmic_glink_ss_in: endpoint {
                                                 remote-endpoint = <&usb_1_qmpphy_out>;
                                         };
-                                };
+                                };*/
 
 				port@2 {
 					reg = <2>;
@@ -286,11 +286,17 @@
 
         battery: battery {
                 compatible = "simple-battery";
+		device-chemistry = "lithium-ion";
                 voltage-min-design-microvolt = <3200000>;
                 voltage-max-design-microvolt = <4200000>;
-                energy-full-design-microwatt-hours = <18900000>;
-                charge-full-design-microamp-hours = <4500000>;
+                energy-full-design-microwatt-hours = <18500000>;
+                charge-full-design-microamp-hours = <5000000>;
         };
+};
+
+&adsp {
+	status = "okay";
+	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
 &apps_rsc {
@@ -691,18 +697,20 @@
 	};
 };
 
-&adsp {
-	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
-};
-
 &cdsp {
 	status = "okay";
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
-&slpi {
-	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
+&gpi_dma0 {
+	status = "okay";
+};
+
+&gpi_dma1 {
+	status = "okay";
+};
+
+&gpi_dma2 {
 	status = "okay";
 };
 
@@ -719,7 +727,7 @@
 	status = "okay";
 };
 
-&i2c0 {
+&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -844,15 +852,12 @@
 	status = "okay";
 };
 
-&gpi_dma0 {
-	status = "okay";
+&removed_mem {
+        reg = <0x0 0xd8800000 0x0 0x8e00000>;
 };
 
-&gpi_dma1 {
-	status = "okay";
-};
-
-&gpi_dma2 {
+&slpi {
+	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
 	status = "okay";
 };
 
@@ -970,6 +975,10 @@
         vdds-supply = <&pm8350_l5>;
 };
 
+&uart2 {
+        status = "okay";
+};
+
 &uart18 {
         pinctrl-names = "default";
         pinctrl-0 = <&qup_uart18_default>;
@@ -984,7 +993,6 @@
                 vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
                 vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };
-
 };
 
 &tlmm {
@@ -1179,6 +1187,14 @@
 };
 
 &usb_1 {
+	/*
+	 * Bug in interconnect driver breaks USB; RPMh is unable to power on
+	 * USB regulators without this.
+	 */
+	/delete-property/ interconnects;
+	/delete-property/ interconnect-names;
+
+	/* USB3 seems broken (though it's enabled downstream?) */
         qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
@@ -1203,7 +1219,7 @@
         status = "okay";
 };
 
-&usb_1_qmpphy {
+/*&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
         status = "okay";
@@ -1228,4 +1244,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};
+};*/

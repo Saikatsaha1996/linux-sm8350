@@ -113,6 +113,33 @@
 		regulator-boot-on;
 	};
 
+	touchscreen_gpio_i2c {
+		compatible = "i2c-gpio";
+		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2c4_default>;
+	        touchscreen: focaltech@38 {
+                        compatible = "focaltech,ft3658u";
+                        reg = <0x38>;
+                        wakeup-source;
+                        interrupt-parent = <&tlmm>;
+                        interrupts = <23 0x2002>;
+                        reset-gpio = <&tlmm 22 0x00>;
+                        irq-gpio = <&tlmm 23 0x2002>;
+                        vdd-supply = <&pm8350c_l11>;
+                        vcc-i2c-supply = <&pm8350c_l12>;
+                        pinctrl-names = "default", "suspend";
+                        pinctrl-0 = <&ts_int_default &ts_reset_default>;
+                        pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+                        touchscreen-size-x = <1080>;
+                        touchscreen-size-y = <2400>;
+                        focaltech,max-touch-number = <5>;
+                };
+        };
+
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "panel_supply_vddr";
@@ -696,25 +723,6 @@
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
-&gpi_dma0 {
-	status = "okay";
-};
-
-&gpi_dma1 {
-	status = "okay";
-};
-
-&gpi_dma2 {
-	status = "okay";
-};
-
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
-	status = "okay";
-};
-
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/porsche/modem.mbn";
@@ -846,6 +854,18 @@
 	status = "okay";
 };
 
+&gpi_dma0 {
+	status = "okay";
+};
+
+&gpi_dma1 {
+	status = "okay";
+};
+
+&gpi_dma2 {
+	status = "okay";
+};
+
 &removed_mem {
         reg = <0x0 0xd8800000 0x0 0x8e00000>;
 };
@@ -909,6 +929,13 @@
                 power-source = <1>;
                 drive-strength = <2>;
         };
+};
+
+&ipa {
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
+	status = "okay";
 };
 
 &gmu {
@@ -1029,6 +1056,13 @@
 		drive-strength = <2>;
 		bias-disable;
                 output-low;
+	};
+
+	i2c4_default: i2c4-default {
+		pins = "gpio20", "gpio21";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
 	};
 
         sde_dsi_active: sde-dsi-active-state {

@@ -269,7 +269,7 @@
 		};
 	};
 
-	/*pmic-glink {
+	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -303,7 +303,7 @@
 				};
 			};
 		};
-	};*/
+	};
 
         battery: battery {
                 compatible = "simple-battery";
@@ -743,7 +743,7 @@
 	};
 }; 
 
-/*&i2c4 {
+&i2c4 {
        status ="okay";
        clock-frequency = <400000>;
        SpkrTop: audio-codec@34 {
@@ -789,7 +789,7 @@
        };
 };
 
-&i2c5 {
+/*&i2c5 {
 
 	clock-frequency = <400000>;
 	status = "okay";
@@ -1215,26 +1215,35 @@
 };
 
 &usb_1 {
-	status = "okay";
-	qcom,select-utmi-as-pipe-clk;
+        qcom,select-utmi-as-pipe-clk;
+        status = "okay";
 };
 
 &usb_1_dwc3 {
-	dr_mode = "peripheral";
+	dr_mode = "otg";
 	maximum-speed = "high-speed";
 	phys = <&usb_1_hsphy>;
 	phy-names = "usb2-phy";
+        usb-role-switch;
+};
+
+&usb_1_dwc3_hs {
+	remote-endpoint = <&pmic_glink_hs_in>;
 };
 
 &usb_1_hsphy {
-	status = "okay";
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
+        status = "okay";
 };
 
 &usb_1_qmpphy {
-	status = "okay";
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
+        status = "okay";
+};
+
+&usb_1_qmpphy_out {
+	remote-endpoint = <&pmic_glink_ss_in>;
 };

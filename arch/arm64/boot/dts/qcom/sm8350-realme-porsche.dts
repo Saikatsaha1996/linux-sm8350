@@ -32,9 +32,6 @@
 
 	aliases {
                 display0 = &panel0;
-		bluetooth = &bluetooth;
-		serial0 = &uart2;
-		serial1 = &uart18;
 	};
 
 	chosen {

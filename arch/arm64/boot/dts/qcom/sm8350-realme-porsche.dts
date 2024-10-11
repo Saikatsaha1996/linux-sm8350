@@ -969,15 +969,15 @@
         vdds-supply = <&pm8350_l5>;
 };
 
-&uart2 {
+/*&uart2 {
         status = "okay";
-};
+};*/
 
 &uart18 {
         pinctrl-names = "default";
         pinctrl-0 = <&qup_uart18_default>;
         status = "okay";
-        bluetooth {
+        /*bluetooth {
                 compatible = "qcom,qca6390-bt";
 
                 vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
@@ -986,7 +986,7 @@
                 vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
                 vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
                 vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-        };
+        };*/
 };
 
 &tlmm {
@@ -1203,23 +1203,4 @@
 	status = "okay";
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
-};
-
-&usb_2 {
-	status = "okay";
-};
-
-&usb_2_hsphy {
-	status = "okay";
-
-	vdda-pll-supply = <&pm8350_l5>;
-	vdda18-supply = <&pm8350c_l1>;
-	vdda33-supply = <&pm8350_l2>;
-};
-
-&usb_2_qmpphy {
-	status = "okay";
-
-	vdda-phy-supply = <&pm8350_l6>;
-	vdda-pll-supply = <&pm8350_l5>;
 };

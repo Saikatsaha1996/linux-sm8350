@@ -113,7 +113,7 @@
 		regulator-boot-on;
 	};
 
-	touchscreen_gpio_i2c {
+	/*touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -138,7 +138,7 @@
                         touchscreen-size-y = <2400>;
                         focaltech,max-touch-number = <5>;
                 };
-        };
+        };*/
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
@@ -729,7 +729,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+&i2c0 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -789,7 +789,7 @@
        };
 };
 
-/*&i2c5 {
+&i2c5 {
 
 	clock-frequency = <400000>;
 	status = "okay";
@@ -813,8 +813,7 @@
                 touchscreen-size-y = <2400>;
                 focaltech,max-touch-number = <5>;
         };
-};*/
-
+};
 
 /* For bug we have to disabled crypto & bam */
 &cryptobam {
@@ -996,9 +995,9 @@
         vdds-supply = <&pm8350_l5>;
 };
 
-/*&uart2 {
+&uart2 {
         status = "okay";
-};*/
+};
 
 &uart18 {
         pinctrl-names = "default";
@@ -1058,12 +1057,12 @@
                 output-low;
 	};
 
-	i2c4_default: i2c4-default {
+	/*i2c4_default: i2c4-default {
 		pins = "gpio20", "gpio21";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-	};
+	};*/
 
         sde_dsi_active: sde-dsi-active-state {
 		pins = "gpio24";
@@ -1215,7 +1214,6 @@
 };
 
 &usb_1 {
-        qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
 

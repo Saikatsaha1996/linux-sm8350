@@ -164,7 +164,7 @@
                 pinctrl-0 = <&wcnss_en>;
         };
 
-        qca6390-pmu {
+        /*qca6390-pmu {
                 compatible = "qcom,qca6390-pmu";
 
                 pinctrl-names = "default";
@@ -223,7 +223,7 @@
                                 regulator-name = "vreg_pmu_pcie_1p8";
                         };
                 };
-        };
+        };*/
 	        
 
         gpio_keys {
@@ -735,7 +735,7 @@
 	};
 }; 
 
-&i2c4 {
+/*&i2c4 {
        status ="okay";
        clock-frequency = <400000>;
        SpkrTop: audio-codec@34 {
@@ -764,7 +764,7 @@
                status = "okay";
        };
 
-       /*fsa4480: typec-mux@42 {
+       fsa4480: typec-mux@42 {
 		compatible = "fcs,fsa4480";
 		reg = <0x42>;
 		interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
@@ -778,7 +778,7 @@
 				remote-endpoint = <&pmic_glink_sbu>;
 			};
 		};
-       };*/
+       };
 };
 
 &i2c5 {
@@ -805,7 +805,7 @@
                 touchscreen-size-y = <2400>;
                 focaltech,max-touch-number = <5>;
         };
-};
+};*/
 
 
 /* For bug we have to disabled crypto & bam */
@@ -862,7 +862,7 @@
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
 
-        pcie@0 {
+        /*pcie@0 {
                 device_type = "pci";
                 reg = <0x0 0x0 0x0 0x0 0x0>;
                 wifi@0 {
@@ -879,7 +879,7 @@
                         vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
                         vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
                 };
-        };
+        };*/
 };
 
 &pcie0_phy {

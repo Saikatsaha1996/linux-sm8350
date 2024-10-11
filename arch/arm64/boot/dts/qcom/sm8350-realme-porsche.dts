@@ -657,7 +657,7 @@
 	status = "okay";
 };
 
-&i2c0 {
+&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";

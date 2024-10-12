@@ -790,7 +790,7 @@
        };
 };
 
-&i2c5 {
+/*&i2c5 {
 
 	clock-frequency = <400000>;
 	status = "okay";
@@ -814,7 +814,7 @@
                 touchscreen-size-y = <2400>;
                 focaltech,max-touch-number = <5>;
         };
-};
+};*/
 
 /* For bug we have to disabled crypto & bam */
 &cryptobam {
@@ -1057,13 +1057,6 @@
 		bias-disable;
                 output-low;
 	};
-
-	/*i2c4_default: i2c4-default {
-		pins = "gpio20", "gpio21";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-	};*/
 
         sde_dsi_active: sde-dsi-active-state {
 		pins = "gpio24";

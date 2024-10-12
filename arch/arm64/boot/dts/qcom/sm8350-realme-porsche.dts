@@ -938,6 +938,10 @@
 	status = "okay";
 };
 
+&dispcc {
+	status = "okay";
+};
+
 &gmu {
         status = "okay";
         firmware-name = "qcom/a660_gmu.bin";

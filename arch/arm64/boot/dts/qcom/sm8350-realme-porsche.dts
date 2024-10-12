@@ -113,14 +113,15 @@
 		regulator-boot-on;
 	};
 
-	/*touchscreen_gpio_i2c {
+	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
-		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
-		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		sda-gpios = <&tlmm 24 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 25 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&i2c4_default>;
+		pinctrl-0 = <&qup_i2c5_default>;
+
 	        touchscreen: focaltech@38 {
                         compatible = "focaltech,ft3658u";
                         reg = <0x38>;
@@ -138,7 +139,7 @@
                         touchscreen-size-y = <2400>;
                         focaltech,max-touch-number = <5>;
                 };
-        };*/
+        };
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";

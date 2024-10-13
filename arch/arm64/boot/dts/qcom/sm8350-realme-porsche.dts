@@ -730,10 +730,6 @@
 	status = "okay";
 };
 
-/*&dispcc {
-	status = "okay";
-};*/
-
 &gmu {
         status = "okay";
         firmware-name = "qcom/a660_gmu.bin";
@@ -806,7 +802,7 @@
 	};
 };
 
-/*&i2c4 {
+&i2c4 {
 	clock-frequency = <400000>;
 	status = "okay";
         #address-cells = <1>;
@@ -863,9 +859,9 @@
        fsa4480: typec-mux@42 {
 	       compatible = "fcs,fsa4480";
 	       reg = <0x42>;
-               pinctrl-names = "default";
-               pinctrl-0 = <&fsa_default>;
-	       interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
+               /*pinctrl-names = "default";
+               pinctrl-0 = <&fsa_default>;*/
+	       interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
 	       vcc-supply = <&vreg_bob>;
 	       mode-switch;
 	       orientation-switch;
@@ -875,7 +871,7 @@
 			};
 		};
         };
-};*/
+};
 
 &gpi_dma0 {
 	status = "okay";
@@ -912,18 +908,6 @@
 };
 
 &pmk8350_rtc {
-	status = "okay";
-};
-
-&qupv3_id_0 {
-	status = "okay";
-};
-
-&qupv3_id_1 {
-	status = "okay";
-};
-
-&qupv3_id_2 {
 	status = "okay";
 };
 
@@ -992,13 +976,6 @@
         };
 };
 
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
-	status = "okay";
-};
-
 &uart18 {
         pinctrl-names = "default";
         pinctrl-0 = <&qup_uart18_default>;
@@ -1013,6 +990,25 @@
                 vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
                 vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };*/
+};
+
+&ipa {
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
+	status = "okay";
+};
+
+&qupv3_id_0 {
+	status = "okay";
+};
+
+&qupv3_id_1 {
+	status = "okay";
+};
+
+&qupv3_id_2 {
+	status = "okay";
 };
 
 &tlmm {
@@ -1141,7 +1137,7 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-	};
+	};*/
 
 	speaker_default_top: speaker-top-state {
 		active-pins {
@@ -1187,7 +1183,7 @@
                         bias-disable;
                         output-high;
                 };
-	};*/
+	};
 };
 
 &ufs_mem_hc {

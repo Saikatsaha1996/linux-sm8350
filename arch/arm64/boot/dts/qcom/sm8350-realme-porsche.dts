@@ -122,7 +122,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&qup_i2c4_default>;
+		pinctrl-0 = <&i2c4_default>;
 
 	        touchscreen: focaltech@38 {
                         compatible = "focaltech,ft3658u";
@@ -1140,6 +1140,13 @@
 		drive-strength = <16>;
 		bias-pull-down;
 		output-low;
+	};
+
+	i2c4_default: i2c4-default {
+		pins = "gpio20", "gpio21";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
 	};
 
 	speaker_default_top: speaker-top-state {

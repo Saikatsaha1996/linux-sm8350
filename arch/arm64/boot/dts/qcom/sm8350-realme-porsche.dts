@@ -115,7 +115,7 @@
 		regulator-boot-on;
 	};
 
-	touchscreen_gpio_i2c {
+	/*touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -141,7 +141,7 @@
                         touchscreen-size-y = <2400>;
                         focaltech,max-touch-number = <5>;
                 };
-        };
+        };*/
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
@@ -889,10 +889,10 @@
 	status = "okay";
 };
 
-&qup_i2c4_default {
+/*&qup_i2c4_default {
 	function = "gpio";
 	bias-disable;
-};
+};*/
 
 /* For bug we have to disabled crypto & bam */
 &cryptobam {

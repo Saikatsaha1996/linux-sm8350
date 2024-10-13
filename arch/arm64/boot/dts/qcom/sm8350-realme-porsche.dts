@@ -115,14 +115,14 @@
 		regulator-boot-on;
 	};
 
-	/*touchscreen_gpio_i2c {
+	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&i2c4_default>;
+		pinctrl-0 = <&qup_i2c4_default>;
 
 	        touchscreen: focaltech@38 {
                         compatible = "focaltech,ft3658u";
@@ -141,7 +141,7 @@
                         touchscreen-size-y = <2400>;
                         focaltech,max-touch-number = <5>;
                 };
-        };*/
+        };
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
@@ -840,10 +840,8 @@
        fsa4480: typec-mux@42 {
 		compatible = "fcs,fsa4480";
 		reg = <0x42>;
-		interrupts-extended = <&tlmm 116 IRQ_TYPE_LEVEL_LOW>;
+		interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
 		vcc-supply = <&vreg_bob>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&fsa_default>;
 		mode-switch;
 		orientation-switch;
 		port {
@@ -854,7 +852,7 @@
         };
 };
 
-&i2c5 {
+/*&i2c5 {
 	clock-frequency = <400000>;
 	status = "okay";
         #address-cells = <1>;
@@ -877,6 +875,23 @@
                 touchscreen-size-y = <2400>;
                 focaltech,max-touch-number = <5>;
         };
+};*/
+
+&gpi_dma0 {
+	status = "okay";
+};
+
+&gpi_dma1 {
+	status = "okay";
+};
+
+&gpi_dma2 {
+	status = "okay";
+};
+
+&qup_i2c4_default {
+	function = "gpio";
+	bias-disable;
 };
 
 /* For bug we have to disabled crypto & bam */
@@ -914,18 +929,6 @@
 };
 
 &qupv3_id_2 {
-	status = "okay";
-};
-
-&gpi_dma0 {
-	status = "okay";
-};
-
-&gpi_dma1 {
-	status = "okay";
-};
-
-&gpi_dma2 {
 	status = "okay";
 };
 
@@ -1142,12 +1145,12 @@
 		output-low;
 	};
 
-	i2c4_default: i2c4-default {
+	/*i2c4_default: i2c4-default {
 		pins = "gpio20", "gpio21";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-	};
+	};*/
 
 	speaker_default_top: speaker-top-state {
 		active-pins {

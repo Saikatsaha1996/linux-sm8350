@@ -31,7 +31,6 @@
         chassis-type = "handset";
 
 	aliases {
-                hsuart0 = &uart18;
                 display0 = &panel0;
 	};
 
@@ -287,11 +286,6 @@
                 energy-full-design-microwatt-hours = <18500000>;
                 charge-full-design-microamp-hours = <5000000>;
         };
-};
-
-&adsp {
-	status = "okay";
-	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
 &apps_rsc {
@@ -692,6 +686,11 @@
 	};
 };
 
+&adsp {
+	status = "okay";
+	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
+};
+
 &cdsp {
 	status = "okay";
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
@@ -769,7 +768,7 @@
         #size-cells = <0>;
 
 	fuel-gauge@55 {
-		compatible = "ti,bq27541";
+		compatible = "ti,bq27411";
 		reg = <0x55>;
 		monitored-battery = <&battery>;
 	};
@@ -947,22 +946,6 @@
         };
 };
 
-&uart18 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_default>;
-        status = "okay";
-        bluetooth {
-                compatible = "qcom,qca6390-bt";
-
-                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                vddaon-supply = <&vreg_pmu_aon_0p59>;
-                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
-                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-        };
-};
-
 &ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
@@ -1137,6 +1120,22 @@
 			bias-pull-down;
                         input-enable;
 		};
+        };
+};
+
+&uart18 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&qup_uart18_default>;
+        status = "okay";
+        bluetooth {
+                compatible = "qcom,qca6390-bt";
+
+                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                vddaon-supply = <&vreg_pmu_aon_0p59>;
+                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
+                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };
 };
 

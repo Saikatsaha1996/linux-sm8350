@@ -115,7 +115,7 @@
 		regulator-boot-on;
 	};
 
-	touchscreen_gpio_i2c {
+	/*touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
 		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
@@ -141,7 +141,7 @@
                         touchscreen-size-y = <2400>;
                         focaltech,max-touch-number = <5>;
                 };
-        };
+        };*/
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
@@ -732,6 +732,68 @@
 	status = "okay";
 };
 
+&dispcc {
+	status = "okay";
+};
+
+&gmu {
+        status = "okay";
+        firmware-name = "qcom/a660_gmu.bin";
+};
+
+&gpu {
+        status = "okay";
+        zap-shader {
+                memory-region = <&pil_gpu_mem>;
+                firmware-name = "qcom/a660_zap.mbn";
+        };
+};
+
+&mdss {
+        status = "okay";
+};
+
+&mdss_mdp {
+        status = "okay";
+};
+
+&mdss_dp {
+        status = "disabled";
+};
+
+&mdss_dsi0 {
+        status = "okay";
+        vdda-supply = <&pm8350_l6>;
+        panel0: panel@0 {
+                compatible = "mdss,samsung-ams662zs01";
+                reg = <0>;
+                vddio-supply = <&panel_supply_vddio>;
+                vddr-supply = <&panel_supply_vddr>;
+                vddi-supply = <&panel_supply_vddi>;
+                vdd-supply = <&panel_supply_vdd>;
+                reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+                pinctrl-names = "default", "sleep";
+                pinctrl-0 = <&sde_dsi_active &sde_te_active>;
+                pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
+                status = "okay";
+                port {
+                        panel_in: endpoint {
+                                remote-endpoint = <&mdss_dsi0_out>;
+                        };
+                };
+        };
+};
+
+&mdss_dsi0_out {
+        data-lanes = <0 1 2 3>;
+        remote-endpoint = <&panel_in>;
+};
+
+&mdss_dsi0_phy {
+        status = "okay";
+        vdds-supply = <&pm8350_l5>;
+};
+
 &i2c2 {
 
 	clock-frequency = <100000>;
@@ -789,11 +851,10 @@
 				remote-endpoint = <&pmic_glink_sbu>;
 			};
 		};
-       };
+        };
 };
 
-/*&i2c5 {
-
+&i2c5 {
 	clock-frequency = <400000>;
 	status = "okay";
         #address-cells = <1>;
@@ -816,7 +877,7 @@
                 touchscreen-size-y = <2400>;
                 focaltech,max-touch-number = <5>;
         };
-};*/
+};
 
 /* For bug we have to disabled crypto & bam */
 &cryptobam {
@@ -938,68 +999,6 @@
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
 	status = "okay";
-};
-
-&dispcc {
-	status = "okay";
-};
-
-&gmu {
-        status = "okay";
-        firmware-name = "qcom/a660_gmu.bin";
-};
-
-&gpu {
-        status = "okay";
-        zap-shader {
-                memory-region = <&pil_gpu_mem>;
-                firmware-name = "qcom/a660_zap.mbn";
-        };
-};
-
-&mdss {
-        status = "okay";
-};
-
-&mdss_mdp {
-        status = "okay";
-};
-
-&mdss_dp {
-        status = "disabled";
-};
-
-&mdss_dsi0 {
-        status = "okay";
-        vdda-supply = <&pm8350_l6>;
-        panel0: panel@0 {
-                compatible = "mdss,samsung-ams662zs01";
-                reg = <0>;
-                vddio-supply = <&panel_supply_vddio>;
-                vddr-supply = <&panel_supply_vddr>;
-                vddi-supply = <&panel_supply_vddi>;
-                vdd-supply = <&panel_supply_vdd>;
-                reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
-                pinctrl-names = "default", "sleep";
-                pinctrl-0 = <&sde_dsi_active &sde_te_active>;
-                pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
-                status = "okay";
-                port {
-                        panel_in: endpoint {
-                                remote-endpoint = <&mdss_dsi0_out>;
-                        };
-                };
-        };
-};
-
-&mdss_dsi0_out {
-        data-lanes = <0 1 2 3>;
-        remote-endpoint = <&panel_in>;
-};
-
-&mdss_dsi0_phy {
-        status = "okay";
-        vdds-supply = <&pm8350_l5>;
 };
 
 &uart2 {

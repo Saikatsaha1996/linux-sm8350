@@ -1125,7 +1125,7 @@
 
 &uart18 {
         pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_default>;
+        pinctrl-0 = <&qup_uart18_4pin>;
         status = "okay";
         bluetooth {
                 compatible = "qcom,qca6390-bt";

@@ -117,12 +117,12 @@
 
 	touchscreen_gpio_i2c {
 		compatible = "i2c-gpio";
-		sda-gpios = <&tlmm 24 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
-		scl-gpios = <&tlmm 25 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		sda-gpios = <&tlmm 20 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 21 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&qup_i2c5_default>;
+		pinctrl-0 = <&qup_i2c4_default>;
 
 	        touchscreen: focaltech@38 {
                         compatible = "focaltech,ft3658u";
@@ -732,7 +732,7 @@
 	status = "okay";
 };
 
-&i2c0 {
+&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -1214,6 +1214,7 @@
 };
 
 &usb_1 {
+	qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
 

@@ -32,6 +32,8 @@
 
 	aliases {
                 display0 = &panel0;
+		serial0 = &uart2;
+		serial1 = &uart18;
 	};
 
 	chosen {
@@ -702,64 +704,6 @@
 	status = "okay";
 };
 
-&gmu {
-        status = "okay";
-        firmware-name = "qcom/a660_gmu.bin";
-};
-
-&gpu {
-        status = "okay";
-        zap-shader {
-                memory-region = <&pil_gpu_mem>;
-                firmware-name = "qcom/a660_zap.mbn";
-        };
-};
-
-&mdss {
-        status = "okay";
-};
-
-&mdss_mdp {
-        status = "okay";
-};
-
-&mdss_dp {
-        status = "disabled";
-};
-
-&mdss_dsi0 {
-        status = "okay";
-        vdda-supply = <&pm8350_l6>;
-        panel0: panel@0 {
-                compatible = "mdss,samsung-ams662zs01";
-                reg = <0>;
-                vddio-supply = <&panel_supply_vddio>;
-                vddr-supply = <&panel_supply_vddr>;
-                vddi-supply = <&panel_supply_vddi>;
-                vdd-supply = <&panel_supply_vdd>;
-                reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
-                pinctrl-names = "default", "sleep";
-                pinctrl-0 = <&sde_dsi_active &sde_te_active>;
-                pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
-                status = "okay";
-                port {
-                        panel_in: endpoint {
-                                remote-endpoint = <&mdss_dsi0_out>;
-                        };
-                };
-        };
-};
-
-&mdss_dsi0_out {
-        data-lanes = <0 1 2 3>;
-        remote-endpoint = <&panel_in>;
-};
-
-&mdss_dsi0_phy {
-        status = "okay";
-        vdds-supply = <&pm8350_l5>;
-};
-
 &i2c2 {
 
 	clock-frequency = <100000>;
@@ -931,6 +875,64 @@
 	status = "okay";
 };
 
+&gmu {
+        status = "okay";
+        firmware-name = "qcom/a660_gmu.bin";
+};
+
+&gpu {
+        status = "okay";
+        zap-shader {
+                memory-region = <&pil_gpu_mem>;
+                firmware-name = "qcom/a660_zap.mbn";
+        };
+};
+
+&mdss {
+        status = "okay";
+};
+
+&mdss_mdp {
+        status = "okay";
+};
+
+&mdss_dp {
+        status = "disabled";
+};
+
+&mdss_dsi0 {
+        status = "okay";
+        vdda-supply = <&pm8350_l6>;
+        panel0: panel@0 {
+                compatible = "mdss,samsung-ams662zs01";
+                reg = <0>;
+                vddio-supply = <&panel_supply_vddio>;
+                vddr-supply = <&panel_supply_vddr>;
+                vddi-supply = <&panel_supply_vddi>;
+                vdd-supply = <&panel_supply_vdd>;
+                reset-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+                pinctrl-names = "default", "sleep";
+                pinctrl-0 = <&sde_dsi_active &sde_te_active>;
+                pinctrl-1 = <&sde_dsi_suspend &sde_te_suspend>;
+                status = "okay";
+                port {
+                        panel_in: endpoint {
+                                remote-endpoint = <&mdss_dsi0_out>;
+                        };
+                };
+        };
+};
+
+&mdss_dsi0_out {
+        data-lanes = <0 1 2 3>;
+        remote-endpoint = <&panel_in>;
+};
+
+&mdss_dsi0_phy {
+        status = "okay";
+        vdds-supply = <&pm8350_l5>;
+};
+
 &pcie0 {
         status = "okay";
         pinctrl-names = "default";
@@ -963,6 +965,10 @@
         vdda-phy-supply = <&pm8350_l5>;
         vdda-pll-supply = <&pm8350_l6>;
 	
+};
+
+&uart18 {
+        status = "okay";
 };
 
 &uart18 {

@@ -279,14 +279,14 @@
 		};
 	};
 
-        battery: battery {
+        /*battery: battery {
                 compatible = "simple-battery";
 		device-chemistry = "lithium-ion";
                 voltage-min-design-microvolt = <3200000>;
                 voltage-max-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <18500000>;
                 charge-full-design-microamp-hours = <5000000>;
-        };
+        };*/
 };
 
 &adsp {
@@ -703,7 +703,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -715,7 +715,7 @@
 		reg = <0x55>;
 		monitored-battery = <&battery>;
 	};
-};
+};*/
 
 &i2c4 {
 	clock-frequency = <400000>;
@@ -933,9 +933,9 @@
 };
 
 &uart18 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_default>;
         status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&qup_uart18_cts>;
         bluetooth {
                 compatible = "qcom,qca6390-bt";
                 vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;

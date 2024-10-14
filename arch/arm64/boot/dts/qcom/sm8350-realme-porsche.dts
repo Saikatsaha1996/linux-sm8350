@@ -32,7 +32,6 @@
 
 	aliases {
                 display0 = &panel0;
-		hsuart0 = &uart18;
 	};
 
 	chosen {

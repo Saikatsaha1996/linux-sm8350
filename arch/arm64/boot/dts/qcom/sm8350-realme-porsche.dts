@@ -262,12 +262,12 @@
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
-                                port@1 {
+                                /*port@1 {
                                         reg = <1>;
                                         pmic_glink_ss_in: endpoint {
                                                 remote-endpoint = <&usb_1_qmpphy_out>;
                                         };
-                                };
+                                };*/
 				port@2 {
 					reg = <2>;
 					pmic_glink_sbu: endpoint {
@@ -278,18 +278,19 @@
 		};
 	};
 
-        /*battery: battery {
+        battery: battery {
                 compatible = "simple-battery";
 		device-chemistry = "lithium-ion";
                 voltage-min-design-microvolt = <3200000>;
                 voltage-max-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <18500000>;
                 charge-full-design-microamp-hours = <5000000>;
-        };*/
+        };
 };
 
 &adsp {
 	status = "okay";
+        memory-region = <&pil_adsp_mem>;
 	firmware-name = "qcom/sm8350/porsche/adsp.mbn";
 };
 
@@ -693,6 +694,7 @@
 
 &cdsp {
 	status = "okay";
+        memory-region = <&pil_cdsp_mem>;
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
@@ -702,7 +704,7 @@
 	status = "okay";
 };
 
-/*&i2c2 {
+&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -714,7 +716,7 @@
 		reg = <0x55>;
 		monitored-battery = <&battery>;
 	};
-};*/
+};
 
 &i2c4 {
 	clock-frequency = <400000>;
@@ -828,6 +830,7 @@
 };
 
 &slpi {
+        memory-region = <&pil_slpi_mem>;
 	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
 	status = "okay";
 };
@@ -1193,7 +1196,7 @@
         status = "okay";
 };
 
-&usb_1_qmpphy {
+/*&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
         status = "okay";
@@ -1201,4 +1204,4 @@
 
 &usb_1_qmpphy_out {
 	remote-endpoint = <&pmic_glink_ss_in>;
-};
+};*/

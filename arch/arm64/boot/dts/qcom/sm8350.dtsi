@@ -3045,14 +3045,14 @@
 				bias-disable;
 			};
 
-			qup_uart18_default: qup-uart18-default-state {
+			/*qup_uart18_default: qup-uart18-default-state {
 				pins = "gpio68", "gpio69";
 				function = "qup18";
 				drive-strength = <2>;
 				bias-disable;
-			};
+			};*/
 
-			qup_uart18_4pin: qup-uart18-4pin-state {
+			qup_uart18_default: qup-uart18-default-state {
 				cts-pins {
 					pins = "gpio68";
 					function = "qup18";

@@ -760,7 +760,7 @@
         vdds-supply = <&pm8350_l5>;
 };
 
-&i2c2 {
+/*&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -772,7 +772,7 @@
 		reg = <0x55>;
 		monitored-battery = <&battery>;
 	};
-};
+};*/
 
 &i2c4 {
 	clock-frequency = <400000>;

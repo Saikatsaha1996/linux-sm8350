@@ -32,8 +32,7 @@
 
 	aliases {
                 display0 = &panel0;
-		serial0 = &uart2;
-		serial1 = &uart18;
+		hsuart0 = &uart18;
 	};
 
 	chosen {
@@ -933,6 +932,23 @@
         vdds-supply = <&pm8350_l5>;
 };
 
+&uart18 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&qup_uart18_4pin>;
+        status = "okay";
+        bluetooth {
+                compatible = "qcom,qca6390-bt";
+                enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
+                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
+                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                vddaon-supply = <&vreg_pmu_aon_0p59>;
+                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
+                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+        };
+};
+
 &pcie0 {
         status = "okay";
         pinctrl-names = "default";
@@ -965,26 +981,6 @@
         vdda-phy-supply = <&pm8350_l5>;
         vdda-pll-supply = <&pm8350_l6>;
 	
-};
-
-&uart18 {
-        status = "okay";
-};
-
-&uart18 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_4pin>;
-        status = "okay";
-        bluetooth {
-                compatible = "qcom,qca6390-bt";
-
-                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                vddaon-supply = <&vreg_pmu_aon_0p59>;
-                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
-                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-        };
 };
 
 &tlmm {

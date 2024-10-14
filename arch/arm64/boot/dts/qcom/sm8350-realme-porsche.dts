@@ -1163,6 +1163,14 @@
 };
 
 &usb_1 {
+	/*
+	 * Bug in interconnect driver breaks USB; RPMh is unable to power on
+	 * USB regulators without this.
+	 */
+	/delete-property/ interconnects;
+	/delete-property/ interconnect-names;
+
+	/* USB3 seems broken (though it's enabled downstream?) */
         qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
@@ -1186,12 +1194,12 @@
         status = "okay";
 };
 
-&usb_1_qmpphy {
+/*&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
         status = "okay";
 };
 
-/*&usb_1_qmpphy_out {
+&usb_1_qmpphy_out {
 	remote-endpoint = <&pmic_glink_ss_in>;
 };*/

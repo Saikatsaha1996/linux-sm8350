@@ -31,8 +31,9 @@
         chassis-type = "handset";
 
 	aliases {
+		serial0 = &uart2;
+		serial1 = &uart18;
                 display0 = &panel0;
-                /*hsuart0 = &uart18;*/
 	};
 
 	chosen {
@@ -278,14 +279,14 @@
 		};
 	};
 
-        battery: battery {
+        /*battery: battery {
                 compatible = "simple-battery";
 		device-chemistry = "lithium-ion";
                 voltage-min-design-microvolt = <3200000>;
                 voltage-max-design-microvolt = <4200000>;
                 energy-full-design-microwatt-hours = <18500000>;
                 charge-full-design-microamp-hours = <5000000>;
-        };
+        };*/
 };
 
 &adsp {
@@ -704,7 +705,7 @@
 	status = "okay";
 };
 
-&i2c2 {
+/*&i2c2 {
 
 	clock-frequency = <100000>;
 	status = "okay";
@@ -716,7 +717,7 @@
 		reg = <0x55>;
 		monitored-battery = <&battery>;
 	};
-};
+};*/
 
 &i2c4 {
 	clock-frequency = <400000>;
@@ -898,6 +899,25 @@
 	status = "okay";
 };
 
+&uart2 {
+        status = "okay";
+};
+
+&uart18 {
+        status = "okay";
+
+        bluetooth {
+                compatible = "qcom,qca6390-bt";
+
+                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                vddaon-supply = <&vreg_pmu_aon_0p59>;
+                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
+                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+        };
+};
+
 &qupv3_id_0 {
 	status = "okay";
 };
@@ -966,21 +986,6 @@
 &mdss_dsi0_phy {
         status = "okay";
         vdds-supply = <&pm8350_l5>;
-};
-
-&uart18 {
-        status = "okay";
-        pinctrl-names = "cts";
-        pinctrl-0 = <&qup_uart18_cts>;
-        bluetooth {
-                compatible = "qcom,qca6390-bt";
-                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                vddaon-supply = <&vreg_pmu_aon_0p59>;
-                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
-                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-        };
 };
 
 &tlmm {

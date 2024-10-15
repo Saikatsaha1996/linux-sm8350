@@ -31,8 +31,8 @@
         chassis-type = "handset";
 
 	aliases {
-		serial0 = &uart2;
-		serial1 = &uart18;
+		/*serial0 = &uart2;
+		serial1 = &uart18;*/
                 display0 = &panel0;
 	};
 

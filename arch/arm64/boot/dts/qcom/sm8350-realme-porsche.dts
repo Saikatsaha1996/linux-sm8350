@@ -31,8 +31,6 @@
         chassis-type = "handset";
 
 	aliases {
-		/*serial0 = &uart2;
-		serial1 = &uart18;*/
                 display0 = &panel0;
 	};
 
@@ -699,12 +697,6 @@
 	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
-&mpss {
-        memory-region = <&pil_modem_mem>;
-	firmware-name = "qcom/sm8350/porsche/modem.mbn";
-	status = "okay";
-};
-
 &i2c2 {
 
 	clock-frequency = <100000>;
@@ -800,132 +792,11 @@
 	status = "okay";
 };
 
-/* For bug we have to disabled crypto & bam */
-&cryptobam {
-	status = "disabled";
-};
-
-&crypto {
-	status = "disabled";
-};
-
-&pon_pwrkey {
-	status = "okay";
-};
-
-&pon_resin {
-	linux,code = <KEY_VOLUMEUP>;
-	status = "okay";
-};
-
-&pmk8350_adc_tm {
-	status = "okay";
-};
-
-&pmk8350_rtc {
-	status = "okay";
-};
-
-&removed_mem {
-        reg = <0x0 0xd8800000 0x0 0x8e00000>;
-};
-
-&slpi {
-        memory-region = <&pil_slpi_mem>;
-	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
-	status = "okay";
-};
-
 &ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
 	status = "okay";
-};
-
-&qupv3_id_0 {
-	status = "okay";
-};
-
-&qupv3_id_1 {
-	status = "okay";
-};
-
-&qupv3_id_2 {
-	status = "okay";
-};
-
-&pcie0 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-};
-
-&pcie0_phy {
-        status = "okay";
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-	
-};
-
-&pcieport0 {
-	wifi@0 {
-		compatible = "pci17cb,1101";
-		reg = <0x10000 0x0 0x0 0x0 0x0>;
-
-		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-		vddaon-supply = <&vreg_pmu_aon_0p59>;
-		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
-		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
-	        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-	};
-};
-
-&pm8350_gpios {
-	key_vol_down_default: key_vol_down_default {
-		pins = "gpio6";
-		function = "normal";
-		input-enable;
-		bias-pull-up;
-		power-source = <1>;
-	};
-};
-
-&pm8350c_gpios {
-        otg_en_active: otg_en_active {
-                pins = "gpio1";
-                function = "normal";
-                input-disable;
-                output-high;
-                bias-disable;
-                power-source = <1>;
-                drive-strength = <2>;
-        };
-};
-
-&uart2 {
-        status = "okay";
-};
-
-&uart18 {
-        status = "okay";
-
-        bluetooth {
-                compatible = "qcom,qca6390-bt";
-
-                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                vddaon-supply = <&vreg_pmu_aon_0p59>;
-                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
-                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-        };
 };
 
 &gmu {
@@ -984,6 +855,128 @@
 &mdss_dsi0_phy {
         status = "okay";
         vdds-supply = <&pm8350_l5>;
+};
+
+/* For bug we have to disabled crypto & bam */
+&cryptobam {
+	status = "disabled";
+};
+
+&crypto {
+	status = "disabled";
+};
+
+&mpss {
+        memory-region = <&pil_modem_mem>;
+	firmware-name = "qcom/sm8350/porsche/modem.mbn";
+	status = "okay";
+};
+
+&pon_pwrkey {
+	status = "okay";
+};
+
+&pon_resin {
+	linux,code = <KEY_VOLUMEUP>;
+	status = "okay";
+};
+
+&pmk8350_adc_tm {
+	status = "okay";
+};
+
+&pmk8350_rtc {
+	status = "okay";
+};
+
+&pcie0 {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+};
+
+&pcie0_phy {
+        status = "okay";
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+	
+};
+
+&pcieport0 {
+	wifi@0 {
+		compatible = "pci17cb,1101";
+		reg = <0x10000 0x0 0x0 0x0 0x0>;
+
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+	        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+	};
+};
+
+&pm8350_gpios {
+	key_vol_down_default: vol-down-default {
+		pins = "gpio6";
+		function = "normal";
+		input-enable;
+		bias-pull-up;
+		power-source = <1>;
+	};
+
+	gpio1_adc_default: gpio1-adc-default {
+		pins = "gpio1";
+		function = "normal";
+		bias-high-impedance;
+		bias-disable;
+	};
+
+	gpio3_adc_default: gpio3-adc-default {
+		pins = "gpio3";
+		function = "normal";
+		bias-high-impedance;
+		bias-disable;
+	};
+};
+
+&pm8350c_gpios {
+        otg_en_active: otg_en_active {
+                pins = "gpio1";
+                function = "normal";
+                input-disable;
+                output-high;
+                bias-disable;
+                power-source = <1>;
+                drive-strength = <2>;
+        };
+};
+
+&qupv3_id_0 {
+	status = "okay";
+};
+
+&qupv3_id_1 {
+	status = "okay";
+};
+
+&qupv3_id_2 {
+	status = "okay";
+};
+
+&removed_mem {
+        reg = <0x0 0xd8800000 0x0 0x8e00000>;
+};
+
+&slpi {
+        memory-region = <&pil_slpi_mem>;
+	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
+	status = "okay";
 };
 
 &tlmm {
@@ -1141,6 +1134,25 @@
 			bias-pull-down;
                         input-enable;
 		};
+        };
+};
+
+&uart2 {
+        status = "okay";
+};
+
+&uart18 {
+        status = "okay";
+
+        bluetooth {
+                compatible = "qcom,qca6390-bt";
+
+                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                vddaon-supply = <&vreg_pmu_aon_0p59>;
+                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
+                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };
 };
 

@@ -4,6 +4,7 @@
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
 #include <dt-bindings/dma/qcom-gpi.h>
+#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
 #define SMB139x_1_SID 0x0b
 #define SMB139x_2_SID 0x0c
 #include <dt-bindings/iio/qcom,spmi-adc7-smb139x.h>

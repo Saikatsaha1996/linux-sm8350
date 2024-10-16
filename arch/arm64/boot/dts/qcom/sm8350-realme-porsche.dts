@@ -691,12 +691,6 @@
 	};
 };
 
-&cdsp {
-	status = "okay";
-        memory-region = <&pil_cdsp_mem>;
-	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
-};
-
 &i2c2 {
 
 	clock-frequency = <100000>;
@@ -780,7 +774,40 @@
         };
 };
 
+&uart2 {
+        status = "okay";
+};
+
+&uart18 {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&qup_uart18_pin>;
+
+        bluetooth {
+                compatible = "qcom,qca6390-bt";
+
+                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                vddaon-supply = <&vreg_pmu_aon_0p59>;
+                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
+                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+        };
+};
+
+&gpi_dma2 {
+	status = "okay";
+};
+
+&qupv3_id_2 {
+	status = "okay";
+};
+
 &gpi_dma0 {
+	status = "okay";
+};
+
+&qupv3_id_0 {
 	status = "okay";
 };
 
@@ -788,14 +815,7 @@
 	status = "okay";
 };
 
-&gpi_dma2 {
-	status = "okay";
-};
-
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
+&qupv3_id_1 {
 	status = "okay";
 };
 
@@ -864,12 +884,6 @@
 
 &crypto {
 	status = "disabled";
-};
-
-&mpss {
-        memory-region = <&pil_modem_mem>;
-	firmware-name = "qcom/sm8350/porsche/modem.mbn";
-	status = "okay";
 };
 
 &pon_pwrkey {
@@ -957,26 +971,33 @@
         };
 };
 
-&qupv3_id_0 {
-	status = "okay";
-};
-
-&qupv3_id_1 {
-	status = "okay";
-};
-
-&qupv3_id_2 {
-	status = "okay";
-};
-
 &removed_mem {
         reg = <0x0 0xd8800000 0x0 0x8e00000>;
+};
+
+&ipa {
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/porsche/ipa_fws.mbn";
+	status = "okay";
+};
+
+&mpss {
+        memory-region = <&pil_modem_mem>;
+	firmware-name = "qcom/sm8350/porsche/modem.mbn";
+	status = "okay";
 };
 
 &slpi {
         memory-region = <&pil_slpi_mem>;
 	firmware-name = "qcom/sm8350/porsche/slpi.mbn";
 	status = "okay";
+};
+
+&cdsp {
+	status = "okay";
+        memory-region = <&pil_cdsp_mem>;
+	firmware-name = "qcom/sm8350/porsche/cdsp.mbn";
 };
 
 &tlmm {
@@ -1134,27 +1155,6 @@
 			bias-pull-down;
                         input-enable;
 		};
-        };
-};
-
-&uart2 {
-        status = "okay";
-};
-
-&uart18 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_pin>;
-
-        bluetooth {
-                compatible = "qcom,qca6390-bt";
-
-                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                vddaon-supply = <&vreg_pmu_aon_0p59>;
-                vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
-                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };
 };
 

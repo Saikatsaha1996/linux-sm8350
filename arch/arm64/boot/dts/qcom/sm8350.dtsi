@@ -3045,32 +3045,32 @@
 				bias-disable;
 			};
 
-			/*qup_uart18_default: qup-uart18-default-state {
+			qup_uart18_default: qup-uart18-default-state {
 				pins = "gpio68", "gpio69";
 				function = "qup18";
 				drive-strength = <2>;
 				bias-disable;
-			};*/
+			};
 
-			qup_uart18_default: qup-uart18-default-state {
+			qup_uart18_pin: qup-uart18-pin-state {
 				cts-pins {
 					pins = "gpio68";
-					function = "qup18";
+					function = "gpio";
 				};
 
 				rts-pins {
 					pins = "gpio69";
-					function = "qup18";
+					function = "gpio";
 				};
 
 				tx-pins {
 					pins = "gpio70";
-					function = "qup18";
+					function = "gpio";
 				};
 
 				rx-pins {
 					pins = "gpio71";
-					function = "qup18";
+					function = "gpio";
 				};
 			};
 

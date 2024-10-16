@@ -1190,7 +1190,6 @@
         status = "okay";
         vdda-phy-supply = <&pm8350_l5>;
         vdda-pll-supply = <&pm8350_l6>;
-	power-domains = <&qca639x>;
 };
 
 &pcieport0 {

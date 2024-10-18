@@ -1329,6 +1329,50 @@
                 bias-pull-up;
         };
 
+        qup_uart18_pin: qup-uart18-pin-state {
+                default-cts-pin {
+                        pins = "gpio68";
+                        function = "gpio";
+                        drive-strength = <2>;
+                };
+                default-rts-rx-pin {
+                        pins = "gpio69", "gpio71";
+                        function = "gpio";
+                        drive-strength = <2>;
+                        bias-pull-down;
+                };
+                default-tx-pin {
+                        pins = "gpio70";
+                        function = "gpio";
+                        drive-strength = <2>;
+                        bias-pull-up;
+                };
+                cts-rx-pin {
+                        pins = "gpio68", "gpio71";
+                        function = "qup18";
+                        drive-strength = <2>;
+                        bias-disable;
+                };
+                rts-pin {
+                        pins = "gpio69";
+                        function = "qup18";
+                        drive-strength = <2>;
+                        bias-pull-down;
+                };
+                tx-pin {
+                        pins = "gpio70";
+                        function = "qup18";
+                        drive-strength = <2>;
+                        bias-pull-up;
+                };
+                usb2-id-pin {
+                        pins = "gpio51";
+                        function = "gpio";
+                        input-enable;
+                        bias-pull-up;
+               };
+        };
+
 	pcie0_default: pcie0-default-state {
 		perst-pins {
 			pins = "gpio94";

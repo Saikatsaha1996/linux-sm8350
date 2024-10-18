@@ -139,8 +139,8 @@
         wcnss_regulator: wcnss-wlan-regulator {
                 compatible = "regulator-fixed";
                 regulator-name = "wcnss_regulator";
-                regulator-min-microvolt = <1300000>;
-                regulator-max-microvolt = <1300000>;
+                regulator-min-microvolt = <1900000>;
+                regulator-max-microvolt = <1900000>;
                 enable-active-high;
                 wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
                 pinctrl-names = "default";
@@ -165,7 +165,7 @@
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
 
-                /*regulators {
+                regulators {
                         vreg_pmu_rfa_cmn: ldo0 {
                                 regulator-name = "vreg_pmu_rfa_cmn";
                         };
@@ -205,7 +205,7 @@
                         vreg_pmu_pcie_1p8: ldo9 {
                                 regulator-name = "vreg_pmu_pcie_1p8";
                         };
-                };*/
+                };
         };
 
         gpio_keys {
@@ -761,7 +761,7 @@
         pinctrl-names = "default";
         pinctrl-0 = <&qup_uart18_pin>;
 
-        /*bluetooth {
+        bluetooth {
                 compatible = "qcom,qca6390-bt";
 
                 vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
@@ -770,7 +770,7 @@
                 vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
                 vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
                 vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-        };*/
+        };
 };
 
 &gpi_dma2 {
@@ -1183,7 +1183,7 @@
 	
 };
 
-/*&pcieport0 {
+&pcieport0 {
 	wifi@0 {
 		compatible = "pci17cb,1101";
 		reg = <0x10000 0x0 0x0 0x0 0x0>;
@@ -1198,7 +1198,7 @@
 		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
 	        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
 	};
-};*/
+};
 
 &pm8350_gpios {
 	key_vol_down_default: vol-down-default {

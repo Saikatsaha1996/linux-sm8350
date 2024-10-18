@@ -36,7 +36,7 @@
 
 	aliases {
                 display0 = &panel0;
-                serial0 = &uart2;
+                /*serial0 = &uart2;*/
                 hsuart0 = &uart18;
 	};
 
@@ -752,9 +752,9 @@
         };
 };
 
-&uart2 {
+/*&uart2 {
         status = "okay";
-};
+};*/
 
 &uart18 {
         status = "okay";

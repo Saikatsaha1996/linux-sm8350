@@ -1144,6 +1144,12 @@
 	};
 };
 
+&spmi_bus {
+        pmr735b: pmic@5 {
+                status = "disabled";
+        };
+};
+
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";

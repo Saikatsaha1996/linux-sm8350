@@ -36,7 +36,6 @@
 
 	aliases {
                 display0 = &panel0;
-                /*serial0 = &uart2;*/
                 hsuart0 = &uart18;
 	};
 
@@ -938,20 +937,7 @@
 	};
 };
 
-&pmk8350_sdam_2 {
-	status = "okay";
-	rtc_offset: rtc-offset@48 {
-		reg = <0x48 0x4>;
-	};
-};
-
 &pmk8350_rtc {
-	nvmem-cells = <&rtc_offset>;
-	nvmem-cell-names = "offset";
-	reg = <0x6100 0x100>, <0x6200 0x100>;
-	reg-names = "rtc", "alarm";
-	interrupts = <PMK8350_SID 0x62 0x1 IRQ_TYPE_EDGE_RISING>;
-
 	status = "okay";
 };
 

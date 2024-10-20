@@ -36,6 +36,7 @@
 
 	aliases {
                 display0 = &panel0;
+                serial0 = &uart2;
                 hsuart0 = &uart18;
 	};
 
@@ -253,15 +254,6 @@
 			};
 		};
 	};
-
-        /*battery: battery {
-                compatible = "simple-battery";
-		device-chemistry = "lithium-ion";
-                voltage-min-design-microvolt = <3200000>;
-                voltage-max-design-microvolt = <4200000>;
-                energy-full-design-microwatt-hours = <18500000>;
-                charge-full-design-microamp-hours = <5000000>;
-        };*/
 };
 
 &adsp {
@@ -668,20 +660,6 @@
 	};
 };
 
-/*&i2c2 {
-
-	clock-frequency = <100000>;
-	status = "okay";
-        #address-cells = <1>;
-        #size-cells = <0>;
-
-	fuel-gauge@55 {
-		compatible = "ti,bq27541";
-		reg = <0x55>;
-		monitored-battery = <&battery>;
-	};
-};*/
-
 &i2c4 {
 	clock-frequency = <400000>;
 	status = "okay";
@@ -751,9 +729,9 @@
         };
 };
 
-/*&uart2 {
+&uart2 {
         status = "okay";
-};*/
+};
 
 &uart18 {
         status = "okay";
@@ -875,6 +853,12 @@
 	status = "disabled";
 };
 
+&spmi_bus {
+        pmr735b: pmic@5 {
+                status = "disabled";
+        };
+};
+
 &pon_pwrkey {
 	status = "okay";
 };
@@ -887,54 +871,53 @@
 &pmk8350_adc_tm {
 	status = "okay";
 
-	pm8350-msm-therm@0 {
-		reg = <0>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
+        pm8350_msm_therm {
+                reg = <0x144>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 
-	pm8350-cam-flash-therm@1 {
-		reg = <1>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
+        pm8350_cam_flash_therm {
+                reg = <0x145>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 
-	pm8350-hot-pocket-therm@2 {
-		reg = <2>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
+        pm8350_hot_pocket_therm {
+                reg = <0x146>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 
-	pm8350-wide-rfc-therm@3 {
-		reg = <3>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
+        pm8350_wide_rfc_therm {
+                reg = <0x147>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 
-	pm8350-rear-tof-therm@4 {
-		reg = <4>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM5_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
+        pm8350_rear_tof_therm {
+                reg = <0x148>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 
-	/*pm8350b-usb-conn-therm@5 {
-		reg = <5>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_AMUX_THM4_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};*/
+        pm8350b_usb_conn_therm {
+                reg = <0x347>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 
-	pm8350b-wl-chg-therm@6 {
-		reg = <6>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
+        pm8350b_wl_chg_therm {
+                reg = <0x34b>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
+
+        pmk8350_xo_therm {
+                reg = <0x44>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <0xc8>;
+        };
 };
 
 &pmk8350_rtc {
@@ -942,213 +925,268 @@
 };
 
 &pmk8350_vadc {
-	pinctrl-0 = <&gpio1_adc_default>, <&gpio3_adc_default>;
-	pinctrl-names = "default";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pm8350_gpio2_default &pmk8350_pa5_therm_default &pm8350b_pa6_therm_default>;
 
-	channel@0 {
-		reg = <0x00>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmk8350_ref_gnd";
-	};
+        pmk8350_ref_gnd {
+                reg = <0x00>;
+                label = "pmk8350_ref_gnd";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@1 {
-		reg = <0x01>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmk8350_vref_1p25";
-	};
+        pmk8350_vref_1p25 {
+                reg = <0x01>;
+                label = "pmk8350_vref_1p25";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@3 {
-		reg = <0x03>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmk8350_die_temp";
-	};
+        pmk8350_die_temp {
+                reg = <0x03>;
+                label = "pmk8350_die_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@100 {
-		reg = <0x100>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_ref_gnd";
-	};
+        pmk8350_xo_therm {
+                reg = <0x44>;
+                label = "pmk8350_xo_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@101 {
-		reg = <0x101>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_vref_1p25";
-	};
+        pm8350_ref_gnd {
+                reg = <0x100>;
+                label = "pm8350_ref_gnd";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@103 {
-		reg = <0x103>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_die_temp";
-	};
+        pm8350_vref_1p25 {
+                reg = <0x101>;
+                label = "pm8350_vref_1p25";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@128 {
-		reg = <0x128>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <700>;
-		qcom,pre-scaling = <1 1>;
-		label = "gpio1_v";
-	};
+        pm8350_die_temp {
+                reg = <0x103>;
+                label = "pm8350_die_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@12b {
-		reg = <0x12b>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <700>;
-		qcom,pre-scaling = <1 1>;
-		label = "gpio3_v";
-	};
+        pm8350_vph_pwr {
+                reg = <0x18e>;
+                label = "pm8350_vph_pwr";
+                qcom,pre-scaling = <1 3>;
+        };
 
-	channel@144 {
-		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_msm_therm";
-	};
+        pm8350b_ref_gnd {
+                reg = <0x300>;
+                label = "pm8350b_ref_gnd";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@145 {
-		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_cam_flash_therm";
-	};
+        pm8350b_vref_1p25 {
+                reg = <0x301>;
+                label = "pm8350b_vref_1p25";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@146 {
-		reg = <PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_hot_pocket_therm";
-	};
+        pm8350b_die_temp {
+                reg = <0x303>;
+                label = "pm8350b_die_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@147 {
-		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_wide_rfc_therm";
-	};
+        pm8350b_vph_pwr {
+                reg = <0x38e>;
+                label = "pm8350b_vph_pwr";
+                qcom,pre-scaling = <1 3>;
+        };
 
-	channel@148 {
-		reg = <PM8350_ADC7_AMUX_THM5_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_rear_tof_therm";
-	};
+        pm8350b_vbat_sns {
+                reg = <0x38f>;
+                label = "pm8350b_vbat_sns";
+                qcom,pre-scaling = <1 3>;
+        };
 
-	channel@18e {
-		reg = <0x18e>;
-		qcom,pre-scaling = <1 3>;
-		label = "pm8350_vph_pwr";
-	};
+        pmr735a_ref_gnd {
+                reg = <0x400>;
+                label = "pmr735a_ref_gnd";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@300 {
-		reg = <0x300>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_ref_gnd";
-	};
+        pmr735a_vref_1p25 {
+                reg = <0x401>;
+                label = "pmr735a_vref_1p25";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@301 {
-		reg = <0x301>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_vref_1p25";
-	};
+        pmr735a_die_temp {
+                reg = <0x403>;
+                label = "pmr735a_die_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@303 {
-		reg = <0x303>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_die_temp";
-	};
+        pmr735b_ref_gnd {
+                reg = <0x500>;
+                label = "pmr735b_ref_gnd";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@310 {
-		reg = <PM8350B_ADC7_CHG_TEMP>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_chg_temp";
-	};
+        pmr735b_vref_1p25 {
+                reg = <0x501>;
+                label = "pmr735b_vref_1p25";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	/*channel@347 {
-		reg = <PM8350B_ADC7_AMUX_THM4_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_usb_conn_therm";
-	};*/
+        pmr735b_die_temp {
+                reg = <0x503>;
+                label = "pmr735b_die_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@34b {
-		reg = <PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_wl_chg_therm";
-	};
+        pm8350_msm_therm {
+                reg = <0x144>;
+                label = "pm8350_msm_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@38e {
-		reg = <0x38e>;
-		qcom,pre-scaling = <1 3>;
-		label = "pm8350b_vph_pwr";
-	};
+        pm8350_cam_flash_therm {
+                reg = <0x145>;
+                label = "pm8350_cam_flash_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@38f {
-		reg = <0x38f>;
-		qcom,pre-scaling = <1 3>;
-		label = "pm8350b_vbat_sns";
-	};
+        pm8350_hot_pocket_therm {
+                reg = <0x146>;
+                label = "pm8350_hot_pocket_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@400 {
-		reg = <0x400>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_ref_gnd";
-	};
+        pm8350_wide_rfc_therm {
+                reg = <0x147>;
+                label = "pm8350_wide_rfc_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@401 {
-		reg = <0x401>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_vref_1p25";
-	};
+        pm8350b_usb_conn_therm {
+                reg = <0x347>;
+                label = "pm8350b_usb_conn_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@403 {
-		reg = <0x403>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_die_temp";
-	};
+        pm8350b_wl_chg_therm {
+                reg = <0x34b>;
+                label = "pm8350b_wl_chg_therm";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@500 {
-		reg = <0x500>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735b_ref_gnd";
-	};
+        pm8350b_chg_temp {
+                reg = <0x310>;
+                label = "pm8350b_chg_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@501 {
-		reg = <0x501>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735b_vref_1p25";
-	};
+        pm8350b_iin_fb {
+                reg = <0x317>;
+                label = "pm8350b_iin_fb";
+                qcom,pre-scaling = <32 100>;
+        };
 
-	channel@503 {
-		reg = <0x503>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735b_die_temp";
-	};
+        pm8350b_ichg_fb {
+                reg = <0x3a1>;
+                label = "pm8350b_ichg_fb";
+                qcom,pre-scaling = <1000 300000>;
+        };
 
-	channel@b06 {
-		reg = <SMB139x_1_ADC7_SMB_TEMP>;
-		qcom,pre-scaling = <1 1>;
-		label = "smb139x_1_smb_temp";
-	};
+        smb139x_1_smb_temp {
+                reg = <0xb06>;
+                label = "smb139x_1_smb_temp";
+                qcom,pre-scaling = <1 1>;
+        };
 
-	channel@c06 {
-		reg = <SMB139x_2_ADC7_SMB_TEMP>;
-		qcom,pre-scaling = <1 1>;
-		label = "smb139x_2_smb_temp";
-	};
-};
+        smb139x_1_ichg_smb {
+                reg = <0xb18>;
+                label = "smb139x_1_ichg_smb";
+                qcom,pre-scaling = <16 100>;
+        };
 
-&spmi_bus {
-        pmr735b: pmic@5 {
-                status = "disabled";
+        smb139x_1_iin_smb {
+                reg = <0xb19>;
+                label = "smb139x_1_iin_smb";
+                qcom,pre-scaling = <32 100>;
+        };
+
+        smb139x_2_smb_temp {
+                reg = <0xc06>;
+                label = "smb139x_2_smb_temp";
+                qcom,pre-scaling = <1 1>;
+        };
+
+        smb139x_2_ichg_smb {
+                reg = <0xc18>;
+                label = "smb139x_2_ichg_smb";
+                qcom,pre-scaling = <16 100>;
+        };
+
+        smb139x_2_iin_smb {
+                reg = <0xc19>;
+                label = "smb139x_2_iin_smb";
+                qcom,pre-scaling = <32 100>;
+        };
+
+        pm8350_board_id {
+                reg = <0x10a>;
+                label = "pm8350_board_id";
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
+
+        pmk8350_pa_therm5 {
+                reg = <0x47>;
+                label = "pmk8350_pa_therm5";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
+
+        pm8350b_pa_therm6 {
+                reg = <0x34a>;
+                label = "pm8350b_pa_therm6";
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+                qcom,pre-scaling = <1 1>;
+        };
+
+        usb_temp_adc {
+                reg = <0x148>;
+                label = "usb_temp_adc";
+                qcom,pre-scaling = <1 1>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
+        };
+
+        usb_supplementary_temp_adc {
+                reg = <0x14b>;
+                label = "usb_supplementary_temp_adc";
+                qcom,pre-scaling = <1 1>;
+                qcom,ratiometric;
+                qcom,hw-settle-time = <200>;
         };
 };
+
+
 
 &mpss {
         memory-region = <&pil_modem_mem>;
@@ -1166,23 +1204,19 @@
         pinctrl-0 = <&pcie0_default>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        pcie@0 {
-                device_type = "pci";
-                reg = <0x0 0x0 0x0 0x0 0x0>;
-                wifi@0 {
-                        compatible = "pci17cb,1101";
-                        reg = <0x10000 0x0 0x0 0x0 0x0>;
+        wifi@0 {
+                compatible = "pci17cb,1101";
+                reg = <0x10000 0x0 0x0 0x0 0x0>;
 
-                        vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                        vddaon-supply = <&vreg_pmu_aon_0p59>;
-                        vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-                        vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
-                        vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                        vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                        vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-                        vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
-                        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-                };
+                vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                vddaon-supply = <&vreg_pmu_aon_0p59>;
+                vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+                vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+                vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+                vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+                vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
         };
 };
 
@@ -1191,6 +1225,20 @@
         vdda-phy-supply = <&pm8350_l5>;
         vdda-pll-supply = <&pm8350_l6>;
 	
+};
+
+&pmk8350_gpios {
+	pmk8350_pa5_therm_default: pmk8350-pa5-therm-default {
+		pins = "gpio3";
+		bias-high-impedance;
+	};
+};
+
+&pm8350b_gpios {
+	pm8350b_pa6_therm_default: pm8350b-pa6-therm-default {
+		pins = "gpio1";
+		bias-high-impedance;
+	};
 };
 
 &pm8350_gpios {
@@ -1202,7 +1250,7 @@
 		power-source = <1>;
 	};
 
-        sim2_high_default: sim2_high_default {
+        sim2_high_default: sim2-high-default {
                 pins = "gpio8";
                 function = "normal";
                 input-enable;
@@ -1210,19 +1258,23 @@
                 bias-pull-up;
         };
 
-	gpio1_adc_default: gpio1-adc-default {
+        pm8350_gpio2_default: pm8350-gpio2-default {
+		pins = "gpio2";
+		bias-high-impedance;
+	};
+
+	/delete-node/ pm8350_rear_tof_therm_default;
+	usbtemp_l_gpio_default: usbtemp-l-gpio-default {
 		pins = "gpio1";
 		function = "normal";
 		bias-high-impedance;
-		bias-disable;
-	};
+        };
 
-	gpio3_adc_default: gpio3-adc-default {
-		pins = "gpio3";
+	usbtemp_r_gpio_default: usbtemp-r-gpio-default {
+                pins = "gpio3";
 		function = "normal";
-		bias-high-impedance;
-		bias-disable;
-	};
+                bias-high-impedance;
+        };
 };
 
 &pm8350c_gpios {

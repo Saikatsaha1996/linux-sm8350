@@ -147,13 +147,10 @@
                 pinctrl-0 = <&wcnss_en>;
         };
 
-        qca6390: qca6390-pmu {
+        qca6390-pmu {
                 compatible = "qcom,qca6390-pmu";
-
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>, <&wlan_en_state>;
-                #power-domain-cells = <0>;
-
                 vddaon-supply = <&pmr735a_s2>;
                 vddpmu-supply = <&pmr735a_s2>;
                 vddrfa0p95-supply = <&pmr735a_s2>;
@@ -162,7 +159,6 @@
                 vddpcie1p3-supply = <&wcnss_regulator>;
                 vddpcie1p9-supply = <&pm8350c_s1>;
                 vddio-supply = <&pm8350_s10>;
-
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
 
@@ -1129,13 +1125,30 @@
         pinctrl-0 = <&pcie0_default>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+        pcie@0 {
+                device_type = "pci";
+                reg = <0x0 0x0 0x0 0x0 0x0>;
+                wifi@0 {
+                        compatible = "pci17cb,1101";
+                        reg = <0x10000 0x0 0x0 0x0 0x0>;
+
+                        vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+                        vddaon-supply = <&vreg_pmu_aon_0p59>;
+                        vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+                        vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+                        vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+                        vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+                        vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+                        vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+                        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+                };
+        };
 };
 
 &pcie0_phy {
         status = "okay";
         vdda-phy-supply = <&pm8350_l5>;
         vdda-pll-supply = <&pm8350_l6>;
-        power-domains = <&qca6390>;
 	
 };
 
@@ -1188,18 +1201,6 @@
 		bias-high-impedance;
 		bias-disable;
 	};
-
-	/*usbtemp_l_gpio_default: usbtemp-l-gpio-default {
-		pins = "gpio1";
-		function = "normal";
-		bias-high-impedance;
-        };
-
-	usbtemp_r_gpio_default: usbtemp-r-gpio-default {
-                pins = "gpio3";
-		function = "normal";
-                bias-high-impedance;
-        };*/
 };
 
 &pm8350c_gpios {

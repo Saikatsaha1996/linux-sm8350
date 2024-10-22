@@ -1150,7 +1150,7 @@
         pinctrl-0 = <&pcie0_default>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        pcie@0 {
+        /*pcie@0 {
                 device_type = "pci";
                 reg = <0x0 0x0 0x0 0x0 0x0>;
                 wifi@0 {
@@ -1167,7 +1167,7 @@
                         vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
                         vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
                 };
-        };
+        };*/
 };
 
 &pcie0_phy {

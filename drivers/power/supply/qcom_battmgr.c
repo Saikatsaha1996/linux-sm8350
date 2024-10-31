@@ -13,6 +13,8 @@
 #include <linux/math.h>
 #include <linux/units.h>
 
+#define BC_CHG_STATUS_GET 0x59 // Took this data from downstream which is oplus device specific
+
 #define BATTMGR_CHEMISTRY_LEN	4
 #define BATTMGR_STRING_LEN	128
 
@@ -312,6 +314,25 @@ struct qcom_battmgr {
 	 */
 	struct mutex lock;
 };
+
+/* device specific codes requard for oplus device */
+
+static int qcom_battmgr_get_chg_status(struct qcom_battmgr_data *data)
+{
+        int ret;
+        int chg_status = 1; // Initialize to 1 as recommended
+
+        ret = pmic_glink_send(data->glink_client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
+        if (ret < 0) {
+                dev_err(data->dev, "Failed to get charging status, error: %d\n", ret);
+                return ret;
+        }
+
+        dev_info(data->dev, "Charging Status: %d\n", chg_status);
+        data->charging_status = chg_status;
+
+        return 0;
+}
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
 {

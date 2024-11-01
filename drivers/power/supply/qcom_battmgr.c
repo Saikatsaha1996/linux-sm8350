@@ -315,7 +315,7 @@ struct qcom_battmgr {
 	struct mutex lock;
 };
 
-/* device specific codes requard for oplus device */
+/* device specific codes requard for oplus device
 
 static int qcom_battmgr_get_chg_status(struct qcom_battmgr_data *data)
 {
@@ -332,7 +332,7 @@ static int qcom_battmgr_get_chg_status(struct qcom_battmgr_data *data)
         data->charging_status = chg_status;
 
         return 0;
-}
+}*/
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
 {
@@ -950,6 +950,25 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 	.num_properties = ARRAY_SIZE(sm8350_wls_props),
 	.get_property = qcom_battmgr_wls_get_property,
 };
+
+/* device specific codes requard for oplus device */
+
+static int qcom_battmgr_get_chg_status(struct qcom_battmgr_data *data)
+{
+        int ret;
+        int chg_status = 1; // Initialize to 1 as recommended
+
+        ret = pmic_glink_send(data->glink_client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
+        if (ret < 0) {
+                dev_err(data->dev, "Failed to get charging status, error: %d\n", ret);
+                return ret;
+        }
+
+        dev_info(data->dev, "Charging Status: %d\n", chg_status);
+        data->charging_status = chg_status;
+
+        return 0;
+}
 
 static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,

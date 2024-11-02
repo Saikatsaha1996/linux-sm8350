@@ -953,19 +953,19 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 
 /* device specific codes requard for oplus device */
 
-static int qcom_battmgr_get_chg_status(struct qcom_battmgr_data *data)
+static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
 {
         int ret;
         int chg_status = 1; // Initialize to 1 as recommended
 
-        ret = pmic_glink_send(data->glink_client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
+        ret = pmic_glink_send(battmgr->glink_client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
         if (ret < 0) {
-                dev_err(data->dev, "Failed to get charging status, error: %d\n", ret);
+                dev_err(battmgr->dev, "Failed to get charging status, error: %d\n", ret);
                 return ret;
         }
 
-        dev_info(data->dev, "Charging Status: %d\n", chg_status);
-        data->charging_status = chg_status;
+        dev_info(battmgr->dev, "Charging Status: %d\n", chg_status);
+        battmgr->charging_status = chg_status;
 
         return 0;
 }

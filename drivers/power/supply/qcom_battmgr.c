@@ -90,6 +90,11 @@ enum qcom_battmgr_variant {
 #define WLS_TYPE			5
 #define WLS_BOOST_EN			6
 
+struct qcom_battmgr_chg_status_request {
+    struct pmic_glink_hdr hdr;
+    __le32 chg_status;
+};
+
 struct qcom_battmgr_enable_request {
 	struct pmic_glink_hdr hdr;
 	__le32 battery_id;
@@ -955,6 +960,28 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 
 static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
 {
+    struct qcom_battmgr_chg_status_request req;
+    int ret;
+
+    memset(&req, 0, sizeof(req)); // Initialize the structure to zero
+    req.hdr.type = BC_CHG_STATUS_GET; // Set the command type
+    req.chg_status = 1; // Initialize to 1 as recommended
+
+    // Send the request using pmic_glink_send with the request structure
+    ret = pmic_glink_send(battmgr->client, &req, sizeof(req));
+    if (ret < 0) {
+        dev_err(battmgr->dev, "Failed to get charging status, error: %d\n", ret);
+        return ret;
+    }
+
+    dev_info(battmgr->dev, "Charging Status: %d\n", req.chg_status);
+    battmgr->status.status = req.chg_status; // Store the status in battmgr's status
+
+    return 0;
+}
+
+/*static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
+{
         int ret;
         int chg_status = 1; // Initialize to 1 as recommended
 
@@ -971,7 +998,7 @@ static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
         battmgr->status = chg_status;
 
         return 0;
-}
+}*/
 
 static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,

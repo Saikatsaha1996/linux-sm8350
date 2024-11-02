@@ -959,16 +959,16 @@ static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
         int chg_status = 1; // Initialize to 1 as recommended
 
 	// Ensure you are using the correct structure member
-        ret = pmic_glink_send(battmgr->glink_client, BC_CHG_STATUS_GET, (void *)&chg_status, sizeof(chg_status));
+        //ret = pmic_glink_send(battmgr->glink_client, BC_CHG_STATUS_GET, (void *)&chg_status, sizeof(chg_status));
 
-        //ret = pmic_glink_send(battmgr->glink_client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
+        ret = pmic_glink_send(battmgr->client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
         if (ret < 0) {
                 dev_err(battmgr->dev, "Failed to get charging status, error: %d\n", ret);
                 return ret;
         }
 
         dev_info(battmgr->dev, "Charging Status: %d\n", chg_status);
-        battmgr->charging_status = chg_status;
+        battmgr->status = chg_status;
 
         return 0;
 }

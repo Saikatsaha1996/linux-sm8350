@@ -13,8 +13,6 @@
 #include <linux/math.h>
 #include <linux/units.h>
 
-#define BC_CHG_STATUS_GET 0x59 // Took this data from downstream which is oplus device specific
-
 #define BATTMGR_CHEMISTRY_LEN	4
 #define BATTMGR_STRING_LEN	128
 

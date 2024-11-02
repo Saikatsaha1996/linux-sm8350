@@ -968,7 +968,7 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 	case BC_CHG_STATUS_GET:
 		// Logic to handle getting the charging status
 		// This might involve populating `battmgr->status` or sending a response
-		schedule_delayed_work(&dev->chg_status_send_work, 0);
+		schedule_delayed_work(&battmgr->chg_status_send_work, 0);
 		dev_info(battmgr->dev, "Charging status requested\n");
 		// Retrieve and process charging status here
 		break;
@@ -976,7 +976,7 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 	case BC_CHG_STATUS_SET:
 		// Handle the request to set the charging status
 		// Example logic to change charging state based on message containing desired state
-		schedule_delayed_work(&dev->unsuspend_usb_work, 0);
+		schedule_delayed_work(&battmgr->unsuspend_usb_work, 0);
 		dev_info(battmgr->dev, "Charging status set request\n");
 		// Implement setting charging state here
 		break;

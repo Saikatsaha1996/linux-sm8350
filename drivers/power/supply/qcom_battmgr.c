@@ -33,6 +33,8 @@ enum qcom_battmgr_variant {
 #define NOTIF_WLS_PROPERTY		0x34
 #define NOTIF_BAT_INFO			0x81
 #define NOTIF_BAT_STATUS		0x80
+#define BC_CHG_STATUS_GET               0x59 /* Took this data from downstream which is oplus device specific */
+#define BC_CHG_STATUS_SET               0x60 /* Took this data from downstream which is oplus device specific */
 
 #define BATTMGR_BAT_INFO		0x9
 
@@ -89,11 +91,6 @@ enum qcom_battmgr_variant {
 #define WLS_CURR_MAX			4
 #define WLS_TYPE			5
 #define WLS_BOOST_EN			6
-
-struct qcom_battmgr_chg_status_request {
-    struct pmic_glink_hdr hdr;
-    __le32 chg_status;
-};
 
 struct qcom_battmgr_enable_request {
 	struct pmic_glink_hdr hdr;
@@ -310,6 +307,8 @@ struct qcom_battmgr {
 	struct qcom_battmgr_ac ac;
 	struct qcom_battmgr_usb usb;
 	struct qcom_battmgr_wireless wireless;
+        struct delayed_work chg_status_send_work;
+        struct delayed_work unsuspend_usb_work;
 
 	struct work_struct enable_work;
 
@@ -319,25 +318,6 @@ struct qcom_battmgr {
 	 */
 	struct mutex lock;
 };
-
-/* device specific codes requard for oplus device
-
-static int qcom_battmgr_get_chg_status(struct qcom_battmgr_data *data)
-{
-        int ret;
-        int chg_status = 1; // Initialize to 1 as recommended
-
-        ret = pmic_glink_send(data->glink_client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
-        if (ret < 0) {
-                dev_err(data->dev, "Failed to get charging status, error: %d\n", ret);
-                return ret;
-        }
-
-        dev_info(data->dev, "Charging Status: %d\n", chg_status);
-        data->charging_status = chg_status;
-
-        return 0;
-}*/
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
 {
@@ -958,49 +938,58 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 
 /* device specific codes requard for oplus device */
 
-static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
+static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+				      const struct qcom_battmgr_message *msg,
+				      int len)
 {
-    struct qcom_battmgr_chg_status_request req;
-    int ret;
+	size_t payload_len = len - sizeof(struct pmic_glink_hdr);
+	unsigned int notification;
 
-    memset(&req, 0, sizeof(req)); // Initialize the structure to zero
-    req.hdr.type = BC_CHG_STATUS_GET; // Set the command type
-    req.chg_status = 1; // Initialize to 1 as recommended
+	if (payload_len != sizeof(msg->notification)) {
+		dev_warn(battmgr->dev, "ignoring notification with invalid length\n");
+		return;
+	}
 
-    // Send the request using pmic_glink_send with the request structure
-    ret = pmic_glink_send(battmgr->client, &req, sizeof(req));
-    if (ret < 0) {
-        dev_err(battmgr->dev, "Failed to get charging status, error: %d\n", ret);
-        return ret;
-    }
+	notification = le32_to_cpu(msg->notification);
+	switch (notification) {
+	case NOTIF_BAT_INFO:
+		battmgr->info.valid = false;
+		fallthrough;
+	case NOTIF_BAT_STATUS:
+	case NOTIF_BAT_PROPERTY:
+		power_supply_changed(battmgr->bat_psy);
+		break;
+	case NOTIF_USB_PROPERTY:
+		power_supply_changed(battmgr->usb_psy);
+		break;
+	case NOTIF_WLS_PROPERTY:
+		power_supply_changed(battmgr->wls_psy);
+		break;
 
-    dev_info(battmgr->dev, "Charging Status: %d\n", req.chg_status);
-    battmgr->status.status = req.chg_status; // Store the status in battmgr's status
+	// New cases for charging status
+	case BC_CHG_STATUS_GET:
+		// Logic to handle getting the charging status
+		// This might involve populating `battmgr->status` or sending a response
+		schedule_delayed_work(&dev->chg_status_send_work, 0);
+		dev_info(battmgr->dev, "Charging status requested\n");
+		// Retrieve and process charging status here
+		break;
 
-    return 0;
+	case BC_CHG_STATUS_SET:
+		// Handle the request to set the charging status
+		// Example logic to change charging state based on message containing desired state
+		schedule_delayed_work(&dev->unsuspend_usb_work, 0);
+		dev_info(battmgr->dev, "Charging status set request\n");
+		// Implement setting charging state here
+		break;
+
+	default:
+		dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
+		break;
+	}
 }
 
-/*static int qcom_battmgr_get_chg_status(struct qcom_battmgr *battmgr)
-{
-        int ret;
-        int chg_status = 1; // Initialize to 1 as recommended
-
-	// Ensure you are using the correct structure member
-        //ret = pmic_glink_send(battmgr->glink_client, BC_CHG_STATUS_GET, (void *)&chg_status, sizeof(chg_status));
-
-        ret = pmic_glink_send(battmgr->client, BC_CHG_STATUS_GET, &chg_status, sizeof(chg_status));
-        if (ret < 0) {
-                dev_err(battmgr->dev, "Failed to get charging status, error: %d\n", ret);
-                return ret;
-        }
-
-        dev_info(battmgr->dev, "Charging Status: %d\n", chg_status);
-        battmgr->status = chg_status;
-
-        return 0;
-}*/
-
-static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+/*static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,
 				      int len)
 {
@@ -1031,7 +1020,7 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 		dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
 		break;
 	}
-}
+}*/
 
 static void qcom_battmgr_sc8280xp_strcpy(char *dest, const char *src)
 {

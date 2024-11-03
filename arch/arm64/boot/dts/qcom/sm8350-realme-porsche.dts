@@ -140,7 +140,7 @@
                 compatible = "regulator-fixed";
                 regulator-name = "wcnss_regulator";
                 regulator-min-microvolt = <1350000>;
-                regulator-max-microvolt = <1350000>;
+                regulator-max-microvolt = <1900000>;
                 enable-active-high;
                 wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
                 pinctrl-names = "default";
@@ -149,8 +149,10 @@
 
         qca6390-pmu {
                 compatible = "qcom,qca6390-pmu";
+
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en_state>, <&wlan_en_state>;
+
                 vddaon-supply = <&pmr735a_s2>;
                 vddpmu-supply = <&pmr735a_s2>;
                 vddrfa0p95-supply = <&pmr735a_s2>;
@@ -159,8 +161,9 @@
                 vddpcie1p3-supply = <&wcnss_regulator>;
                 vddpcie1p9-supply = <&pm8350c_s1>;
                 vddio-supply = <&pm8350_s10>;
-                wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
+                wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
 
                 regulators {
                         vreg_pmu_rfa_cmn: ldo0 {
@@ -220,22 +223,6 @@
 			linux,can-disable;
 		};
 	};
-
-        /*qca639x: qca639x {
-                compatible = "qcom,qca6390";
-                #power-domain-cells = <0>;
-                vddaon-supply = <&pmr735a_s2>;
-                vddpmu-supply = <&pmr735a_s2>;
-                vddrfa1-supply = <&pmr735a_s2>;
-                vddrfa2-supply = <&pm8350_s12>;
-                vddrfa3-supply = <&pm8350c_s1>;
-                vddpcie1-supply = <&wcnss_regulator>;
-                vddpcie2-supply = <&pm8350c_s1>;
-                vddio-supply = <&pm8350_s12>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&wlan_en_state>;
-                wlan-en-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-        };*/
 
 	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
@@ -742,35 +729,36 @@
         };
 };
 
-&pcie0 {
+/*&pcie0 {
         status = "okay";
         pinctrl-names = "default";
         pinctrl-0 = <&pcie0_default>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        pcie@0 {
-                wifi@0 {
-                        compatible = "pci17cb,1101";
-                        reg = <0x10000 0x0 0x0 0x0 0x0>;
-
-                        vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                        vddaon-supply = <&vreg_pmu_aon_0p59>;
-                        vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-                        vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
-                        vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                        vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                        vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-                        vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
-                        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-                };
-        };
 };
 
 &pcie0_phy {
-        status = "okay";
         vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;	
+        vdda-pll-supply = <&pm8350_l6>;
+        status = "okay";
 };
+
+&pcieport0 {
+	wifi@0 {
+		compatible = "pci17cb,1101";
+		reg = <0x10000 0x0 0x0 0x0 0x0>;
+
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+	};
+};*/
 
 &uart2 {
         status = "okay";
@@ -790,15 +778,6 @@
 		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
 		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };
-
-        /*bluetooth {
-                compatible = "qcom,qca6390-bt";
-                power-domains = <&qca639x>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&bt_en_state>;
-                enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
-                max-speed = <3200000>;
-        };*/
 };
 
 &gpi_dma2 {
@@ -1173,38 +1152,6 @@
 	status = "okay";
 };
 
-/*&pcie0 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-        pcie@0 {
-                wifi@0 {
-                        compatible = "pci17cb,1101";
-                        reg = <0x10000 0x0 0x0 0x0 0x0>;
-
-                        vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-                        vddaon-supply = <&vreg_pmu_aon_0p59>;
-                        vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-                        vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
-                        vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-                        vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-                        vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-                        vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
-                        vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-                };
-        };
-};
-
-&pcie0_phy {
-        status = "okay";
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-        power-domains = <&qca639x>;
-	
-};*/
-
 &pmk8350_gpios {
 	pmk8350_pa5_therm_default: pmk8350-pa5-therm-default {
 		pins = "gpio3";
@@ -1273,6 +1220,37 @@
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
+};
+
+&pcie0 {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+};
+
+&pcie0_phy {
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+        status = "okay";
+};
+
+&pcieport0 {
+	wifi@0 {
+		compatible = "pci17cb,1101";
+		reg = <0x10000 0x0 0x0 0x0 0x0>;
+
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+	};
 };
 
 &tlmm {

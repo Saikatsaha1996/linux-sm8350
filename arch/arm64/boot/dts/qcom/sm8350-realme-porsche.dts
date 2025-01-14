@@ -868,6 +868,39 @@
         vdds-supply = <&pm8350_l5>;
 };
 
+&pcie0 {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+};
+
+&pcie0_phy {
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+        status = "okay";
+};
+
+&pcieport0 {
+	wifi@0 {
+		compatible = "pci17cb,1101";
+		reg = <0x10000 0x0 0x0 0x0 0x0>;
+
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+
+                qcom,ath11k-calibration-variant = "Realme_Gt_2";
+	};
+};
+
 &slpi {
         memory-region = <&pil_slpi_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/slpi.mbn";
@@ -1220,37 +1253,6 @@
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
-};
-
-&pcie0 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-};
-
-&pcie0_phy {
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-        status = "okay";
-};
-
-&pcieport0 {
-	wifi@0 {
-		compatible = "pci17cb,1101";
-		reg = <0x10000 0x0 0x0 0x0 0x0>;
-
-		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-		vddaon-supply = <&vreg_pmu_aon_0p59>;
-		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
-		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
-		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-	};
 };
 
 &tlmm {

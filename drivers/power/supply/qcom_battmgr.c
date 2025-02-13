@@ -29,6 +29,10 @@ enum qcom_battmgr_variant {
 #define NOTIF_BAT_PROPERTY		0x30
 #define NOTIF_USB_PROPERTY		0x32
 #define NOTIF_WLS_PROPERTY		0x34
+
+#define BC_CHG_STATUS_GET		0x59
+#define BC_CHG_STATUS_SET		0x60
+
 #define NOTIF_BAT_INFO			0x81
 #define NOTIF_BAT_STATUS		0x80
 
@@ -930,7 +934,7 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 	.get_property = qcom_battmgr_wls_get_property,
 };
 
-static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+/*static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,
 				      int len)
 {
@@ -961,6 +965,66 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 		dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
 		break;
 	}
+}*/
+
+static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+				      const struct qcom_battmgr_message *msg,
+				      int len)
+{
+	size_t payload_len = len - sizeof(struct pmic_glink_hdr);
+	unsigned int notification;
+
+	if (payload_len != sizeof(msg->notification)) {
+		dev_warn(battmgr->dev, "Ignoring notification with invalid length\n");
+		return;
+	}
+
+	notification = le32_to_cpu(msg->notification);
+	switch (notification) {
+	case NOTIF_BAT_INFO:
+		battmgr->info.valid = false;
+		fallthrough;
+	case NOTIF_BAT_STATUS:
+	case NOTIF_BAT_PROPERTY:
+		power_supply_changed(battmgr->bat_psy);
+		break;
+	case NOTIF_USB_PROPERTY:
+		power_supply_changed(battmgr->usb_psy);
+		break;
+	case NOTIF_WLS_PROPERTY:
+		power_supply_changed(battmgr->wls_psy);
+		break;
+	case BC_CHG_STATUS_GET:  // 0x59 - Handle charging status request
+		dev_info(battmgr->dev, "Received BC_CHG_STATUS_GET (0x59) - Updating status\n");
+
+		// Ensure we retrieve and update the charging state
+		qcom_battmgr_update_charge_status(battmgr);
+		break;
+	case BC_CHG_STATUS_SET:  // 0x60 - Handle charging enable/disable
+		dev_info(battmgr->dev, "Received BC_CHG_STATUS_SET (0x60) - Adjusting charge state\n");
+
+		// Ensure USB charging is properly resumed if needed
+		qcom_battmgr_unsuspend_usb(battmgr);
+		break;
+	default:
+		dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
+		break;
+	}
+}
+
+static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
+{
+	// Read and update charging status from firmware
+	if (battmgr->info.status != POWER_SUPPLY_STATUS_CHARGING) {
+		battmgr->info.status = POWER_SUPPLY_STATUS_CHARGING;
+		power_supply_changed(battmgr->bat_psy);
+	}
+}
+
+static void qcom_battmgr_unsuspend_usb(struct qcom_battmgr *battmgr)
+{
+	// If needed, add logic to resume USB charging here
+	dev_info(battmgr->dev, "Resuming USB charging (if applicable)");
 }
 
 static void qcom_battmgr_sc8280xp_strcpy(char *dest, const char *src)

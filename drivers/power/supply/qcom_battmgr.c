@@ -967,6 +967,9 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 	}
 }*/
 
+static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr);
+static void qcom_battmgr_unsuspend_usb(struct qcom_battmgr *battmgr);
+
 static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,
 				      int len)
@@ -1012,13 +1015,33 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 	}
 }
 
-static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
+/*static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
 {
 	// Read and update charging status from firmware
 	if (battmgr->info.status != POWER_SUPPLY_STATUS_CHARGING) {
 		battmgr->info.status = POWER_SUPPLY_STATUS_CHARGING;
 		power_supply_changed(battmgr->bat_psy);
 	}
+}*/
+
+static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
+{
+    union power_supply_propval val;
+    int ret;
+
+    // Fetch current charge status from battery power supply
+    ret = power_supply_get_property(battmgr->bat_psy, POWER_SUPPLY_PROP_STATUS, &val);
+    if (ret < 0) {
+        dev_err(battmgr->dev, "Failed to get charge status: %d\n", ret);
+        return;
+    }
+
+    // If the status is not already charging, notify power supply subsystem
+    if (val.intval != POWER_SUPPLY_STATUS_CHARGING) {
+        dev_info(battmgr->dev, "Updating charge status to CHARGING\n");
+        val.intval = POWER_SUPPLY_STATUS_CHARGING;
+        power_supply_changed(battmgr->bat_psy);
+    }
 }
 
 static void qcom_battmgr_unsuspend_usb(struct qcom_battmgr *battmgr)

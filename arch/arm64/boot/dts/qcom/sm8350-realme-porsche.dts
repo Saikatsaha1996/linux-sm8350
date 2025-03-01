@@ -1166,12 +1166,12 @@
         };
 };
 
-&ipa {
+/*&ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
-};
+};*/
 
 &pcie0 {
         status = "okay";
@@ -1179,7 +1179,15 @@
         pinctrl-0 = <&pcie0_default>;
         perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
         wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+};
 
+&pcie0_phy {
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+        status = "okay";
+};
+
+&pcieport0 {
 	wifi@0 {
 		compatible = "pci17cb,1101";
 		reg = <0x10000 0x0 0x0 0x0 0x0>;
@@ -1194,14 +1202,15 @@
 		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
 		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
 
-                qcom,ath11k-calibration-variant = "Realme_Gt_2";
+		qcom,ath11k-calibration-variant = "Realme_Gt_2";
 	};
 };
 
-&pcie0_phy {
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-        status = "okay";
+&ipa {
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
+	status = "okay";
 };
 
 &tlmm {

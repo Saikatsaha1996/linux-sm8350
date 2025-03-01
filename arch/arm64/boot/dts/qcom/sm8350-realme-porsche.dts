@@ -142,7 +142,6 @@
                 regulator-min-microvolt = <1900000>;
                 regulator-max-microvolt = <1900000>;
                 enable-active-high;
-                regulator-always-on;
                 wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&wcnss_en>;
@@ -852,38 +851,6 @@
 	status = "disabled";
 };
 
-&pm8350_gpios {
-	key_vol_down_default: vol-down-default {
-		pins = "gpio6";
-		function = "normal";
-		input-enable;
-		bias-pull-up;
-		power-source = <1>;
-	};
-
-        sim2_high_default: sim2-high-default {
-                pins = "gpio8";
-                function = "normal";
-                input-enable;
-                power-source = <1>;
-                bias-pull-up;
-        };
-
-	gpio1_adc_default: gpio1-adc-default-state {
-		pins = "gpio1";
-		function = "normal";
-		bias-high-impedance;
-		bias-disable;
-	};
-
-	gpio3_adc_default: gpio3-adc-default-state {
-		pins = "gpio3";
-		function = "normal";
-		bias-high-impedance;
-		bias-disable;
-	};
-};
-
 &spmi_bus {
         pmr735b: pmic@5 {
                 status = "disabled";
@@ -892,48 +859,6 @@
 
 &pmk8350_adc_tm {
 	status = "okay";
-
-	pm8350-msm-therm@0 {
-		reg = <0>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-cam-flash-therm@1 {
-		reg = <1>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-hot-pocket-therm@2 {
-		reg = <2>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-wide-rfc-therm@3 {
-		reg = <3>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350-rear-tof-therm@4 {
-		reg = <4>;
-		io-channels = <&pmk8350_vadc PM8350_ADC7_AMUX_THM5_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
-
-	pm8350b-wl-chg-therm@6 {
-		reg = <6>;
-		io-channels = <&pmk8350_vadc PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time-us = <200>;
-	};
 };
 
 &pmk8350_rtc {
@@ -941,198 +866,7 @@
 };
 
 &pmk8350_vadc {
-	pinctrl-0 = <&gpio1_adc_default>, <&gpio3_adc_default>;
-	pinctrl-names = "default";
-
-	channel@0 {
-		reg = <0x00>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmk8350_ref_gnd";
-	};
-
-	channel@1 {
-		reg = <0x01>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmk8350_vref_1p25";
-	};
-
-	channel@3 {
-		reg = <0x03>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmk8350_die_temp";
-	};
-
-	channel@100 {
-		reg = <0x100>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_ref_gnd";
-	};
-
-	channel@101 {
-		reg = <0x101>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_vref_1p25";
-	};
-
-	channel@103 {
-		reg = <0x103>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_die_temp";
-	};
-
-	channel@128 {
-		reg = <0x128>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <700>;
-		qcom,pre-scaling = <1 1>;
-		label = "gpio1_v";
-	};
-
-	channel@12b {
-		reg = <0x12b>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <700>;
-		qcom,pre-scaling = <1 1>;
-		label = "gpio3_v";
-	};
-
-	channel@144 {
-		reg = <PM8350_ADC7_AMUX_THM1_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_msm_therm";
-	};
-
-	channel@145 {
-		reg = <PM8350_ADC7_AMUX_THM2_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_cam_flash_therm";
-	};
-
-	channel@146 {
-		reg = <PM8350_ADC7_AMUX_THM3_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_hot_pocket_therm";
-	};
-
-	channel@147 {
-		reg = <PM8350_ADC7_AMUX_THM4_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_wide_rfc_therm";
-	};
-
-	channel@148 {
-		reg = <PM8350_ADC7_AMUX_THM5_100K_PU(1)>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350_rear_tof_therm";
-	};
-
-	channel@18e {
-		reg = <0x18e>;
-		qcom,pre-scaling = <1 3>;
-		label = "pm8350_vph_pwr";
-	};
-
-	channel@300 {
-		reg = <0x300>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_ref_gnd";
-	};
-
-	channel@301 {
-		reg = <0x301>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_vref_1p25";
-	};
-
-	channel@303 {
-		reg = <0x303>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_die_temp";
-	};
-
-	channel@310 {
-		reg = <PM8350B_ADC7_CHG_TEMP>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_chg_temp";
-	};
-
-	channel@34b {
-		reg = <PM8350B_ADC7_GPIO2_100K_PU>;
-		qcom,ratiometric;
-		qcom,hw-settle-time = <200>;
-		qcom,pre-scaling = <1 1>;
-		label = "pm8350b_wl_chg_therm";
-	};
-
-	channel@38e {
-		reg = <0x38e>;
-		qcom,pre-scaling = <1 3>;
-		label = "pm8350b_vph_pwr";
-	};
-
-	channel@38f {
-		reg = <0x38f>;
-		qcom,pre-scaling = <1 3>;
-		label = "pm8350b_vbat_sns";
-	};
-
-	channel@400 {
-		reg = <0x400>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_ref_gnd";
-	};
-
-	channel@401 {
-		reg = <0x401>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_vref_1p25";
-	};
-
-	channel@403 {
-		reg = <0x403>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735a_die_temp";
-	};
-
-	channel@500 {
-		reg = <0x500>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735b_ref_gnd";
-	};
-
-	channel@501 {
-		reg = <0x501>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735b_vref_1p25";
-	};
-
-	channel@503 {
-		reg = <0x503>;
-		qcom,pre-scaling = <1 1>;
-		label = "pmr735b_die_temp";
-	};
-
-	channel@b06 {
-		reg = <SMB139x_1_ADC7_SMB_TEMP>;
-		qcom,pre-scaling = <1 1>;
-		label = "smb139x_1_smb_temp";
-	};
-
-	channel@c06 {
-		reg = <SMB139x_2_ADC7_SMB_TEMP>;
-		qcom,pre-scaling = <1 1>;
-		label = "smb139x_2_smb_temp";
-	};
+	status = "okay";
 };
 
 &pon_pwrkey {
@@ -1147,31 +881,15 @@
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";
-        rf-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-        sim-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-        pinctrl-names = "default";
-        pinctrl-0 = <&rf_cable0_default &sim2_high_default>;
 	status = "okay";
 };
 
-&pm8350c_gpios {
-        otg_en_active: otg_en_active {
-                pins = "gpio1";
-                function = "normal";
-                input-disable;
-                output-high;
-                bias-disable;
-                power-source = <1>;
-                drive-strength = <2>;
-        };
-};
-
-/*&ipa {
+&ipa {
 	qcom,gsi-loader = "self";
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
-};*/
+};
 
 &pcie0 {
         status = "okay";
@@ -1206,11 +924,14 @@
 	};
 };
 
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
-	status = "okay";
+&pm8350_gpios {
+	key_vol_down_default: vol-down-default {
+		pins = "gpio6";
+		function = "normal";
+		input-enable;
+		bias-pull-up;
+		power-source = <1>;
+	};
 };
 
 &tlmm {
@@ -1282,14 +1003,6 @@
 		drive-strength = <2>;
 		bias-pull-down;
 	};
-
-        rf_cable0_default: rf_cable0_default {
-                pins = "gpio99";
-                function = "gpio";
-                drive-strength = <2>;
-                input-enable;
-                bias-pull-up;
-        };
 
         qup_uart18_pin: qup-uart18-pin-state {
                 default-cts-pin {

@@ -139,7 +139,7 @@
         wcnss_regulator: wcnss-wlan-regulator {
                 compatible = "regulator-fixed";
                 regulator-name = "wcnss_regulator";
-                regulator-min-microvolt = <1350000>;
+                regulator-min-microvolt = <1900000>;
                 regulator-max-microvolt = <1900000>;
                 enable-active-high;
                 wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;

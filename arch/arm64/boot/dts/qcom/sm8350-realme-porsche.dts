@@ -865,9 +865,9 @@
 	status = "okay";
 };
 
-&pmk8350_vadc {
+/*&pmk8350_vadc {
 	status = "okay";
-};
+};*/
 
 &pon_pwrkey {
 	status = "okay";
@@ -881,13 +881,6 @@
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";
-	status = "okay";
-};
-
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
 };
 
@@ -922,6 +915,13 @@
 
 		qcom,ath11k-calibration-variant = "Realme_Gt_2";
 	};
+};
+
+&ipa {
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
+	status = "okay";
 };
 
 &pm8350_gpios {

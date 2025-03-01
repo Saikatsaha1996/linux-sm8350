@@ -214,7 +214,7 @@
 		label = "gpio-keys";
 		pinctrl-names = "default";
 		pinctrl-0 = <&key_vol_down_default>;
-		vol_up {
+		vol_down {
 			label = "volume_down";
 			gpios = <&pm8350_gpios 6 GPIO_ACTIVE_LOW>;
 			linux,input-type = <1>;

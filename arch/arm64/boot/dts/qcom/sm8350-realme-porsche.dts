@@ -838,37 +838,6 @@
         vdds-supply = <&pm8350_l5>;
 };
 
-&pcie0 {
-        status = "okay";
-        pinctrl-names = "default";
-        pinctrl-0 = <&pcie0_default>;
-        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-
-	wifi@0 {
-		compatible = "pci17cb,1101";
-		reg = <0x10000 0x0 0x0 0x0 0x0>;
-
-		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
-		vddaon-supply = <&vreg_pmu_aon_0p59>;
-		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
-		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
-		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
-		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
-		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-
-                qcom,ath11k-calibration-variant = "Realme_Gt_2";
-	};
-};
-
-&pcie0_phy {
-        vdda-phy-supply = <&pm8350_l5>;
-        vdda-pll-supply = <&pm8350_l6>;
-        status = "okay";
-};
-
 &slpi {
         memory-region = <&pil_slpi_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/slpi.mbn";
@@ -883,19 +852,42 @@
 	status = "disabled";
 };
 
+&pm8350_gpios {
+	key_vol_down_default: vol-down-default {
+		pins = "gpio6";
+		function = "normal";
+		input-enable;
+		bias-pull-up;
+		power-source = <1>;
+	};
+
+        sim2_high_default: sim2-high-default {
+                pins = "gpio8";
+                function = "normal";
+                input-enable;
+                power-source = <1>;
+                bias-pull-up;
+        };
+
+	gpio1_adc_default: gpio1-adc-default-state {
+		pins = "gpio1";
+		function = "normal";
+		bias-high-impedance;
+		bias-disable;
+	};
+
+	gpio3_adc_default: gpio3-adc-default-state {
+		pins = "gpio3";
+		function = "normal";
+		bias-high-impedance;
+		bias-disable;
+	};
+};
+
 &spmi_bus {
         pmr735b: pmic@5 {
                 status = "disabled";
         };
-};
-
-&pon_pwrkey {
-	status = "okay";
-};
-
-&pon_resin {
-	linux,code = <KEY_VOLUMEUP>;
-	status = "okay";
 };
 
 &pmk8350_adc_tm {
@@ -1143,6 +1135,15 @@
 	};
 };
 
+&pon_pwrkey {
+	status = "okay";
+};
+
+&pon_resin {
+	linux,code = <KEY_VOLUMEDOWN>;
+	status = "okay";
+};
+
 &mpss {
         memory-region = <&pil_modem_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";
@@ -1151,57 +1152,6 @@
         pinctrl-names = "default";
         pinctrl-0 = <&rf_cable0_default &sim2_high_default>;
 	status = "okay";
-};
-
-/*&pmk8350_gpios {
-	pmk8350_pa5_therm_default: pmk8350-pa5-therm-default {
-		pins = "gpio3";
-		bias-high-impedance;
-	};
-};
-
-&pm8350b_gpios {
-	pm8350b_pa6_therm_default: pm8350b-pa6-therm-default {
-		pins = "gpio1";
-		bias-high-impedance;
-	};
-};*/
-
-&pm8350_gpios {
-	key_vol_down_default: vol-down-default {
-		pins = "gpio6";
-		function = "normal";
-		input-enable;
-		bias-pull-up;
-		power-source = <1>;
-	};
-
-        sim2_high_default: sim2-high-default {
-                pins = "gpio8";
-                function = "normal";
-                input-enable;
-                power-source = <1>;
-                bias-pull-up;
-        };
-
-        pm8350_gpio2_default: pm8350-gpio2-default {
-		pins = "gpio2";
-		bias-high-impedance;
-	};
-
-	gpio1_adc_default: gpio1-adc-default-state {
-		pins = "gpio1";
-		function = "normal";
-		bias-high-impedance;
-		bias-disable;
-	};
-
-	gpio3_adc_default: gpio3-adc-default-state {
-		pins = "gpio3";
-		function = "normal";
-		bias-high-impedance;
-		bias-disable;
-	};
 };
 
 &pm8350c_gpios {
@@ -1221,6 +1171,37 @@
 	memory-region = <&pil_ipa_fw_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 	status = "okay";
+};
+
+&pcie0 {
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie0_default>;
+        perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+        wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+
+	wifi@0 {
+		compatible = "pci17cb,1101";
+		reg = <0x10000 0x0 0x0 0x0 0x0>;
+
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+
+                qcom,ath11k-calibration-variant = "Realme_Gt_2";
+	};
+};
+
+&pcie0_phy {
+        vdda-phy-supply = <&pm8350_l5>;
+        vdda-pll-supply = <&pm8350_l6>;
+        status = "okay";
 };
 
 &tlmm {

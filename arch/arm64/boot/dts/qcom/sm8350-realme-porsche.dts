@@ -864,7 +864,7 @@
         };
         pm8350: pmic@1 {
                 status = "okay";
-        }
+        };
 };
 
 &pmk8350_adc_tm {

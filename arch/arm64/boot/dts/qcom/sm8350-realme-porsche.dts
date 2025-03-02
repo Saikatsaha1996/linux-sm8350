@@ -256,6 +256,13 @@
 	};
 };
 
+&ipa {
+	status = "okay";
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
+};
+
 &adsp {
 	status = "okay";
         memory-region = <&pil_adsp_mem>;
@@ -773,12 +780,6 @@
 	status = "okay";
 };
 
-&cdsp {
-	status = "okay";
-        memory-region = <&pil_cdsp_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
-};
-
 &gmu {
         status = "okay";
         firmware-name = "qcom/a660_gmu.bin";
@@ -835,6 +836,12 @@
 &mdss_dsi0_phy {
         status = "okay";
         vdds-supply = <&pm8350_l5>;
+};
+
+&mpss {
+        memory-region = <&pil_modem_mem>;
+	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";
+	status = "okay";
 };
 
 &slpi {
@@ -1112,12 +1119,6 @@
 	status = "okay";
 };
 
-&mpss {
-        memory-region = <&pil_modem_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/modem.mbn";
-	status = "okay";
-};
-
 &pcie0 {
         status = "okay";
         pinctrl-names = "default";
@@ -1151,11 +1152,10 @@
 	};
 };
 
-&ipa {
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
+&cdsp {
 	status = "okay";
+        memory-region = <&pil_cdsp_mem>;
+	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
 
 &pm8350_gpios {

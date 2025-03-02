@@ -862,6 +862,9 @@
         pmr735b: pmic@5 {
                 status = "disabled";
         };
+        pm8350: pmic@1 {
+                status = "okay";
+        }
 };
 
 &pmk8350_adc_tm {
@@ -1159,6 +1162,8 @@
 };
 
 &pm8350_gpios {
+	status = "okay";
+
 	key_vol_down_default: vol-down-default {
 		pins = "gpio6";
 		function = "normal";

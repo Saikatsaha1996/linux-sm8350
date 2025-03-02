@@ -858,14 +858,14 @@
 	status = "disabled";
 };
 
-&spmi_bus {
+/*&spmi_bus {
         pmr735b: pmic@5 {
                 status = "disabled";
         };
         pm8350: pmic@1 {
                 status = "okay";
         };
-};
+};*/
 
 &pmk8350_adc_tm {
 	status = "okay";

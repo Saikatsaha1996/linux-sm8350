@@ -27,6 +27,7 @@ enum qcom_battmgr_variant {
 
 #define BC_CHG_STATUS_GET		0x59
 #define BC_CHG_STATUS_SET		0x60
+#define BC_CID_DETECT                   0x52
 
 #define BATTMGR_NOTIFICATION		0x7
 #define NOTIF_BAT_PROPERTY		0x30
@@ -315,6 +316,7 @@ struct qcom_battmgr {
 	 * firmware, as it then stops responding.
 	 */
 	struct mutex lock;
+        struct delayed_work cid_status_change_work;
 };
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
@@ -382,6 +384,29 @@ static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
 	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
 }
 
+static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
+{
+    struct qcom_battmgr *battmgr = container_of(work, struct qcom_battmgr, cid_status_change_work.work);
+    int cid_status = 0;
+
+    /* Read CID status */
+    int rc = qcom_battmgr_read_property(battmgr, USB_CID_STATUS, &cid_status);
+    if (rc < 0) {
+        pr_err("qcom_battmgr: Failed to read CID status\n");
+        return;
+    }
+
+    pr_info("qcom_battmgr: CID Status = %d\n", cid_status);
+
+    /* Implement necessary handling based on CID status */
+    if (cid_status == 0) {
+        /* No cable detected, reset current and temp checks */
+        battmgr->pre_current = -1;
+        battmgr->usbtemp_check = false;
+        qcom_battmgr_usbtemp_reset();
+    }
+}
+INIT_DELAYED_WORK(&battmgr->cid_status_change_work, qcom_battmgr_cid_status_change_work);
 /*static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 {
 	struct qcom_battmgr_update_request request = {
@@ -1183,6 +1208,10 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
     case NOTIF_WLS_PROPERTY:
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
+        break;
+    case BC_CID_DETECT:
+        pr_info("qcom_battmgr: CID detection triggered!\n");
+        schedule_delayed_work(&battmgr->cid_status_change_work, 0);
         break;
     case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59
         pr_info("qcom_battmgr: Received charging status update (0x59)\n");

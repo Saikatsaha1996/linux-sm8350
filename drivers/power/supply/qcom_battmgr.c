@@ -950,7 +950,7 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
     }
 }*/
 
-static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
+/*static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
 {
     union power_supply_propval val;
     int ret, usb_online = 0;
@@ -988,6 +988,51 @@ static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
     }
 
     // Notify power subsystem
+    power_supply_changed(battmgr->bat_psy);
+}*/
+
+static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
+{
+    union power_supply_propval val;
+    int ret, usb_online = 0;
+    struct power_supply *usb_psy;
+
+    if (!battmgr->bat_psy) {
+        dev_err(battmgr->dev, "Battery power supply not registered\n");
+        return;
+    }
+
+    // Get USB power supply status
+    usb_psy = power_supply_get_by_name("qcom-battmgr-usb");
+    if (usb_psy) {
+        ret = power_supply_get_property(usb_psy, POWER_SUPPLY_PROP_ONLINE, &val);
+        if (ret < 0) {
+            dev_err(battmgr->dev, "Failed to get USB online status: %d\n", ret);
+        } else {
+            usb_online = val.intval;
+        }
+        power_supply_put(usb_psy);
+    } else {
+        dev_err(battmgr->dev, "Failed to get USB power supply\n");
+    }
+
+    // Check if the battery should be charging
+    if (usb_online) {
+        dev_info(battmgr->dev, "USB is online, updating charge status to CHARGING\n");
+        val.intval = POWER_SUPPLY_STATUS_CHARGING;
+    } else {
+        dev_info(battmgr->dev, "USB is offline, setting charge status to DISCHARGING\n");
+        val.intval = POWER_SUPPLY_STATUS_DISCHARGING;
+    }
+
+    // Set the correct charge status
+    ret = power_supply_set_property(battmgr->bat_psy, POWER_SUPPLY_PROP_STATUS, &val);
+    if (ret < 0) {
+        dev_err(battmgr->dev, "Failed to set charge status: %d\n", ret);
+        return;
+    }
+
+    // Notify power supply subsystem
     power_supply_changed(battmgr->bat_psy);
 }
 

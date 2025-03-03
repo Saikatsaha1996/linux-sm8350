@@ -22,13 +22,13 @@ enum qcom_battmgr_variant {
 };
 
 #define BATTMGR_BAT_STATUS		0x1
+
 #define BATTMGR_REQUEST_NOTIFICATION	0x4
+
 #define BATTMGR_NOTIFICATION		0x7
 #define NOTIF_BAT_PROPERTY		0x30
 #define NOTIF_USB_PROPERTY		0x32
 #define NOTIF_WLS_PROPERTY		0x34
-#define BC_CHG_STATUS_GET		0x59
-#define BC_CHG_STATUS_SET		0x60
 #define NOTIF_BAT_INFO			0x81
 #define NOTIF_BAT_STATUS		0x80
 
@@ -930,83 +930,6 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 	.get_property = qcom_battmgr_wls_get_property,
 };
 
-/*static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
-{
-    union power_supply_propval val;
-    int ret;
-
-    // Fetch current charge status from battery power supply
-    ret = power_supply_get_property(battmgr->bat_psy, POWER_SUPPLY_PROP_STATUS, &val);
-    if (ret < 0) {
-        dev_err(battmgr->dev, "Failed to get charge status: %d\n", ret);
-        return;
-    }
-
-    // If the status is not already charging, notify power supply subsystem
-    if (val.intval != POWER_SUPPLY_STATUS_CHARGING) {
-        dev_info(battmgr->dev, "Updating charge status to CHARGING\n");
-        val.intval = POWER_SUPPLY_STATUS_CHARGING;
-        power_supply_changed(battmgr->bat_psy);
-    }
-}*/
-
-static void qcom_battmgr_update_charge_status(struct qcom_battmgr *battmgr)
-{
-    union power_supply_propval val;
-    int ret, usb_online = 0;
-    struct power_supply *usb_psy, *bat_psy;
-
-    if (!battmgr->bat_psy) {
-        dev_err(battmgr->dev, "Battery power supply not registered\n");
-        return;
-    }
-
-    // Get USB power supply status
-    usb_psy = power_supply_get_by_name("qcom-battmgr-usb");
-    if (usb_psy) {
-        power_supply_get_property(usb_psy, POWER_SUPPLY_PROP_ONLINE, &val);
-        usb_online = val.intval;
-        power_supply_put(usb_psy);
-    } else {
-        dev_err(battmgr->dev, "Failed to get USB power supply\n");
-    }
-
-    // Get battery power supply to check charging status
-    bat_psy = power_supply_get_by_name("qcom-battmgr-bat");
-    if (!bat_psy) {
-        dev_err(battmgr->dev, "Failed to get battery power supply\n");
-        return;
-    }
-
-    // Fetch charge status from Oplus driver
-    power_supply_get_property(bat_psy, POWER_SUPPLY_PROP_STATUS, &val);
-    power_supply_put(bat_psy);
-
-    // If USB is online but battery status is not charging, override
-    if (usb_online && val.intval != POWER_SUPPLY_STATUS_CHARGING) {
-        dev_info(battmgr->dev, "USB online but battery reports discharging, forcing CHARGING\n");
-        val.intval = POWER_SUPPLY_STATUS_CHARGING;
-    } else if (!usb_online) {
-        val.intval = POWER_SUPPLY_STATUS_DISCHARGING;
-    }
-
-    // Set charge status
-    ret = power_supply_set_property(battmgr->bat_psy, POWER_SUPPLY_PROP_STATUS, &val);
-    if (ret < 0) {
-        dev_err(battmgr->dev, "Failed to set charge status: %d\n", ret);
-        return;
-    }
-
-    dev_info(battmgr->dev, "Final charge status: %d\n", val.intval);
-    power_supply_changed(battmgr->bat_psy);
-}
-
-static void qcom_battmgr_unsuspend_usb(struct qcom_battmgr *battmgr)
-{
-	// If needed, add logic to resume USB charging here
-	dev_info(battmgr->dev, "Resuming USB charging (if applicable)");
-}
-
 static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,
 				      int len)
@@ -1015,7 +938,7 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 	unsigned int notification;
 
 	if (payload_len != sizeof(msg->notification)) {
-		dev_warn(battmgr->dev, "Ignoring notification with invalid length\n");
+		dev_warn(battmgr->dev, "ignoring notification with invalid length\n");
 		return;
 	}
 
@@ -1034,20 +957,8 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 	case NOTIF_WLS_PROPERTY:
 		power_supply_changed(battmgr->wls_psy);
 		break;
-	case BC_CHG_STATUS_GET:  // 0x59 - Handle charging status request
-		dev_info(battmgr->dev, "Received BC_CHG_STATUS_GET (0x59) - Updating status\n");
-
-		// Ensure we retrieve and update the charging state
-		qcom_battmgr_update_charge_status(battmgr);
-		break;
-	case BC_CHG_STATUS_SET:  // 0x60 - Handle charging enable/disable
-		dev_info(battmgr->dev, "Received BC_CHG_STATUS_SET (0x60) - Adjusting charge state\n");
-
-		// Ensure USB charging is properly resumed if needed
-		qcom_battmgr_unsuspend_usb(battmgr);
-		break;
 	default:
-		dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
+		dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
 		break;
 	}
 }

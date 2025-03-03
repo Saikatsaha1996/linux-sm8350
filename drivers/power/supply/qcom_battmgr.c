@@ -259,6 +259,7 @@ struct qcom_battmgr_status {
 
 	unsigned int discharge_time;
 	unsigned int charge_time;
+        unsigned int bc_status;
 };
 
 struct qcom_battmgr_ac {

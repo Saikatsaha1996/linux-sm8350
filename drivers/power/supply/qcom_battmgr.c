@@ -373,13 +373,13 @@ static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcod
 static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
 {
 	pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
-	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BATT_BC_STATUS, 0);
+	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
 }
 
 static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
 {
 	pr_info("qcom_battmgr: Setting BC_CHG_STATUS_SET to %d\n", status);
-	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BATT_BC_STATUS, status);
+	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
 }
 
 /*static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
@@ -681,7 +681,7 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 
 	/* Debug logging for issue tracking */
 	pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
-		psp, battmgr->usb_online, battmgr->status.status);
+		psp, battmgr->usb.online, battmgr->status.status);
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
@@ -1415,7 +1415,7 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		case BATT_POWER_NOW:
 			battmgr->status.power_now = le32_to_cpu(resp->intval.value);
 			break;
-		case BATT_BC_STATUS:
+		case BC_CHG_STATUS_GET:
 	                battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
 	                pr_info("qcom_battmgr: BC_CHG_STATUS received = %d\n", battmgr->status.bc_status);
 	                break;

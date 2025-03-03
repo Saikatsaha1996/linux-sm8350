@@ -477,7 +477,7 @@ out_unlock:
 	return ret;
 }
 
-static int qcom_battmgr_bat_get_property(struct power_supply *psy,
+/*static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 					 enum power_supply_property psp,
 					 union power_supply_propval *val)
 {
@@ -498,6 +498,149 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
 		val->intval = battmgr->status.status;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_TYPE:
+		val->intval = battmgr->info.charge_type;
+		break;
+	case POWER_SUPPLY_PROP_HEALTH:
+		val->intval = battmgr->status.health;
+		break;
+	case POWER_SUPPLY_PROP_PRESENT:
+		val->intval = battmgr->info.present;
+		break;
+	case POWER_SUPPLY_PROP_TECHNOLOGY:
+		val->intval = battmgr->info.technology;
+		break;
+	case POWER_SUPPLY_PROP_CYCLE_COUNT:
+		val->intval = battmgr->info.cycle_count;
+		break;
+	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+		val->intval = battmgr->info.voltage_max_design;
+		break;
+	case POWER_SUPPLY_PROP_VOLTAGE_MAX:
+		val->intval = battmgr->info.voltage_max;
+		break;
+	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+		val->intval = battmgr->status.voltage_now;
+		break;
+	case POWER_SUPPLY_PROP_VOLTAGE_OCV:
+		val->intval = battmgr->status.voltage_ocv;
+		break;
+	case POWER_SUPPLY_PROP_CURRENT_NOW:
+		val->intval = battmgr->status.current_now;
+		break;
+	case POWER_SUPPLY_PROP_POWER_NOW:
+		val->intval = battmgr->status.power_now;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
+		if (unit != QCOM_BATTMGR_UNIT_mAh)
+			return -ENODATA;
+		val->intval = battmgr->info.design_capacity;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_FULL:
+		if (unit != QCOM_BATTMGR_UNIT_mAh)
+			return -ENODATA;
+		val->intval = battmgr->info.last_full_capacity;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_EMPTY:
+		if (unit != QCOM_BATTMGR_UNIT_mAh)
+			return -ENODATA;
+		val->intval = battmgr->info.capacity_low;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_NOW:
+		if (unit != QCOM_BATTMGR_UNIT_mAh)
+			return -ENODATA;
+		val->intval = battmgr->status.capacity;
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
+		val->intval = battmgr->info.charge_count;
+		break;
+	case POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN:
+		if (unit != QCOM_BATTMGR_UNIT_mWh)
+			return -ENODATA;
+		val->intval = battmgr->info.design_capacity;
+		break;
+	case POWER_SUPPLY_PROP_ENERGY_FULL:
+		if (unit != QCOM_BATTMGR_UNIT_mWh)
+			return -ENODATA;
+		val->intval = battmgr->info.last_full_capacity;
+		break;
+	case POWER_SUPPLY_PROP_ENERGY_EMPTY:
+		if (unit != QCOM_BATTMGR_UNIT_mWh)
+			return -ENODATA;
+		val->intval = battmgr->info.capacity_low;
+		break;
+	case POWER_SUPPLY_PROP_ENERGY_NOW:
+		if (unit != QCOM_BATTMGR_UNIT_mWh)
+			return -ENODATA;
+		val->intval = battmgr->status.capacity;
+		break;
+	case POWER_SUPPLY_PROP_CAPACITY:
+		val->intval = battmgr->status.percent;
+		break;
+	case POWER_SUPPLY_PROP_TEMP:
+		val->intval = battmgr->status.temperature;
+		break;
+	case POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG:
+		val->intval = battmgr->status.discharge_time;
+		break;
+	case POWER_SUPPLY_PROP_TIME_TO_FULL_AVG:
+		val->intval = battmgr->status.charge_time;
+		break;
+	case POWER_SUPPLY_PROP_MANUFACTURE_YEAR:
+		val->intval = battmgr->info.year;
+		break;
+	case POWER_SUPPLY_PROP_MANUFACTURE_MONTH:
+		val->intval = battmgr->info.month;
+		break;
+	case POWER_SUPPLY_PROP_MANUFACTURE_DAY:
+		val->intval = battmgr->info.day;
+		break;
+	case POWER_SUPPLY_PROP_MODEL_NAME:
+		val->strval = battmgr->info.model_number;
+		break;
+	case POWER_SUPPLY_PROP_MANUFACTURER:
+		val->strval = battmgr->info.oem_info;
+		break;
+	case POWER_SUPPLY_PROP_SERIAL_NUMBER:
+		val->strval = battmgr->info.serial_number;
+		break;
+	default:
+		return -EINVAL;
+	}
+
+	return 0;
+}*/
+
+static int qcom_battmgr_bat_get_property(struct power_supply *psy,
+					 enum power_supply_property psp,
+					 union power_supply_propval *val)
+{
+	struct qcom_battmgr *battmgr = power_supply_get_drvdata(psy);
+	enum qcom_battmgr_unit unit = battmgr->unit;
+	int ret;
+
+	if (!battmgr->service_up)
+		return -EAGAIN;
+
+	/* Update battery status based on platform */
+	if (battmgr->variant == QCOM_BATTMGR_SC8280XP)
+		ret = qcom_battmgr_bat_sc8280xp_update(battmgr, psp);
+	else
+		ret = qcom_battmgr_bat_sm8350_update(battmgr, psp);
+	if (ret < 0)
+		return ret;
+
+	/* Debug logging for issue tracking */
+	pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
+		psp, battmgr->usb_online, battmgr->status.status);
+
+	switch (psp) {
+	case POWER_SUPPLY_PROP_STATUS:
+		if (battmgr->usb.online) // Check USB power status
+			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+		else
+			val->intval = battmgr->status.status; // Keep original status handling
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
 		val->intval = battmgr->info.charge_type;
@@ -930,7 +1073,7 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 	.get_property = qcom_battmgr_wls_get_property,
 };
 
-static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+/*static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 				      const struct qcom_battmgr_message *msg,
 				      int len)
 {
@@ -961,6 +1104,43 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
 		dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
 		break;
 	}
+}*/
+
+static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+                                      const struct qcom_battmgr_message *msg,
+                                      int len)
+{
+    size_t payload_len = len - sizeof(struct pmic_glink_hdr);
+    unsigned int notification;
+
+    if (payload_len != sizeof(msg->notification)) {
+        dev_warn(battmgr->dev, "ignoring notification with invalid length\n");
+        return;
+    }
+
+    notification = le32_to_cpu(msg->notification);
+    switch (notification) {
+    case NOTIF_BAT_INFO:
+        battmgr->info.valid = false;
+        /* fall through */
+    case NOTIF_BAT_STATUS:
+    case NOTIF_BAT_PROPERTY:
+        power_supply_changed(battmgr->bat_psy);
+        break;
+    case NOTIF_USB_PROPERTY:
+        power_supply_changed(battmgr->usb_psy);
+        break;
+    case NOTIF_WLS_PROPERTY:
+        power_supply_changed(battmgr->wls_psy);
+        break;
+    case BC_CHG_STATUS_GET: // Handling 0x59 notification
+        dev_info(battmgr->dev, "Received BC_CHG_STATUS_GET (0x59), updating status\n");
+        power_supply_changed(battmgr->bat_psy);
+        break;
+    default:
+        dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
+        break;
+    }
 }
 
 static void qcom_battmgr_sc8280xp_strcpy(char *dest, const char *src)

@@ -388,25 +388,26 @@ static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
 {
     struct qcom_battmgr *battmgr = container_of(work, struct qcom_battmgr, cid_status_change_work.work);
     int cid_status = 0;
-
+    int cable_chip_id = 0;
+    int rc;
     /* Read CID status */
-    int rc = qcom_battmgr_read_property(battmgr, USB_CID_STATUS, &cid_status);
+    rc = qcom_battmgr_read_property(battmgr, BC_CID_DETECT, &cid_status);
     if (rc < 0) {
         pr_err("qcom_battmgr: Failed to read CID status\n");
         return;
     }
-
     pr_info("qcom_battmgr: CID Status = %d\n", cid_status);
-
-    /* Implement necessary handling based on CID status */
-    if (cid_status == 0) {
-        /* No cable detected, reset current and temp checks */
-        battmgr->pre_current = -1;
-        battmgr->usbtemp_check = false;
-        qcom_battmgr_usbtemp_reset();
+    /* If a cable is connected, read the chip ID */
+    if (cid_status != 0) {
+        rc = qcom_battmgr_read_property(battmgr, USB_CID_ID, &cable_chip_id);
+        if (rc < 0) {
+            pr_err("qcom_battmgr: Failed to read Cable Chip ID\n");
+        } else {
+            pr_info("qcom_battmgr: Cable Chip ID = %d\n", cable_chip_id);
+        }
     }
 }
-INIT_DELAYED_WORK(&battmgr->cid_status_change_work, qcom_battmgr_cid_status_change_work);
+
 /*static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 {
 	struct qcom_battmgr_update_request request = {
@@ -1201,43 +1202,38 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->bat_psy);
         pr_info("qcom_battmgr: Battery status notification received\n");
         break;
-
-    case NOTIF_USB_PROPERTY:
+    /*case NOTIF_USB_PROPERTY:
         // Debounce mechanism to prevent instant charge/discharge switching
-        qcom_battmgr_usb_sm8350_update(battmgr, POWER_SUPPLY_PROP_ONLINE);
-        
+        qcom_battmgr_usb_sm8350_update(battmgr, POWER_SUPPLY_PROP_ONLINE);      
         if (battmgr->usb_online) {
             msleep(500);  // Wait 500ms before confirming charging state
             qcom_battmgr_request_property(battmgr, BATTMGR_BATTERY_PROPERTY_GET, POWER_SUPPLY_PROP_STATUS, 0);
-        }
-
+	}
         // Ensure proper power state update
         qcom_battmgr_battery_update(battmgr, POWER_SUPPLY_PROP_STATUS);
-
         power_supply_changed(battmgr->usb_psy);
         pr_info("qcom_battmgr: USB property updated, online=%d\n", battmgr->usb_online);
+        break;*/
+    case NOTIF_USB_PROPERTY:
+        power_supply_changed(battmgr->usb_psy);
+        pr_info("qcom_battmgr: USB property notification received\n");
         break;
-
     case NOTIF_WLS_PROPERTY:
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
-
     case BC_CID_DETECT:
         pr_info("qcom_battmgr: CID detection triggered!\n");
         schedule_delayed_work(&battmgr->cid_status_change_work, 0);
         break;
-
     case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59
         pr_info("qcom_battmgr: Received charging status update (0x59)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
-
     case BC_CHG_STATUS_SET:  // Fix unknown notification 0x60
         pr_info("qcom_battmgr: Charging status set (0x60)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
-
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
         break;
@@ -1636,7 +1632,8 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 	INIT_WORK(&battmgr->enable_work, qcom_battmgr_enable_worker);
 	mutex_init(&battmgr->lock);
 	init_completion(&battmgr->ack);
-
+	INIT_DELAYED_WORK(&battmgr->cid_status_change_work, qcom_battmgr_cid_status_change_work);
+	
 	match = of_match_device(qcom_battmgr_of_variants, dev->parent);
 	if (match)
 		battmgr->variant = (unsigned long)match->data;

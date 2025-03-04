@@ -1201,26 +1201,43 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->bat_psy);
         pr_info("qcom_battmgr: Battery status notification received\n");
         break;
+
     case NOTIF_USB_PROPERTY:
+        // Debounce mechanism to prevent instant charge/discharge switching
+        qcom_battmgr_usb_sm8350_update(battmgr, POWER_SUPPLY_PROP_ONLINE);
+        
+        if (battmgr->usb_online) {
+            msleep(500);  // Wait 500ms before confirming charging state
+            qcom_battmgr_request_property(battmgr, BATTMGR_BATTERY_PROPERTY_GET, POWER_SUPPLY_PROP_STATUS, 0);
+        }
+
+        // Ensure proper power state update
+        qcom_battmgr_battery_update(battmgr, POWER_SUPPLY_PROP_STATUS);
+
         power_supply_changed(battmgr->usb_psy);
-        pr_info("qcom_battmgr: USB property notification received\n");
+        pr_info("qcom_battmgr: USB property updated, online=%d\n", battmgr->usb_online);
         break;
+
     case NOTIF_WLS_PROPERTY:
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
+
     case BC_CID_DETECT:
         pr_info("qcom_battmgr: CID detection triggered!\n");
         schedule_delayed_work(&battmgr->cid_status_change_work, 0);
         break;
+
     case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59
         pr_info("qcom_battmgr: Received charging status update (0x59)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
+
     case BC_CHG_STATUS_SET:  // Fix unknown notification 0x60
         pr_info("qcom_battmgr: Charging status set (0x60)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
+
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
         break;

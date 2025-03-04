@@ -403,7 +403,7 @@ static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
     /* If a cable is connected, read the chip ID */
     if (cid_status != 0) {
         mutex_lock(&battmgr->lock);
-        rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_CID_ID, 0);
+        rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
         mutex_unlock(&battmgr->lock);
         if (rc < 0) {
             pr_err("qcom_battmgr: Failed to read Cable Chip ID\n");

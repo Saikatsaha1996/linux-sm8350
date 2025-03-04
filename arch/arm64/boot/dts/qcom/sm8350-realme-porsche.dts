@@ -237,6 +237,10 @@
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
+
+                pinctrl-names = "default", "gpio";
+                pinctrl-0 = <&usb_phy_ps &usb_phy_ps1>;
+
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
 
 		connector@0 {
@@ -676,16 +680,6 @@
 		};
 	};
 };
-
-/*&i2c2 {
-        status = "okay";
-        clock-frequency = <100000>;
-        bq27541: fuel-gauge@55 {
-                compatible = "ti,bq27541";
-                reg = <0x55>;
-                fuel-gauge;
-        };
-};*/
 
 &i2c4 {
 	clock-frequency = <400000>;
@@ -1418,6 +1412,23 @@
 			bias-pull-down;
                         input-enable;
 		};
+        };
+
+        usb_phy_ps: usb3phy_portselect_default {
+                        function = "usb_phy";
+                        pins = "gpio81";
+                        bias-disable;
+                        drive-strength = <0x02>;
+                };
+        };
+
+        usb_phy_ps1: usb3phy_portselect_gpio {
+                        function = "gpio";
+                        pins = "gpio81";
+                        drive-strength = <0x02>;
+                        bias-disable;
+                        input-enable;
+                };
         };
 };
 

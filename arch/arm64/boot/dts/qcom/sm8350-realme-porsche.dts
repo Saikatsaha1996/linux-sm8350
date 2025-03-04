@@ -667,7 +667,7 @@
 	};
 };
 
-&i2c2 {
+/*&i2c2 {
         status = "okay";
         clock-frequency = <100000>;
         bq27541: fuel-gauge@55 {
@@ -675,7 +675,7 @@
                 reg = <0x55>;
                 fuel-gauge;
         };
-};
+};*/
 
 &i2c4 {
 	clock-frequency = <400000>;

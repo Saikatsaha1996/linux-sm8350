@@ -1414,21 +1414,19 @@
 		};
         };
 
-        usb_phy_ps: usb3phy_portselect_default {
-                        function = "usb_phy";
-                        pins = "gpio81";
-                        bias-disable;
-                        drive-strength = <2>;
-                };
+        usb_phy_ps: usb3phy-portselect-default {
+                function = "usb_phy";
+                pins = "gpio81";
+                bias-disable;
+                drive-strength = <2>;
         };
 
-        usb_phy_ps1: usb3phy_portselect_gpio {
-                        function = "gpio";
-                        pins = "gpio81";
-                        drive-strength = <2>;
-                        bias-disable;
-                        input-enable;
-                };
+        usb_phy_ps1: usb3phy-portselect-gpio {
+                function = "gpio";
+                pins = "gpio81";
+                drive-strength = <2>;
+                bias-disable;
+                input-enable;
         };
 };
 

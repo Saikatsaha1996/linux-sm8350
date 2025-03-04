@@ -391,7 +391,7 @@ static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
     int cable_chip_id = 0;
     int rc;
     /* Read CID status */
-    rc = qcom_battmgr_read_property(battmgr, BC_CID_DETECT, &cid_status);
+    rc = qcom_battmgr_request_property(battmgr, BC_CID_DETECT, &cid_status);
     if (rc < 0) {
         pr_err("qcom_battmgr: Failed to read CID status\n");
         return;
@@ -399,7 +399,7 @@ static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
     pr_info("qcom_battmgr: CID Status = %d\n", cid_status);
     /* If a cable is connected, read the chip ID */
     if (cid_status != 0) {
-        rc = qcom_battmgr_read_property(battmgr, USB_CID_ID, &cable_chip_id);
+        rc = qcom_battmgr_request_property(battmgr, BC_CID_DETECT, &cable_chip_id);
         if (rc < 0) {
             pr_err("qcom_battmgr: Failed to read Cable Chip ID\n");
         } else {

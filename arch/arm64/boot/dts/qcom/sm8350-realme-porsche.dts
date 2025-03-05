@@ -238,8 +238,8 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-                pinctrl-names = "default", "gpio";
-                pinctrl-0 = <&usb_phy_ps &usb_phy_ps1>;
+                /*pinctrl-names = "default", "gpio";
+                pinctrl-0 = <&usb_phy_ps &usb_phy_ps1>;*/
 
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
 
@@ -1414,20 +1414,22 @@
 		};
         };
 
-        usb_phy_ps: usb3phy-portselect-default {
-                function = "usb_phy";
-                pins = "gpio81";
-                bias-disable;
-                drive-strength = <2>;
-        };
+        /*usb_phy_ps: usb3phy-portselect-default {
+                active-pins {
+                        function = "usb_phy";
+                        pins = "gpio81";
+                        bias-disable;
+                        drive-strength = <2>;
+                };
 
-        usb_phy_ps1: usb3phy-portselect-gpio {
-                function = "gpio";
-                pins = "gpio81";
-                drive-strength = <2>;
-                bias-disable;
-                input-enable;
-        };
+                sleep-pins {
+                        function = "gpio";
+                        pins = "gpio81";
+                        drive-strength = <2>;
+                        bias-disable;
+                        input-enable;
+                };
+        };*/
 };
 
 &ufs_mem_hc {

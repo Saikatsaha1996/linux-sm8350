@@ -1493,8 +1493,8 @@
        phy-names = "usb2-phy";
        usb-role-switch;
        vbus-det-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
-       pinctrl-names = "default";
-       pinctrl-0 = <&usb_otg_en>;
+       //pinctrl-names = "default";
+       //pinctrl-0 = <&usb_otg_en>;
 };
 
 &usb_1_dwc3_hs {
@@ -1508,7 +1508,7 @@
         status = "okay";
 };
 
-/*&usb_1_qmpphy {
+&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
         status = "okay";
@@ -1534,4 +1534,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};*/
+};

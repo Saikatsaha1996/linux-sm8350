@@ -1204,7 +1204,7 @@
         };*/
 };
 
-/*&pm8350c_gpios {
+&pm8350c_gpios {
 	status = "okay";
                 usb_otg_en: otg-en-defult {
 	        pins = "gpio1";
@@ -1213,7 +1213,7 @@
 	        bias-disable;
 	        output-high;
         };
-};*/
+};
 
 &tlmm {
 	gpio-reserved-ranges = <52 8>;
@@ -1471,9 +1471,9 @@
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
-       /*vbus-det-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+       /*vbus-det-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;*/
        pinctrl-names = "default";
-       pinctrl-0 = <&usb_otg_en>;*/
+       pinctrl-0 = <&usb_otg_en>;
 };
 
 &usb_1_dwc3_hs {

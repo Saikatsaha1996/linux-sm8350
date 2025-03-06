@@ -262,12 +262,12 @@
 					};
 				};
 
-                                port@1 {
+                                /*port@1 {
                                         reg = <1>;
                                         pmic_glink_ss_in: endpoint {
                                                 remote-endpoint = <&usb_1_qmpphy_out>;
                                         };
-                                };
+                                };*/
 
 				port@2 {
 					reg = <2>;
@@ -1508,7 +1508,7 @@
         status = "okay";
 };
 
-&usb_1_qmpphy {
+/*&usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
         status = "okay";
@@ -1516,7 +1516,7 @@
 
 &usb_1_qmpphy_out {
 	remote-endpoint = <&pmic_glink_ss_in>;
-};
+};*/
 
 &usb_2 {
         dr_mode = "host";

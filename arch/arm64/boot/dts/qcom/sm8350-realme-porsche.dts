@@ -1516,7 +1516,7 @@
 
 &usb_1_qmpphy_out {
 	remote-endpoint = <&pmic_glink_ss_in>;
-};*/
+};
 
 &usb_2 {
         dr_mode = "host";
@@ -1534,4 +1534,4 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};
+};*/

@@ -273,13 +273,6 @@
 	};
 };
 
-&ipa {
-	status = "okay";
-	qcom,gsi-loader = "self";
-	memory-region = <&pil_ipa_fw_mem>;
-	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
-};
-
 &adsp {
 	status = "okay";
         memory-region = <&pil_adsp_mem>;
@@ -1475,19 +1468,19 @@
 	/delete-property/ interconnects;
 	/delete-property/ interconnect-names;
         qcom,select-utmi-as-pipe-clk;
-        vbus-supply = <&usb2_vbus_boost_reg>;
+        /*vbus-supply = <&usb2_vbus_boost_reg>;*/
         status = "okay";
 };
 
 &usb_1_dwc3 {
-       dr_mode = "otg";
+       dr_mode = "host";
        maximum-speed = "high-speed";
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
-       vbus-det-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+       /*vbus-det-gpio = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
        pinctrl-names = "default";
-       pinctrl-0 = <&usb_otg_en>;
+       pinctrl-0 = <&usb_otg_en>;*/
 };
 
 &usb_1_dwc3_hs {
@@ -1521,4 +1514,11 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
+};
+
+&ipa {
+	status = "okay";
+	qcom,gsi-loader = "self";
+	memory-region = <&pil_ipa_fw_mem>;
+	firmware-name = "qcom/sm8350/realme/porsche/ipa_fws.mbn";
 };

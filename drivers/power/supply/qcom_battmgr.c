@@ -1067,6 +1067,78 @@ static const u8 sm8350_wls_prop_map[] = {
 	[POWER_SUPPLY_PROP_CURRENT_MAX] = WLS_CURR_MAX,
 };
 
+static int qcom_battmgr_get_usb_type(struct power_supply *psy, union power_supply_propval *val)
+{
+    struct qcom_battmgr *battmgr = power_supply_get_drvdata(psy);
+    int usb_type;
+
+    mutex_lock(&battmgr->lock);
+    usb_type = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_TYPE_PROPERTY, 0);
+    mutex_unlock(&battmgr->lock);
+
+    if (usb_type < 0) {
+        pr_err("qcom_battmgr: Failed to read USB Type\n");
+        val->intval = POWER_SUPPLY_USB_TYPE_UNKNOWN;
+        return usb_type;
+    }
+
+    switch (usb_type) {
+    case 0:
+        val->intval = POWER_SUPPLY_USB_TYPE_SDP;
+        break;
+    case 1:
+        val->intval = POWER_SUPPLY_USB_TYPE_DCP;
+        break;
+    case 2:
+        val->intval = POWER_SUPPLY_USB_TYPE_CDP;
+        break;
+    case 3:
+        val->intval = POWER_SUPPLY_USB_TYPE_PD;
+        break;
+    default:
+        val->intval = POWER_SUPPLY_USB_TYPE_UNKNOWN;
+        break;
+    }
+
+    return 0;
+}
+
+static int qcom_battmgr_get_charge_type(struct power_supply *psy, union power_supply_propval *val)
+{
+    struct qcom_battmgr *battmgr = power_supply_get_drvdata(psy);
+    int charge_type;
+
+    mutex_lock(&battmgr->lock);
+    charge_type = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, CHARGE_TYPE_PROPERTY, 0);
+    mutex_unlock(&battmgr->lock);
+
+    if (charge_type < 0) {
+        pr_err("qcom_battmgr: Failed to read Charge Type\n");
+        val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
+        return charge_type;
+    }
+
+    switch (charge_type) {
+    case 0:
+        val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
+        break;
+    case 1:
+        val->intval = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
+        break;
+    case 2:
+        val->intval = POWER_SUPPLY_CHARGE_TYPE_FAST;
+        break;
+    case 3:
+        val->intval = POWER_SUPPLY_CHARGE_TYPE_TAPER;
+        break;
+    default:
+        val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
+        break;
+    }
+
+    return 0;
+}
+
 static int qcom_battmgr_wls_sm8350_update(struct qcom_battmgr *battmgr,
 					  enum power_supply_property psp)
 {

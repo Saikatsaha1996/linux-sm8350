@@ -1253,47 +1253,37 @@
 	};
 
         qup_uart18_pin: qup-uart18-pin-state {
-                default-cts-pin {
+                cts-pin {
                         pins = "gpio68";
-                        function = "gpio";
-                        drive-strength = <2>;
-                };
-                default-rts-rx-pin {
-                        pins = "gpio69", "gpio71";
-                        function = "gpio";
-                        drive-strength = <2>;
-                        bias-pull-down;
-                };
-                default-tx-pin {
-                        pins = "gpio70";
-                        function = "gpio";
-                        drive-strength = <2>;
-                        bias-pull-up;
-                };
-                cts-rx-pin {
-                        pins = "gpio68", "gpio71";
                         function = "qup18";
                         drive-strength = <2>;
-                        bias-disable;
+                        bias-bus-hold;
                 };
                 rts-pin {
                         pins = "gpio69";
                         function = "qup18";
                         drive-strength = <2>;
-                        bias-pull-down;
+                        bias-disable;
                 };
                 tx-pin {
                         pins = "gpio70";
                         function = "qup18";
                         drive-strength = <2>;
-                        bias-pull-up;
+                       	bias-disable;
+		        output-enable;
                 };
-                usb2-id-pin {
+                rx-pin {
+                        pins = "gpio71";
+                        function = "qup18";
+                        drive-strength = <2>;
+		        bias-pull-up;
+                };
+                /*usb2-id-pin {
                         pins = "gpio51";
                         function = "gpio";
                         input-enable;
                         bias-pull-up;
-               };
+               };*/
         };
 
 	pcie0_default: pcie0-default-state {

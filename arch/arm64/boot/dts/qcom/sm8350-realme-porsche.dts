@@ -90,7 +90,7 @@
                 };
         };
 
-        bat: battery {
+        /*bat: battery {
 	        compatible = "simple-battery";
 	        device-chemistry = "lithium-ion";
 	        /* Voltage */
@@ -106,7 +106,7 @@
 	        /* Charge Current */
 	        constant-charge-current-max-microamp = <6000000>; /* 6A fast charging */
 	        constant-charge-voltage-max-microvolt = <4350000>; /* 4.35V max */
-        };
+        };*/
 
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
@@ -245,17 +245,32 @@
 		};
 	};
 
-	/*pmic-glink {
+	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+
+	        voltage-min-design-microvolt = <3000000>;  /* 3.0V minimum */
+	        voltage-max-design-microvolt = <4350000>;  /* 4.35V maximum */
+	        voltage-now-microvolt = <3700000>;         /* Assume battery is around 3.7V */
+	        /* Battery Capacity */
+	        charge-full-design-microamp-hours = <5000000>;  /* 5000mAh typical */
+	        charge-full-microamp-hours = <4880000>;  /* 4880mAh rated */
+	        /* Energy */
+	        energy-full-design-microwatt-hours = <19250000>;  /* 5000mAh @ 3.85V */
+	        energy-full-microwatt-hours = <18788000>;  /* 4880mAh @ 3.85V */
+	        /* Charge Current */
+	        constant-charge-current-max-microamp = <6000000>; /* 6A fast charging */
+	        constant-charge-voltage-max-microvolt = <4350000>; /* 4.35V max */
 
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
+                        mode-switch;
+                        orientation-switch;
                         usb-role-switch;
 			ports {
 				#address-cells = <1>;
@@ -275,7 +290,7 @@
 				};
 			};
 		};
-	};*/
+	};
 };
 
 &adsp {
@@ -747,19 +762,19 @@
                status = "okay";
        };
 
-       /*fsa4480: typec-mux@42 {
-	       compatible = "fcs,fsa4480";
-	       reg = <0x42>;
-	       interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
-	       vcc-supply = <&vreg_bob>;
-	       mode-switch;
-	       orientation-switch;
-	       port {
-			fsa4480_sbu_mux: endpoint {
-				remote-endpoint = <&pmic_glink_sbu>;
-			};
-		};
-        };*/
+       fsa4480: typec-mux@42 {
+               compatible = "fcs,fsa4480";
+               reg = <0x42>;
+               interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+               vcc-supply = <&vreg_bob>;
+               mode-switch;
+               orientation-switch;
+               port {
+                        fsa4480_sbu_mux: endpoint {
+                                remote-endpoint = <&pmic_glink_sbu>;
+                        };
+               };
+       };
 };
 
 &uart2 {
@@ -1427,8 +1442,6 @@
 };
 
 &usb_1 {
-	/delete-property/ interconnects;
-	/delete-property/ interconnect-names;
         qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
@@ -1438,12 +1451,12 @@
        maximum-speed = "high-speed";
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
-       //usb-role-switch;
+       usb-role-switch;
 };
 
-/*&usb_1_dwc3_hs {
+&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};*/
+};
 
 &usb_1_hsphy {
 	vdda-pll-supply = <&pm8350_l5>;

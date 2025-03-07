@@ -357,7 +357,7 @@ static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcod
 	return qcom_battmgr_request(battmgr, &request, sizeof(request));
 }
 
-static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
+/*static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
 {
     int rc;
 
@@ -373,6 +373,25 @@ static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
     pr_info("qcom_battmgr: Retrieved charge status = %d\n", battmgr->status.bc_status);
 
     return 0;
+}*/
+
+static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
+{
+    int rc;
+
+    pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
+
+    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
+    if (rc < 0) {
+        pr_err("qcom_battmgr: Failed to request BC_CHG_STATUS_GET, rc=%d\n", rc);
+        return rc;
+    }
+
+    /* Wait for response to be processed */
+    wait_for_completion(&battmgr->ack);
+
+    /* Return the actual status value stored in battmgr->status.bc_status */
+    return battmgr->status.bc_status;
 }
 
 static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
@@ -1278,9 +1297,9 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			battmgr->status.power_now = le32_to_cpu(resp->intval.value);
 			break;
 		case BC_CHG_STATUS_GET:
-	                battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
-	                pr_info("qcom_battmgr: BC_CHG_STATUS received = %d\n", battmgr->status.bc_status);
-	                break;
+                        battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
+                        pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_status);
+                        break;
 		case BC_CHG_STATUS_SET:
                         battmgr->status.bc_status = le32_to_cpu(resp->intval.value);  // ✅ Store the value
                         pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_status);

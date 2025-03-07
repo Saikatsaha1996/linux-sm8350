@@ -1128,9 +1128,9 @@ static int qcom_battmgr_get_charge_type(struct power_supply *psy, union power_su
     case 2:
         val->intval = POWER_SUPPLY_CHARGE_TYPE_FAST;
         break;
-    case 3:
+    /*case 3:
         val->intval = POWER_SUPPLY_CHARGE_TYPE_TAPER;
-        break;
+        break;*/
     default:
         val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
         break;

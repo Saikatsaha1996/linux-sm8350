@@ -25,7 +25,7 @@ enum qcom_battmgr_variant {
 
 #define BATTMGR_REQUEST_NOTIFICATION	0x4
 
-#define BC_CID_DETECT                   0x52
+//#define BC_CID_DETECT                   0x52
 #define BC_CHG_STATUS_GET		0x59
 #define BC_CHG_STATUS_SET		0x60
 
@@ -316,7 +316,7 @@ struct qcom_battmgr {
 	 * firmware, as it then stops responding.
 	 */
 	struct mutex lock;
-        struct delayed_work cid_status_change_work;
+       // struct delayed_work cid_status_change_work;
 };
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
@@ -412,14 +412,14 @@ static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
     return 0;
 }
 
-static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
+/*static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
 {
     struct qcom_battmgr *battmgr = container_of(work, struct qcom_battmgr, cid_status_change_work.work);
     int cid_status = 0;
     int cable_chip_id = 0;
-    int rc;
+    int rc;*/
     /* Read CID status */
-    mutex_lock(&battmgr->lock);
+ /*   mutex_lock(&battmgr->lock);
     rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
     mutex_unlock(&battmgr->lock);
     if (rc < 0) {
@@ -427,9 +427,9 @@ static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
         return;
     }
     pr_info("qcom_battmgr: CID Status = %d\n", rc);
-    cid_status = rc;
+    cid_status = rc;*/
     /* If a cable is connected, read the chip ID */
-    if (cid_status != 0) {
+/*    if (cid_status != 0) {
         mutex_lock(&battmgr->lock);
         rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
         mutex_unlock(&battmgr->lock);
@@ -440,7 +440,7 @@ static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
             pr_info("qcom_battmgr: Cable Chip ID = %d\n", cable_chip_id);
         }
     }
-}
+}*/
 
 static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 {
@@ -1064,10 +1064,10 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
-    case BC_CID_DETECT: // Fix unknown notification 0x52
+    /*case BC_CID_DETECT: // Fix unknown notification 0x52
         pr_info("qcom_battmgr: CID detection triggered!\n");
         schedule_delayed_work(&battmgr->cid_status_change_work, 0);
-        break;
+        break;*/
     case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59
         pr_info("qcom_battmgr: Received charging status update (0x59)\n");
         power_supply_changed(battmgr->bat_psy);
@@ -1476,7 +1476,7 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 	mutex_init(&battmgr->lock);
 	init_completion(&battmgr->ack);
 	/* Additional from Downstream */
-	INIT_DELAYED_WORK(&battmgr->cid_status_change_work, qcom_battmgr_cid_status_change_work);
+	//INIT_DELAYED_WORK(&battmgr->cid_status_change_work, qcom_battmgr_cid_status_change_work);
 	
 	match = of_match_device(qcom_battmgr_of_variants, dev->parent);
 	if (match)

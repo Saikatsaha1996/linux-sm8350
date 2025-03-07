@@ -90,6 +90,24 @@
                 };
         };
 
+        bat: battery {
+	        compatible = "simple-battery";
+	        device-chemistry = "lithium-ion";
+	        /* Voltage */
+	        voltage-min-design-microvolt = <3000000>;  /* 3.0V minimum */
+	        voltage-max-design-microvolt = <4350000>;  /* 4.35V maximum */
+	        voltage-now-microvolt = <3700000>;         /* Assume battery is around 3.7V */
+	        /* Battery Capacity */
+	        charge-full-design-microamp-hours = <5000000>;  /* 5000mAh typical */
+	        charge-full-microamp-hours = <4880000>;  /* 4880mAh rated */
+	        /* Energy */
+	        energy-full-design-microwatt-hours = <19250000>;  /* 5000mAh @ 3.85V */
+	        energy-full-microwatt-hours = <18788000>;  /* 4880mAh @ 3.85V */
+	        /* Charge Current */
+	        constant-charge-current-max-microamp = <6000000>; /* 6A fast charging */
+	        constant-charge-voltage-max-microvolt = <4350000>; /* 4.35V max */
+        };
+
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vph_pwr";
@@ -661,6 +679,17 @@
 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
 						   RPMH_REGULATOR_MODE_HPM>;
 		};
+	};
+};
+
+&i2c2 {
+	clock-frequency = <100000>;
+	status = "okay";
+
+	bq27541: fuel-gauge@55 {
+		compatible = "ti,bq27541";
+		reg = <0x55>;
+		monitored-battery = <&bat>;
 	};
 };
 
@@ -1423,7 +1452,7 @@
         status = "okay";
 };
 
-&usb_2 {
+/*&usb_2 {
 	status = "okay";
 };
 
@@ -1443,7 +1472,7 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};
+};*/
 
 &ipa {
 	status = "okay";

@@ -339,21 +339,6 @@ static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t
 	return battmgr->error;
 }
 
-/*static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcode,
-					 int property, u32 value)
-{
-	struct qcom_battmgr_property_request request = {
-		.hdr.owner = cpu_to_le32(PMIC_GLINK_OWNER_BATTMGR),
-		.hdr.type = cpu_to_le32(PMIC_GLINK_REQ_RESP),
-		.hdr.opcode = cpu_to_le32(opcode),
-		.battery = cpu_to_le32(0),
-		.property = cpu_to_le32(property),
-		.value = cpu_to_le32(value),
-	};
-
-	return qcom_battmgr_request(battmgr, &request, sizeof(request));
-}*/
-
 static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcode,
 					 int property, u32 value)
 {
@@ -374,14 +359,38 @@ static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcod
 
 static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
 {
-	pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
-	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
+    int rc;
+
+    pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
+
+    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
+    if (rc < 0) {
+        pr_err("qcom_battmgr: Failed to get charge status, rc = %d\n", rc);
+        return rc;
+    }
+
+    battmgr->status.bc_status = rc;  // ✅ Store the retrieved value
+    pr_info("qcom_battmgr: Retrieved charge status = %d\n", battmgr->status.bc_status);
+
+    return 0;
 }
 
 static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
 {
-	pr_info("qcom_battmgr: Setting BC_CHG_STATUS_SET to %d\n", status);
-	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
+    int rc;
+
+    pr_info("qcom_battmgr: Setting BC_CHG_STATUS_SET to %d\n", status);
+
+    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
+    if (rc < 0) {
+        pr_err("qcom_battmgr: Failed to set charge status, rc = %d\n", rc);
+        return rc;
+    }
+
+    battmgr->status.bc_status = status;  // ✅ Store the new status
+    pr_info("qcom_battmgr: Charge status successfully set to %d\n", battmgr->status.bc_status);
+
+    return 0;
 }
 
 static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
@@ -1272,6 +1281,10 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 	                battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
 	                pr_info("qcom_battmgr: BC_CHG_STATUS received = %d\n", battmgr->status.bc_status);
 	                break;
+		case BC_CHG_STATUS_SET:
+                        battmgr->status.bc_status = le32_to_cpu(resp->intval.value);  // ✅ Store the value
+                        pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_status);
+                        break;
 		default:
 			dev_warn(battmgr->dev, "unknown property %#x\n", property);
 			break;

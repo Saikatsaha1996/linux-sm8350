@@ -245,7 +245,7 @@
 		};
 	};
 
-	pmic-glink {
+	/*pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -256,7 +256,7 @@
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
-                        usb-role-switch;   // ADD THIS
+                        usb-role-switch;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -275,7 +275,7 @@
 				};
 			};
 		};
-	};
+	};*/
 };
 
 &adsp {
@@ -747,7 +747,7 @@
                status = "okay";
        };
 
-       fsa4480: typec-mux@42 {
+       /*fsa4480: typec-mux@42 {
 	       compatible = "fcs,fsa4480";
 	       reg = <0x42>;
 	       interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
@@ -759,7 +759,7 @@
 				remote-endpoint = <&pmic_glink_sbu>;
 			};
 		};
-        };
+        };*/
 };
 
 &uart2 {
@@ -1434,16 +1434,16 @@
 };
 
 &usb_1_dwc3 {
-       dr_mode = "otg";
+       dr_mode = "host";
        maximum-speed = "high-speed";
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
-       usb-role-switch;
+       //usb-role-switch;
 };
 
-&usb_1_dwc3_hs {
+/*&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};
+};*/
 
 &usb_1_hsphy {
 	vdda-pll-supply = <&pm8350_l5>;

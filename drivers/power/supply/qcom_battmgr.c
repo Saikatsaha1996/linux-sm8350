@@ -384,60 +384,27 @@ static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
 	return qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
 }
 
-/*static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
-{
-    struct qcom_battmgr *battmgr = container_of(work, struct qcom_battmgr, cid_status_change_work.work);
-    int cid_status = 0;
-    int cable_chip_id = 0;
-    int rc;
-    mutex_lock(&battmgr->lock);
-    rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
-    mutex_unlock(&battmgr->lock);
-    if (rc < 0) {
-        pr_err("qcom_battmgr: Failed to read CID status\n");
-        return;
-    }
-    pr_info("qcom_battmgr: CID Status = %d\n", rc);
-    cid_status = rc;
-    if (cid_status != 0) {
-        mutex_lock(&battmgr->lock);
-        rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
-        mutex_unlock(&battmgr->lock);
-        if (rc < 0) {
-            pr_err("qcom_battmgr: Failed to read Cable Chip ID\n");
-        } else {
-            cable_chip_id = rc;
-            pr_info("qcom_battmgr: Cable Chip ID = %d\n", cable_chip_id);
-        }
-    }
-}*/
-
 static void qcom_battmgr_cid_status_change_work(struct work_struct *work)
 {
     struct qcom_battmgr *battmgr = container_of(work, struct qcom_battmgr, cid_status_change_work.work);
     int cid_status = 0;
     int cable_chip_id = 0;
     int rc;
-
     /* Read CID status */
     mutex_lock(&battmgr->lock);
     rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
     mutex_unlock(&battmgr->lock);
-
     if (rc < 0) {
         pr_err("qcom_battmgr: Failed to read CID status\n");
         return;
     }
-
     pr_info("qcom_battmgr: CID Status = %d\n", rc);
     cid_status = rc;
-
     /* If a cable is connected, read the chip ID */
     if (cid_status != 0) {
         mutex_lock(&battmgr->lock);
         rc = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BC_CID_DETECT, 0);
         mutex_unlock(&battmgr->lock);
-
         if (rc < 0) {
             pr_err("qcom_battmgr: Failed to read Cable Chip ID\n");
         } else {
@@ -992,11 +959,6 @@ static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
 	mutex_lock(&battmgr->lock);
 	ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, prop, 0);
 	mutex_unlock(&battmgr->lock);
-	
-	if (prop == USB_TYPE) {
-		battmgr->usb.usb_type = ret;
-		pr_info("qcom_battmgr: Updated USB type = %d\n", ret);
-	}
 
 	return ret;
 }
@@ -1039,7 +1001,6 @@ static int qcom_battmgr_usb_get_property(struct power_supply *psy,
 		break;
 	case POWER_SUPPLY_PROP_USB_TYPE:
 		val->intval = battmgr->usb.usb_type;
-		pr_info("qcom_battmgr: USB type is %d\n", battmgr->usb.usb_type);
 		break;
 	default:
 		return -EINVAL;
@@ -1259,14 +1220,9 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->usb_psy);
         pr_info("qcom_battmgr: USB property updated, online=%d\n", battmgr->usb_online);
         break;*/
-    /*case NOTIF_USB_PROPERTY:
-        power_supply_changed(battmgr->usb_psy);
-        pr_info("qcom_battmgr: USB property notification received\n");
-        break;*/
     case NOTIF_USB_PROPERTY:
-        pr_info("qcom_battmgr: USB property notification received\n");
-        qcom_battmgr_usb_sm8350_update(battmgr, POWER_SUPPLY_PROP_USB_TYPE);
         power_supply_changed(battmgr->usb_psy);
+        pr_info("qcom_battmgr: USB property notification received\n");
         break;
     case NOTIF_WLS_PROPERTY:
         power_supply_changed(battmgr->wls_psy);

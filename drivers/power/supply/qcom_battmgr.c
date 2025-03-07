@@ -1073,7 +1073,7 @@ static int qcom_battmgr_get_usb_type(struct power_supply *psy, union power_suppl
     int usb_type;
 
     mutex_lock(&battmgr->lock);
-    usb_type = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_TYPE_PROPERTY, 0);
+    usb_type = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_TYPE, 0);
     mutex_unlock(&battmgr->lock);
 
     if (usb_type < 0) {
@@ -1109,7 +1109,7 @@ static int qcom_battmgr_get_charge_type(struct power_supply *psy, union power_su
     int charge_type;
 
     mutex_lock(&battmgr->lock);
-    charge_type = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, CHARGE_TYPE_PROPERTY, 0);
+    charge_type = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, BATT_CHG_TYPE, 0);
     mutex_unlock(&battmgr->lock);
 
     if (charge_type < 0) {

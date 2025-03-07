@@ -1434,7 +1434,7 @@
 };
 
 &usb_1_dwc3 {
-       dr_mode = "host";
+       dr_mode = "otg";
        maximum-speed = "high-speed";
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
@@ -1452,7 +1452,7 @@
         status = "okay";
 };
 
-/*&usb_2 {
+&usb_2 {
 	status = "okay";
 };
 
@@ -1472,7 +1472,7 @@
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
-};*/
+};
 
 &ipa {
 	status = "okay";

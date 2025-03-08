@@ -251,9 +251,9 @@
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
-                        //mode-switch;
-                        //orientation-switch;
-                        //usb-role-switch;
+                        mode-switch;
+                        orientation-switch;
+                        usb-role-switch;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -1178,7 +1178,7 @@
 	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
 
-/*&pm8350c_gpios {
+&pm8350c_gpios {
         status = "okay";
 
         vbus_enable: vbus-enable {
@@ -1187,7 +1187,7 @@
                 bias-disable;
                 power-source = <0>;
                 output-high;
-                qcom,drive-strength = <3>;
+                drive-strength = <3>;
         };
 
         vbus_disable: vbus-disable {
@@ -1196,9 +1196,9 @@
                 bias-disable;
                 power-source = <0>;
                 output-low;
-                qcom,drive-strength = <3>;
+                drive-strength = <3>;
         };
-};*/
+};
 
 &pm8350_gpios {
 	status = "okay";

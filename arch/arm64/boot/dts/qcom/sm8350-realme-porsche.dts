@@ -112,20 +112,17 @@
 
         };
 
-        /*vbus_otg: regulator-vbus {
-               compatible = "regulator-fixed";
-               regulator-name = "vbus_otg";
-               regulator-min-microvolt = <5000000>;
-               regulator-max-microvolt = <5000000>;
-               gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-               regulator-boot-on;
-               regulator-always-on;
-               enable-active-high;
-               pinctrl-names = "default", "detect";
-               pinctrl-0 = <&vbus_boost>;
-               pinctrl-1 = <&vbus_detect>;
-               status = "okay";
-        };*/
+	extcon_usb1: extcon-usb1 {
+		compatible = "linux,extcon-usb-gpio";
+		vbus-gpio =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&vbus_detect
+			     &usb_id
+			     &vbus_boost>;
+	};
 
         panel_supply_vddio: panel-supply-regulator@1 {
                 compatible = "regulator-fixed";
@@ -716,7 +713,7 @@
 &i2c19 {
        status ="okay";
        clock-frequency = <400000>;
-       /*SpkrTop: audio-codec@34 {
+       SpkrTop: audio-codec@34 {
                compatible = "nxp,tfa9874";
                reg = <0x34>;
                reset-gpio = <&tlmm 15 GPIO_ACTIVE_HIGH>;
@@ -740,7 +737,7 @@
                sound-name-prefix = "Bottom";
                #sound-dai-cells = <1>;
                status = "okay";
-       };*/
+       };
 
        fsa4480: typec-mux@42 {
                compatible = "fcs,fsa4480";
@@ -765,7 +762,7 @@
 &uart18 {
         status = "okay";
         pinctrl-names = "default";
-        pinctrl-0 = <&qup_uart18_pin>;
+        pinctrl-0 = <&qup_uart18_default>;
 
         bluetooth {
                 compatible = "qcom,qca6390-bt";
@@ -1180,28 +1177,6 @@
 	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
 
-/*&pm8350c_gpios {
-        status = "okay";
-
-        vbus_enable: vbus-enable {
-                pins = "gpio9";
-                function = "normal";
-                bias-disable;
-                power-source = <0>;
-                output-high;
-                drive-strength = <3>;
-        };
-
-        vbus_disable: vbus-disable {
-                pins = "gpio9";
-                function = "normal";
-                bias-disable;
-                power-source = <0>;
-                output-low;
-                drive-strength = <3>;
-        };
-};*/
-
 &pm8350_gpios {
 	status = "okay";
 
@@ -1227,12 +1202,11 @@
 		bias-disable;
 	};
 
-        /*vbus_boost: vbus-boost-enable {
+        vbus_boost: vbus-boost-enable {
                 pins = "gpio8";
                 function = "normal";
                 power-source = <0>;
-                output-high;
-                drive-strength = <3>;
+                output-low;
         };
 
         vbus_detect: vbus-detect-enable {
@@ -1241,7 +1215,7 @@
                 input-enable;
                 bias-disable;
                 power-source = <0>;
-        };*/
+        };
 
 };
 
@@ -1323,6 +1297,40 @@
                 drive-strength = <2>;
         };
         qup_uart18_pin: qup-uart18-pin-state {
+                uart_cts: cts-pin {
+                        pins = "gpio68";
+                        function = "qup18";
+                        drive-strength = <2>;
+                        bias-bus-hold;
+                };
+                uart_rts: rts-pin {
+                        pins = "gpio69";
+                        function = "qup18";
+                        drive-strength = <2>;
+                        bias-disable;
+                };
+                uart_tx: tx-pin {
+                        pins = "gpio70";
+                        function = "qup18";
+                        drive-strength = <2>;
+                       	bias-disable;
+		        output-enable;
+                };
+                uart_rx: rx-pin {
+                        pins = "gpio71";
+                        function = "qup18";
+                        drive-strength = <2>;
+		        bias-pull-up;
+                };
+                usb_id: usb2-id-pin {
+                        pins = "gpio51";
+                        function = "gpio";
+                        input-enable;
+                        bias-pull-up;
+               };
+        };
+
+        qup_uart18_default: qup-uart18-default {
                 cts-pin {
                         pins = "gpio68";
                         function = "qup18";
@@ -1339,22 +1347,15 @@
                         pins = "gpio70";
                         function = "qup18";
                         drive-strength = <2>;
-                       	bias-disable;
-		        output-enable;
+                        bias-disable;
+                        output-enable;
                 };
                 rx-pin {
                         pins = "gpio71";
                         function = "qup18";
                         drive-strength = <2>;
-		        bias-pull-up;
-                };
-                usb2-id-pin {
-                        pins = "gpio51";
-                        function = "gpio";
-                        input-enable;
                         bias-pull-up;
-               };
-        };
+                };
 
 	pcie0_default: pcie0-default-state {
 		perst-pins {
@@ -1469,6 +1470,7 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
+        extcon = <&extcon_usb1>;
         status = "okay";
 };
 

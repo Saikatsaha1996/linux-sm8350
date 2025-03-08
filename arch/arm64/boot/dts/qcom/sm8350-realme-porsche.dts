@@ -112,7 +112,7 @@
 
         };
 
-        vbus_otg: regulator-vbus {
+        /*vbus_otg: regulator-vbus {
                compatible = "regulator-fixed";
                regulator-name = "vbus_otg";
                regulator-min-microvolt = <5000000>;
@@ -125,7 +125,7 @@
                pinctrl-0 = <&vbus_boost>;
                pinctrl-1 = <&vbus_detect>;
                status = "okay";
-        };
+        };*/
 
         panel_supply_vddio: panel-supply-regulator@1 {
                 compatible = "regulator-fixed";
@@ -1227,10 +1227,9 @@
 		bias-disable;
 	};
 
-        vbus_boost: vbus-boost-enable {
+        /*vbus_boost: vbus-boost-enable {
                 pins = "gpio8";
                 function = "normal";
-                //bias-disable;
                 power-source = <0>;
                 output-high;
                 drive-strength = <3>;
@@ -1242,7 +1241,7 @@
                 input-enable;
                 bias-disable;
                 power-source = <0>;
-        };
+        };*/
 
 };
 

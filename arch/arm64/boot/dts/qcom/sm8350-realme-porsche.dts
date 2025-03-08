@@ -1436,7 +1436,6 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
-        vbus-supply = <&vbus_otg>;  // **Link VBUS regulator**
         status = "okay";
 };
 
@@ -1456,6 +1455,29 @@
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
+        status = "okay";
+};
+
+&usb_2 {
+        vbus-supply = <&vbus_otg>;  // **Link VBUS regulator**
+	status = "okay";
+};
+
+&usb_2_dwc3 {
+       dr_mode = "host";
+       status = "okay"; 
+};
+
+&usb_2_hsphy {
+	vdda-pll-supply = <&pm8350_l5>;
+	vdda18-supply = <&pm8350c_l1>;
+	vdda33-supply = <&pm8350_l2>;
+        status = "okay";
+};
+
+&usb_2_qmpphy {
+	vdda-phy-supply = <&pm8350_l6>;
+	vdda-pll-supply = <&pm8350_l5>;
         status = "okay";
 };
 

@@ -1330,7 +1330,7 @@
                };
         };
 
-        qup_uart18_default: qup-uart18-default {
+        qup_uart18_default: qup-uart18-default-state {
                 cts-pin {
                         pins = "gpio68";
                         function = "qup18";

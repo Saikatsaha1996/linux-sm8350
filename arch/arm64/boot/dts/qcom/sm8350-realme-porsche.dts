@@ -1356,6 +1356,7 @@
                         drive-strength = <2>;
                         bias-pull-up;
                 };
+        };
 
 	pcie0_default: pcie0-default-state {
 		perst-pins {

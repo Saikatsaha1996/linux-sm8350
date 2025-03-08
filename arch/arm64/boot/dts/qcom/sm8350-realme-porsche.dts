@@ -117,12 +117,12 @@
                regulator-name = "vbus_otg";
                regulator-min-microvolt = <5000000>;
                regulator-max-microvolt = <5000000>;
-               gpio = <&pm8350c_gpios 9 GPIO_ACTIVE_HIGH>;
-               //regulator-always-on;
+               gpio = <&pm8350c_gpios 9 0x00>;
+               regulator-boot-on;
                enable-active-high;
-               //pinctrl-names = "default", "disable";
-               //pinctrl-0 = <&vbus_enable>;
-               //pinctrl-1 = <&vbus_disable>;
+               pinctrl-names = "default", "disable";
+               pinctrl-0 = <&vbus_enable>;
+               pinctrl-1 = <&vbus_disable>;
                status = "okay";
         };
 
@@ -1443,15 +1443,15 @@
 };
 
 &usb_1 {
-        //qcom,select-utmi-as-pipe-clk;
+        qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
 
 &usb_1_dwc3 {
        dr_mode = "otg";
-       //maximum-speed = "high-speed";
-       //phys = <&usb_1_hsphy>;
-       //phy-names = "usb2-phy";
+       maximum-speed = "high-speed";
+       phys = <&usb_1_hsphy>;
+       phy-names = "usb2-phy";
        usb-role-switch;
 };
 

@@ -122,7 +122,7 @@
                enable-active-high;
                pinctrl-names = "default", "disable";
                pinctrl-0 = <&vbus_enable>;
-               pinctrl-1 = <&vbus_disable>;
+               //pinctrl-1 = <&vbus_disable>;
                status = "okay";
         };
 

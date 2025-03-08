@@ -120,6 +120,9 @@
                gpio = <&pm8350c_gpios 9 GPIO_ACTIVE_HIGH>;
                regulator-always-on;
                enable-active-high;
+               pinctrl-names = "default", "disable";
+               pinctrl-0 = <&vbus_enable>;
+               pinctrl-1 = <&vbus_disable>;
                status = "okay";
         };
 
@@ -1167,7 +1170,7 @@
 	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
 
-/*&pm8350c_gpios {
+&pm8350c_gpios {
         status = "okay";
 
         vbus_enable: vbus-enable {
@@ -1187,7 +1190,7 @@
                 output-low; // Disable VBUS when inactive
                 qcom,drive-strength = <3>;
         };
-};*/
+};
 
 &pm8350_gpios {
 	status = "okay";
@@ -1433,6 +1436,7 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
+        vbus-supply = <&vbus_otg>;  // **Link VBUS regulator**
         status = "okay";
 };
 
@@ -1442,7 +1446,6 @@
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
-       vbus-supply = <&vbus_otg>;  // **Link VBUS regulator**
 };
 
 &usb_1_dwc3_hs {

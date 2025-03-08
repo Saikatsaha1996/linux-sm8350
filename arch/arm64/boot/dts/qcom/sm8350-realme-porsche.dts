@@ -1315,14 +1315,13 @@
 		bias-pull-down;
 	};
 
-        fsa4480: fsa4480-default {
+        fsa_def: fsa4480-default {
                 pins = "gpio116";
                 function = "gpio";
                 bias-disable;
                 output-high;
                 drive-strength = <2>;
         };
-
         qup_uart18_pin: qup-uart18-pin-state {
                 cts-pin {
                         pins = "gpio68";

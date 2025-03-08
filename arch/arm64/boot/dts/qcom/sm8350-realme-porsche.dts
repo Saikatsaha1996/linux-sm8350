@@ -716,7 +716,7 @@
 &i2c19 {
        status ="okay";
        clock-frequency = <400000>;
-       SpkrTop: audio-codec@34 {
+       /*SpkrTop: audio-codec@34 {
                compatible = "nxp,tfa9874";
                reg = <0x34>;
                reset-gpio = <&tlmm 15 GPIO_ACTIVE_HIGH>;
@@ -740,15 +740,16 @@
                sound-name-prefix = "Bottom";
                #sound-dai-cells = <1>;
                status = "okay";
-       };
+       };*/
 
        fsa4480: typec-mux@42 {
                compatible = "fcs,fsa4480";
                reg = <0x42>;
-               interrupts-extended = <&tlmm 2 IRQ_TYPE_LEVEL_LOW>;
+               interrupts-extended = <&tlmm 116 IRQ_TYPE_EDGE_BOTH>;
                vcc-supply = <&vreg_bob>;
                mode-switch;
                orientation-switch;
+               usb-role-switch;
                port {
                         fsa4480_sbu_mux: endpoint {
                                 remote-endpoint = <&pmic_glink_sbu>;
@@ -1315,6 +1316,14 @@
 		bias-pull-down;
 	};
 
+        fsa4480: fsa4480-default {
+                pins = "gpio116";
+                function = "gpio";
+                bias-disable;
+                output-high;
+                drive-strength = <2>;
+        };
+
         qup_uart18_pin: qup-uart18-pin-state {
                 cts-pin {
                         pins = "gpio68";
@@ -1494,29 +1503,6 @@
 &usb_1_qmpphy_out {
 	remote-endpoint = <&pmic_glink_ss_in>;
 };
-
-/*&usb_2 {
-        vbus-supply = <&vbus_otg>;
-	status = "okay";
-};
-
-&usb_2_dwc3 {
-       dr_mode = "host";
-       status = "okay"; 
-};
-
-&usb_2_hsphy {
-	vdda-pll-supply = <&pm8350_l5>;
-	vdda18-supply = <&pm8350c_l1>;
-	vdda33-supply = <&pm8350_l2>;
-        status = "okay";
-};
-
-&usb_2_qmpphy {
-	vdda-phy-supply = <&pm8350_l6>;
-	vdda-pll-supply = <&pm8350_l5>;
-        status = "okay";
-};*/
 
 &ipa {
 	status = "okay";

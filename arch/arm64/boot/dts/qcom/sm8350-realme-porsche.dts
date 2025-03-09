@@ -116,14 +116,8 @@
 		compatible = "linux,extcon-usb-gpio";
 		vbus-gpios =  <&pm8350c_gpios 9 0x00>;
 		id-gpios = <&tlmm 51 0x00>;
-                pinctrl-names = "active";
-                pinctrl-0 = <&dischg_enable>;
-		//vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
-
-		//pinctrl-names = "default";
-		//pinctrl-0 = <&vbus_detect
-		//	     &usb_id
-		//	     &vbus_boost>;
+                pinctrl-names = "active", "sleep";
+                pinctrl-0 = <&dischg_enable>, <&dischg_disable>;
 	};
 
         panel_supply_vddio: panel-supply-regulator@1 {
@@ -1180,7 +1174,14 @@
 		function = "normal";
 		bias-disable;
 		power-source = <0>;
-		output-high;
+	        output-high;
+	};
+	dischg_disable: dischg-disable-state {
+		pins = "gpio9";
+		function = "normal";
+		bias-disable;
+		power-source = <0>;
+	        output-low;
 	};
 };
 
@@ -1208,22 +1209,6 @@
 		bias-high-impedance;
 		bias-disable;
 	};
-
-        /*vbus_boost: vbus-boost-enable {
-                pins = "gpio8";
-                function = "normal";
-                power-source = <0>;
-                output-high;
-        };
-
-        vbus_detect: vbus-detect-enable {
-                pins = "gpio9";
-                function = "normal";
-                input-enable;
-                bias-disable;
-                power-source = <0>;
-        };*/
-
 };
 
 &tlmm {
@@ -1478,6 +1463,7 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
+        extcon = <&extcon_usb1>;
         status = "okay";
 };
 
@@ -1487,7 +1473,6 @@
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
-       extcon = <&extcon_usb1>;
 };
 
 &usb_1_dwc3_hs {

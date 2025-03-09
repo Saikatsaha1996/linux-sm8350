@@ -112,7 +112,7 @@
 
         };
 
-	/*extcon_usb1: extcon-usb1 {
+	extcon_usb1: extcon-usb1 {
 		compatible = "linux,extcon-usb-gpio";
 		vbus-gpio =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
@@ -122,7 +122,7 @@
 		pinctrl-0 = <&vbus_detect
 			     &usb_id
 			     &vbus_boost>;
-	};*/
+	};
 
         panel_supply_vddio: panel-supply-regulator@1 {
                 compatible = "regulator-fixed";
@@ -1198,7 +1198,7 @@
 		bias-disable;
 	};
 
-        /*vbus_boost: vbus-boost-enable {
+        vbus_boost: vbus-boost-enable {
                 pins = "gpio8";
                 function = "normal";
                 power-source = <0>;
@@ -1211,7 +1211,7 @@
                 input-enable;
                 bias-disable;
                 power-source = <0>;
-        };*/
+        };
 
 };
 
@@ -1292,7 +1292,7 @@
                 output-high;
                 drive-strength = <2>;
         };
-        /*qup_uart18_pin: qup-uart18-pin-state {
+        qup_uart18_pin: qup-uart18-pin-state {
                 uart_cts: cts-pin {
                         pins = "gpio68";
                         function = "qup18";
@@ -1324,7 +1324,7 @@
                         input-enable;
                         bias-disable;
                };
-        };*/
+        };
 
         qup_uart18_default: qup-uart18-default-state {
                 cts-pin {
@@ -1470,14 +1470,14 @@
 };
 
 &usb_1_dwc3 {
-       dr_mode = "otg";
-       usb-role-switch;
+       dr_mode = "host";
+       extcon = <&extcon_usb1>;
+       //usb-role-switch;
        status = "okay";
-       port {
-              usb_1_dwc3_hs {
-                     remote-endpoint = <&pmic_glink_hs_in>;
-              };
-       };
+};
+
+&usb_1_dwc3_hs {
+       remote-endpoint = <&pmic_glink_hs_in>;
 };
 
 &usb_1_hsphy {
@@ -1492,11 +1492,10 @@
 	vdda-pll-supply = <&pm8350_l1>;
 	orientation-switch;
         status = "okay";
-        port {
-              usb_1_qmpphy_out {
-                     remote-endpoint = <&pmic_glink_ss_in>;
-              };
-       };
+};
+
+&usb_1_qmpphy_out {
+       remote-endpoint = <&pmic_glink_ss_in>;
 };
 
 &ipa {

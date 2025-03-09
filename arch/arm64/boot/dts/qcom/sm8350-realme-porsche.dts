@@ -112,7 +112,7 @@
 
         };
 
-	extcon_usb1: extcon-usb1 {
+	/*extcon_usb1: extcon-usb1 {
 		compatible = "linux,extcon-usb-gpio";
 		vbus-gpio =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
@@ -122,7 +122,7 @@
 		pinctrl-0 = <&vbus_detect
 			     &usb_id
 			     &vbus_boost>;
-	};
+	};*/
 
         panel_supply_vddio: panel-supply-regulator@1 {
                 compatible = "regulator-fixed";
@@ -1466,18 +1466,20 @@
 };
 
 &usb_1 {
+        qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
 
 &usb_1_dwc3 {
-       dr_mode = "host";
-       extcon = <&extcon_usb1>;
-       //usb-role-switch;
-       status = "okay";
+       dr_mode = "otg";
+       maximum-speed = "high-speed";
+       phys = <&usb_1_hsphy>;
+       phy-names = "usb2-phy";
+       usb-role-switch;
 };
 
 &usb_1_dwc3_hs {
-       remote-endpoint = <&pmic_glink_hs_in>;
+	remote-endpoint = <&pmic_glink_hs_in>;
 };
 
 &usb_1_hsphy {
@@ -1495,7 +1497,7 @@
 };
 
 &usb_1_qmpphy_out {
-       remote-endpoint = <&pmic_glink_ss_in>;
+	remote-endpoint = <&pmic_glink_ss_in>;
 };
 
 &ipa {

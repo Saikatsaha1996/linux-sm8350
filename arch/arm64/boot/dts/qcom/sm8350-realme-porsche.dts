@@ -150,6 +150,11 @@
                 pinctrl-0 = <&wcnss_en>;
         };
 
+        extcon_usb: extcon-usb {
+                compatible = "linux,extcon-usb-gpio";
+                vbus-gpios = <&pm8350c_gpios 9 GPIO_ACTIVE_HIGH>;
+        };
+
         qca6390-pmu {
                 compatible = "qcom,qca6390-pmu";
 
@@ -1186,6 +1191,26 @@
 	};
 };
 
+&pm8350c_gpios {
+	dischg_enable: dischg-enable-state {
+		pins = "gpio9";
+		function = "normal";
+		bias-disable;
+		power-source = <0>;
+		output-high;
+		drive-strength = <3>;
+	};
+
+	dischg_disable: dischg-disable-state {
+		pins = "gpio9";
+		function = "normal";
+		bias-disable;
+		power-source = <0>;
+		output-low;
+		drive-strength = <3>;
+	};
+};
+
 &tlmm {
 	gpio-reserved-ranges = <52 8>;
 
@@ -1447,6 +1472,7 @@
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
+       extcon = <&extcon_usb>;
 };
 
 &usb_1_dwc3_hs {

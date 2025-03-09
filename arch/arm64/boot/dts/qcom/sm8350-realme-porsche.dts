@@ -1468,7 +1468,6 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
-        extcon = <&extcon_usb1>;
         status = "okay";
 };
 
@@ -1500,6 +1499,28 @@
 
 &usb_1_qmpphy_out {
 	remote-endpoint = <&pmic_glink_ss_in>;
+};
+
+&usb_2 {
+	status = "okay";
+};
+
+&usb_2_dwc3 {
+       dr_mode = "host";
+       extcon = <&extcon_usb1>;
+};
+
+&usb_2_hsphy {
+	vdda-pll-supply = <&pm8350_l5>;
+	vdda18-supply = <&pm8350c_l1>;
+	vdda33-supply = <&pm8350_l2>;
+        status = "okay";
+};
+
+&usb_2_qmpphy {
+	vdda-phy-supply = <&pm8350_l6>;
+	vdda-pll-supply = <&pm8350_l5>;
+        status = "okay";
 };
 
 &ipa {

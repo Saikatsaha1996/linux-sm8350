@@ -112,14 +112,6 @@
 
         };
 
-	extcon_usb1: extcon-usb1 {
-		compatible = "linux,extcon-usb-gpio";
-		vbus-gpios =  <&pm8350c_gpios 9 0x00>;
-		id-gpios = <&tlmm 51 0x00>;
-                pinctrl-names = "active", "sleep";
-                pinctrl-0 = <&dischg_enable>, <&dischg_disable>;
-	};
-
         panel_supply_vddio: panel-supply-regulator@1 {
                 compatible = "regulator-fixed";
                 regulator-name = "panel_supply_vddio";
@@ -1168,25 +1160,8 @@
         memory-region = <&pil_cdsp_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
-&pm8350c_gpios {
-	dischg_enable: dischg-enable-state {
-		pins = "gpio9";
-		function = "normal";
-		bias-disable;
-		power-source = <0>;
-	        output-high;
-	};
-	dischg_disable: dischg-disable-state {
-		pins = "gpio9";
-		function = "normal";
-		bias-disable;
-		power-source = <0>;
-	        output-low;
-	};
-};
 
 &pm8350_gpios {
-	status = "okay";
 
 	key_vol_down_default: vol-down-default {
 		pins = "gpio6";
@@ -1288,7 +1263,7 @@
                 output-high;
                 drive-strength = <2>;
         };
-        qup_uart18_pin: qup-uart18-pin-state {
+        /*qup_uart18_pin: qup-uart18-pin-state {
                 uart_cts: cts-pin {
                         pins = "gpio68";
                         function = "qup18";
@@ -1320,7 +1295,7 @@
                         input-enable;
                         bias-disable;
                };
-        };
+        };*/
 
         qup_uart18_default: qup-uart18-default-state {
                 cts-pin {
@@ -1463,7 +1438,6 @@
 
 &usb_1 {
         qcom,select-utmi-as-pipe-clk;
-        extcon = <&extcon_usb1>;
         status = "okay";
 };
 
@@ -1489,7 +1463,6 @@
 &usb_1_qmpphy {
 	vdda-phy-supply = <&pm8350_l6>;
 	vdda-pll-supply = <&pm8350_l1>;
-	orientation-switch;
         status = "okay";
 };
 

@@ -112,17 +112,19 @@
 
         };
 
-	/*extcon_usb1: extcon-usb1 {
+	extcon_usb1: extcon-usb1 {
 		compatible = "linux,extcon-usb-gpio";
-		vbus-gpio =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
-		id-gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
-		vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+		vbus-gpio =  <&pm8350c_gpios 9 0x00>;
+		id-gpio = <&tlmm 51 0x00>;
+                pinctrl-names = "active";
+                pinctrl-0 = <&dischg_enable>;
+		//vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
 
-		pinctrl-names = "default";
-		pinctrl-0 = <&vbus_detect
-			     &usb_id
-			     &vbus_boost>;
-	};*/
+		//pinctrl-names = "default";
+		//pinctrl-0 = <&vbus_detect
+		//	     &usb_id
+		//	     &vbus_boost>;
+	};
 
         panel_supply_vddio: panel-supply-regulator@1 {
                 compatible = "regulator-fixed";
@@ -1172,6 +1174,15 @@
         memory-region = <&pil_cdsp_mem>;
 	firmware-name = "qcom/sm8350/realme/porsche/cdsp.mbn";
 };
+&pm8350c_gpios {
+	dischg_enable: dischg-enable-state {
+		pins = "gpio9";
+		function = "normal";
+		bias-disable;
+		power-source = <0>;
+		output-high;
+	};
+};
 
 &pm8350_gpios {
 	status = "okay";
@@ -1198,7 +1209,7 @@
 		bias-disable;
 	};
 
-        vbus_boost: vbus-boost-enable {
+        /*vbus_boost: vbus-boost-enable {
                 pins = "gpio8";
                 function = "normal";
                 power-source = <0>;
@@ -1211,7 +1222,7 @@
                 input-enable;
                 bias-disable;
                 power-source = <0>;
-        };
+        };*/
 
 };
 
@@ -1476,6 +1487,7 @@
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
+       extcon = <&extcon_usb1>;
 };
 
 &usb_1_dwc3_hs {

@@ -232,6 +232,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+                monitored-battery = <&qcom_battery>;
                 qcom_battery {
                         compatible = "qcom,battery";
                         power-supplies = <&pmic_glink>;

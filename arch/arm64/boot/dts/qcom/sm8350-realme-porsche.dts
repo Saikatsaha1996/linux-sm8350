@@ -227,27 +227,22 @@
 		};
 	};
 
-        qcom_battery {
-                compatible = "qcom,battery";
-                voltage-min-design-microvolt = <3000000>;
-	        voltage-max-design-microvolt = <4350000>;
-	        voltage-now-microvolt = <3700000>;
-	        /* Battery Capacity */
-	        charge-full-design-microamp-hours = <4885000>;
-	        charge-full-microamp-hours = <4880000>;
-	        /* Energy */
-	        energy-full-design-microwatt-hours = <19250000>;
-	        energy-full-microwatt-hours = <18788000>;
-	        /* Charge Current */
-	        constant-charge-current-max-microamp = <6000000>;
-	        constant-charge-voltage-max-microvolt = <4350000>;
-                status = "okay";
-        };
 	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+                qcom_battery {
+                        compatible = "qcom,battery";
+                        power-supplies = <&pmic_glink>;
+                        voltage-min-design-microvolt = <3000000>;
+                        voltage-max-design-microvolt = <4350000>;
+                        charge-full-design-microamp-hours = <4885000>;
+	                charge-full-microamp-hours = <4880000>;
+                        constant-charge-current-max-microamp = <6000000>;
+                        constant-charge-voltage-max-microvolt = <4350000>;
+                        status = "okay";
+                };
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;

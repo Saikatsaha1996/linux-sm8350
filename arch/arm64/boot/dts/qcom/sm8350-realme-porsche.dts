@@ -235,7 +235,6 @@
                 monitored-battery = <&qcom_battery>;
                 qcom_battery {
                         compatible = "qcom,battery";
-                        power-supplies = <&pmic_glink>;
                         voltage-min-design-microvolt = <3000000>;
                         voltage-max-design-microvolt = <4350000>;
                         charge-full-design-microamp-hours = <4885000>;

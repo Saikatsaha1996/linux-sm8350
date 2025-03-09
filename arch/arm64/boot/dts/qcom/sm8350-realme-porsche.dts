@@ -114,8 +114,8 @@
 
 	extcon_usb1: extcon-usb1 {
 		compatible = "linux,extcon-usb-gpio";
-		vbus-gpio =  <&pm8350c_gpios 9 0x00>;
-		id-gpio = <&tlmm 51 0x00>;
+		vbus-gpios =  <&pm8350c_gpios 9 0x00>;
+		id-gpios = <&tlmm 51 0x00>;
                 pinctrl-names = "active";
                 pinctrl-0 = <&dischg_enable>;
 		//vbus-out-gpio = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;

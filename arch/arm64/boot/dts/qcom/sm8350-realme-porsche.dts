@@ -232,8 +232,8 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-                monitored-battery = <&qcom_battery>;
-                qcom_battery {
+                monitored-battery = <&battery>;
+                battery {
                         compatible = "qcom,battery";
                         voltage-min-design-microvolt = <3000000>;
                         voltage-max-design-microvolt = <4350000>;

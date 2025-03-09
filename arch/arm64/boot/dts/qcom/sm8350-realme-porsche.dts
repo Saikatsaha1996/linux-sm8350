@@ -227,6 +227,22 @@
 		};
 	};
 
+        qcom_battery {
+                compatible = "qcom,battery";
+                voltage-min-design-microvolt = <3000000>;
+	        voltage-max-design-microvolt = <4350000>;
+	        voltage-now-microvolt = <3700000>;
+	        /* Battery Capacity */
+	        charge-full-design-microamp-hours = <4885000>;
+	        charge-full-microamp-hours = <4880000>;
+	        /* Energy */
+	        energy-full-design-microwatt-hours = <19250000>;
+	        energy-full-microwatt-hours = <18788000>;
+	        /* Charge Current */
+	        constant-charge-current-max-microamp = <6000000>;
+	        constant-charge-voltage-max-microvolt = <4350000>;
+                status = "okay";
+        };
 	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
 		#address-cells = <1>;
@@ -1263,7 +1279,7 @@
                 output-high;
                 drive-strength = <2>;
         };
-        /*qup_uart18_pin: qup-uart18-pin-state {
+        qup_uart18_pin: qup-uart18-pin-state {
                 uart_cts: cts-pin {
                         pins = "gpio68";
                         function = "qup18";
@@ -1295,7 +1311,7 @@
                         input-enable;
                         bias-disable;
                };
-        };*/
+        };
 
         qup_uart18_default: qup-uart18-default-state {
                 cts-pin {

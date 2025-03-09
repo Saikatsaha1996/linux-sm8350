@@ -1474,7 +1474,7 @@
        usb-role-switch;
        status = "okay";
        port {
-              usb_1_dwc3_hs: endpoint {
+              usb_1_dwc3_hs {
                      remote-endpoint = <&pmic_glink_hs_in>;
               };
        };
@@ -1493,7 +1493,7 @@
 	orientation-switch;
         status = "okay";
         port {
-              usb_1_qmpphy_out: endpoint {
+              usb_1_qmpphy_out {
                      remote-endpoint = <&pmic_glink_ss_in>;
               };
        };

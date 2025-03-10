@@ -306,6 +306,7 @@ snd-soc-tas2770-y := tas2770.o
 snd-soc-tas2781-comlib-y := tas2781-comlib.o
 snd-soc-tas2781-fmwlib-y := tas2781-fmwlib.o
 snd-soc-tas2781-i2c-y := tas2781-i2c.o
+snd-soc-tfa9872-objs := tfa9872.o
 snd-soc-tfa9879-y := tfa9879.o
 snd-soc-tfa989x-y := tfa989x.o
 snd-soc-tlv320adc3xxx-y := tlv320adc3xxx.o

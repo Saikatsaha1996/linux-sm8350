@@ -1472,7 +1472,6 @@
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        usb-role-switch;
-       extcon = <&extcon_usb>;
 };
 
 &usb_1_dwc3_hs {

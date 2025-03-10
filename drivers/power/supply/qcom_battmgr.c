@@ -12,6 +12,7 @@
 #include <linux/soc/qcom/pmic_glink.h>
 #include <linux/math.h>
 #include <linux/units.h>
+#include <linux/gpio/consumer.h>
 
 #define BATTMGR_CHEMISTRY_LEN	4
 #define BATTMGR_STRING_LEN	128

@@ -26,6 +26,8 @@ enum qcom_battmgr_variant {
 #define BATTMGR_REQUEST_NOTIFICATION	0x4
 
 //#define BC_CID_DETECT                   0x52
+#define NOTIF_OTG_ENABLE                0x49
+#define NOTIF_OTG_DISABLE               0x50
 #define BC_CHG_STATUS_GET		0x59
 #define BC_CHG_STATUS_SET		0x60
 
@@ -285,6 +287,35 @@ struct qcom_battmgr_wireless {
 	unsigned int current_max;
 };
 
+/*struct qcom_battmgr {
+	struct device *dev;
+	struct pmic_glink_client *client;
+
+	enum qcom_battmgr_variant variant;
+
+	struct power_supply *ac_psy;
+	struct power_supply *bat_psy;
+	struct power_supply *usb_psy;
+	struct power_supply *wls_psy;
+
+	enum qcom_battmgr_unit unit;
+
+	int error;
+	struct completion ack;
+
+	bool service_up;
+
+	struct qcom_battmgr_info info;
+	struct qcom_battmgr_status status;
+	struct qcom_battmgr_ac ac;
+	struct qcom_battmgr_usb usb;
+	struct qcom_battmgr_wireless wireless;
+
+	struct work_struct enable_work;
+	struct mutex lock;
+       // struct delayed_work cid_status_change_work;
+};*/
+
 struct qcom_battmgr {
 	struct device *dev;
 	struct pmic_glink_client *client;
@@ -316,7 +347,11 @@ struct qcom_battmgr {
 	 * firmware, as it then stops responding.
 	 */
 	struct mutex lock;
-       // struct delayed_work cid_status_change_work;
+
+	/* OTG Support */
+	bool otg_enabled;                // Tracks OTG state (enabled/disabled)
+	struct work_struct otg_work;      // Work queue for OTG control
+	struct gpio_desc *otg_vbus_gpios;  // GPIO to enable VBUS for OTG
 };
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
@@ -1034,7 +1069,34 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 	.get_property = qcom_battmgr_wls_get_property,
 };
 
-static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+static void qcom_battmgr_otg_worker(struct work_struct *work)
+{
+	struct qcom_battmgr *battmgr = container_of(work, struct qcom_battmgr, otg_work);
+	int value = battmgr->otg_enabled ? 1 : 0;
+
+	if (!battmgr->otg_vbus_gpios) {
+		dev_err(battmgr->dev, "OTG VBUS GPIO not available\n");
+		return;
+	}
+
+	dev_info(battmgr->dev, "Setting OTG VBUS to %s\n", value ? "ON" : "OFF");
+	gpiod_set_value(battmgr->otg_vbus_gpios, value);
+}
+
+int qcom_battmgr_enable_otg(struct qcom_battmgr *battmgr, bool enable)
+{
+	if (!battmgr)
+		return -EINVAL;
+	
+        mutex_lock(&battmgr->lock);
+        battmgr->otg_enabled = enable;
+        mutex_unlock(&battmgr->lock);
+        schedule_work(&battmgr->otg_work);
+
+	return 0;
+}
+
+/*static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
                                       const struct qcom_battmgr_message *msg,
                                       int len)
 {
@@ -1064,10 +1126,10 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
-    /*case BC_CID_DETECT: // Fix unknown notification 0x52
+    case BC_CID_DETECT: // Fix unknown notification 0x52
         pr_info("qcom_battmgr: CID detection triggered!\n");
         schedule_delayed_work(&battmgr->cid_status_change_work, 0);
-        break;*/
+        break;
     case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59
         pr_info("qcom_battmgr: Received charging status update (0x59)\n");
         power_supply_changed(battmgr->bat_psy);
@@ -1076,6 +1138,62 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         pr_info("qcom_battmgr: Charging status set (0x60)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
+    default:
+        dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
+        break;
+    }
+}*/
+
+static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
+                                      const struct qcom_battmgr_message *msg,
+                                      int len)
+{
+    size_t payload_len = len - sizeof(struct pmic_glink_hdr);
+    unsigned int notification;
+
+    if (payload_len != sizeof(msg->notification)) {
+        dev_warn(battmgr->dev, "Ignoring notification with invalid length\n");
+        return;
+    }
+
+    notification = le32_to_cpu(msg->notification);
+
+    switch (notification) {
+    case NOTIF_BAT_INFO:
+        battmgr->info.valid = false;
+        fallthrough;
+    case NOTIF_BAT_STATUS:
+    case NOTIF_BAT_PROPERTY:
+        power_supply_changed(battmgr->bat_psy);
+        pr_info("qcom_battmgr: Battery status notification received\n");
+        break;
+    case NOTIF_USB_PROPERTY:
+        power_supply_changed(battmgr->usb_psy);
+        pr_info("qcom_battmgr: USB property notification received\n");
+        break;
+    case NOTIF_WLS_PROPERTY:
+        power_supply_changed(battmgr->wls_psy);
+        pr_info("qcom_battmgr: Wireless charging notification received\n");
+        break;
+    case BC_CHG_STATUS_GET:
+        pr_info("qcom_battmgr: Received charging status update (0x59)\n");
+        power_supply_changed(battmgr->bat_psy);
+        break;
+    case BC_CHG_STATUS_SET:
+        pr_info("qcom_battmgr: Charging status set (0x60)\n");
+        power_supply_changed(battmgr->bat_psy);
+        break;
+
+    /*** NEW OTG NOTIFICATIONS ***/
+    case NOTIF_OTG_ENABLE:
+        pr_info("qcom_battmgr: OTG Enabled (0x49)\n");
+        qcom_battmgr_enable_otg(battmgr, true);
+        break;
+    case NOTIF_OTG_DISABLE:
+        pr_info("qcom_battmgr: OTG Disabled (0x50)\n");
+        qcom_battmgr_enable_otg(battmgr, false);
+        break;
+
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
         break;
@@ -1206,7 +1324,7 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 	unsigned int val;
 
 	if (payload_len < sizeof(__le32)) {
-		dev_warn(battmgr->dev, "invalid payload length for %#x: %zd\n",
+		dev_warn(battmgr->dev, "Invalid payload length for %#x: %zd\n",
 			 opcode, len);
 		return;
 	}
@@ -1217,7 +1335,7 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		if (property == BATT_MODEL_NAME) {
 			if (payload_len != sizeof(resp->strval)) {
 				dev_warn(battmgr->dev,
-					 "invalid payload length for BATT_MODEL_NAME request: %zd\n",
+					 "Invalid payload length for BATT_MODEL_NAME request: %zd\n",
 					 payload_len);
 				battmgr->error = -ENODATA;
 				return;
@@ -1225,7 +1343,7 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		} else {
 			if (payload_len != sizeof(resp->intval)) {
 				dev_warn(battmgr->dev,
-					 "invalid payload length for %#x request: %zd\n",
+					 "Invalid payload length for %#x request: %zd\n",
 					 property, payload_len);
 				battmgr->error = -ENODATA;
 				return;
@@ -1247,9 +1365,9 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			battmgr->info.present = le32_to_cpu(resp->intval.value);
 			break;
 		case BATT_CHG_TYPE:
-                        battmgr->info.charge_type = le32_to_cpu(resp->intval.value);
-                        pr_info("qcom_battmgr: Charge type = %d\n", battmgr->info.charge_type);
-                        break;
+			battmgr->info.charge_type = le32_to_cpu(resp->intval.value);
+			pr_info("qcom_battmgr: Charge type = %d\n", battmgr->info.charge_type);
+			break;
 		case BATT_CAPACITY:
 			battmgr->status.percent = le32_to_cpu(resp->intval.value) / 100;
 			break;
@@ -1297,23 +1415,23 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			battmgr->status.power_now = le32_to_cpu(resp->intval.value);
 			break;
 		case BC_CHG_STATUS_GET:
-                        battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
-                        pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_status);
-                        break;
+			battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
+			pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_status);
+			break;
 		case BC_CHG_STATUS_SET:
-                        battmgr->status.bc_status = le32_to_cpu(resp->intval.value);  // ✅ Store the value
-                        pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_status);
-                        break;
+			battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
+			pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_status);
+			break;
 		default:
-			dev_warn(battmgr->dev, "unknown property %#x\n", property);
+			dev_warn(battmgr->dev, "Unknown battery property %#x\n", property);
 			break;
 		}
 		break;
+		
 	case BATTMGR_USB_PROPERTY_GET:
 		property = le32_to_cpu(resp->intval.property);
 		if (payload_len != sizeof(resp->intval)) {
-			dev_warn(battmgr->dev,
-				 "invalid payload length for %#x request: %zd\n",
+			dev_warn(battmgr->dev, "Invalid payload length for %#x request: %zd\n",
 				 property, payload_len);
 			battmgr->error = -ENODATA;
 			return;
@@ -1324,10 +1442,10 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			goto out_complete;
 
 		switch (property) {
-                case USB_ONLINE:
-                        battmgr->usb.online = le32_to_cpu(resp->intval.value);
-                        pr_info("qcom_battmgr: USB Online status = %d\n", battmgr->usb.online);
-                        break;
+		case USB_ONLINE:
+			battmgr->usb.online = le32_to_cpu(resp->intval.value);
+			pr_info("qcom_battmgr: USB Online status = %d\n", battmgr->usb.online);
+			break;
 		case USB_VOLT_NOW:
 			battmgr->usb.voltage_now = le32_to_cpu(resp->intval.value);
 			break;
@@ -1346,51 +1464,27 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		case USB_TYPE:
 			battmgr->usb.usb_type = le32_to_cpu(resp->intval.value);
 			break;
+		case NOTIF_OTG_ENABLE: // OTG enable notification
+		        dev_info(battmgr->dev, "Received OTG enable notification\n");
+		        qcom_battmgr_enable_otg(battmgr, true);
+		        break;
+	        case NOTIF_OTG_DISABLE: // OTG disable notification
+		        dev_info(battmgr->dev, "Received OTG disable notification\n");
+		        qcom_battmgr_enable_otg(battmgr, false);
+		        break;
 		default:
-			dev_warn(battmgr->dev, "unknown property %#x\n", property);
+			dev_warn(battmgr->dev, "Unknown USB property %#x\n", property);
 			break;
 		}
 		break;
-	case BATTMGR_WLS_PROPERTY_GET:
-		property = le32_to_cpu(resp->intval.property);
-		if (payload_len != sizeof(resp->intval)) {
-			dev_warn(battmgr->dev,
-				 "invalid payload length for %#x request: %zd\n",
-				 property, payload_len);
-			battmgr->error = -ENODATA;
-			return;
-		}
 
-		battmgr->error = le32_to_cpu(resp->intval.result);
-		if (battmgr->error)
-			goto out_complete;
-
-		switch (property) {
-		case WLS_ONLINE:
-			battmgr->wireless.online = le32_to_cpu(resp->intval.value);
-			break;
-		case WLS_VOLT_NOW:
-			battmgr->wireless.voltage_now = le32_to_cpu(resp->intval.value);
-			break;
-		case WLS_VOLT_MAX:
-			battmgr->wireless.voltage_max = le32_to_cpu(resp->intval.value);
-			break;
-		case WLS_CURR_NOW:
-			battmgr->wireless.current_now = le32_to_cpu(resp->intval.value);
-			break;
-		case WLS_CURR_MAX:
-			battmgr->wireless.current_max = le32_to_cpu(resp->intval.value);
-			break;
-		default:
-			dev_warn(battmgr->dev, "unknown property %#x\n", property);
-			break;
-		}
-		break;
 	case BATTMGR_REQUEST_NOTIFICATION:
+		pr_info("qcom_battmgr: Notification request received.\n");
 		battmgr->error = 0;
 		break;
+
 	default:
-		dev_warn(battmgr->dev, "unknown message %#x\n", opcode);
+		dev_warn(battmgr->dev, "Unknown message %#x\n", opcode);
 		break;
 	}
 
@@ -1457,6 +1551,7 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 	const struct of_device_id *match;
 	struct qcom_battmgr *battmgr;
 	struct device *dev = &adev->dev;
+	int ret;
 
 	battmgr = devm_kzalloc(dev, sizeof(*battmgr), GFP_KERNEL);
 	if (!battmgr)
@@ -1473,11 +1568,18 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 	psy_cfg_supply.num_supplicants = 1;
 
 	INIT_WORK(&battmgr->enable_work, qcom_battmgr_enable_worker);
+	INIT_WORK(&battmgr->otg_work, qcom_battmgr_otg_worker);  // OTG workqueue
 	mutex_init(&battmgr->lock);
 	init_completion(&battmgr->ack);
-	/* Additional from Downstream */
-	//INIT_DELAYED_WORK(&battmgr->cid_status_change_work, qcom_battmgr_cid_status_change_work);
-	
+
+	/* Initialize OTG */
+	battmgr->otg_enabled = false;
+	battmgr->otg_vbus_gpios = devm_gpiod_get_optional(dev, "otg-vbus", GPIOD_OUT_LOW);
+	if (IS_ERR(battmgr->otg_vbus_gpios)) {
+		dev_err(dev, "Failed to get OTG VBUS GPIO\n");
+		return PTR_ERR(battmgr->otg_vbus_gpios);
+	}
+
 	match = of_match_device(qcom_battmgr_of_variants, dev->parent);
 	if (match)
 		battmgr->variant = (unsigned long)match->data;
@@ -1503,7 +1605,7 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 		battmgr->wls_psy = devm_power_supply_register(dev, &sc8280xp_wls_psy_desc, &psy_cfg_supply);
 		if (IS_ERR(battmgr->wls_psy))
 			return dev_err_probe(dev, PTR_ERR(battmgr->wls_psy),
-					     "failed to register wireless charing power supply\n");
+					     "failed to register wireless charging power supply\n");
 	} else {
 		battmgr->bat_psy = devm_power_supply_register(dev, &sm8350_bat_psy_desc, &psy_cfg);
 		if (IS_ERR(battmgr->bat_psy))
@@ -1518,7 +1620,7 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 		battmgr->wls_psy = devm_power_supply_register(dev, &sm8350_wls_psy_desc, &psy_cfg_supply);
 		if (IS_ERR(battmgr->wls_psy))
 			return dev_err_probe(dev, PTR_ERR(battmgr->wls_psy),
-					     "failed to register wireless charing power supply\n");
+					     "failed to register wireless charging power supply\n");
 	}
 
 	battmgr->client = devm_pmic_glink_client_alloc(dev, PMIC_GLINK_OWNER_BATTMGR,

@@ -227,7 +227,7 @@
 		};
 	};
 
-	extcon_usb {
+	extcon_usb: extcon-usb {
 		compatible = "linux,extcon-usb-gpio";
 		vbus-gpios =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;

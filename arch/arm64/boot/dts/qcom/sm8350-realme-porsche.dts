@@ -708,6 +708,7 @@
                compatible = "nxp,tfa9874";
                reg = <0x34>;
                reset-gpio = <&tlmm 15 GPIO_ACTIVE_HIGH>;
+               vdd-supply = <&pm8350_s10>;
                first-boost-trip-lvl = <0x9>;
                max-coil-current = <0xf>;
                pinctrl-names = "default";
@@ -721,6 +722,7 @@
                compatible = "nxp,tfa9874";
                reg = <0x35>;
                reset-gpio = <&tlmm 42 GPIO_ACTIVE_HIGH>;
+               vdd-supply = <&pm8350_s10>;
                first-boost-trip-lvl = <0x9>;
                max-coil-current = <0xf>;
                pinctrl-names = "default";

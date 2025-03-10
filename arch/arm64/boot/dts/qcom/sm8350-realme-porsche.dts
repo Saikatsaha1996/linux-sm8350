@@ -139,6 +139,17 @@
                 regulator-max-microvolt = <1800000>;
         };
 
+        usb_vbus_reg: regulator-vbus {
+                compatible = "regulator-fixed";
+                regulator-name = "usb_vbus";
+                regulator-min-microvolt = <5000000>;
+                regulator-max-microvolt = <5000000>;
+                vbus-gpios =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+		id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		vbus-out-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+                enable-active-high;
+        };
+
         wcnss_regulator: wcnss-wlan-regulator {
                 compatible = "regulator-fixed";
                 regulator-name = "wcnss_regulator";
@@ -1452,6 +1463,7 @@
 	vdda33-supply = <&pm8350_l2>;
         qcom,param-override-seq = <0x63 0x6c 0x0f 0x70 0x17 0x74>;
         qcom,param-override-seq-host = <0x67 0x6c 0x0f 0x70 0x14 0x74>;
+        vbus-supply = <&usb_vbus_reg>;
         status = "okay";
 };
 

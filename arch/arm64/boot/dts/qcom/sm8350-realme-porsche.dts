@@ -146,7 +146,7 @@
                 regulator-max-microvolt = <5000000>;
                 vbus-gpios =  <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
 		id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
-		vbus-out-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+		vbus-otg-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
                 enable-active-high;
         };
 

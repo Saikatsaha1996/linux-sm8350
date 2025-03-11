@@ -229,14 +229,16 @@
 
 	extcon_usb: extcon-usb {
 		compatible = "linux,extcon-usb-gpio";
-		vbus-gpios =  <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
+		vbus-gpios =  <&pm8350c_gpios 9 GPIO_ACTIVE_HIGH>;
 		id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
-		vbus-out-gpios = <&pm8350_gpios 9 GPIO_ACTIVE_HIGH>;
+                ccdetect-gpios = <&tlmm 14 0x00>;
+                otg-gpios = <&pm8350c_gpios 1 0x00>;
+		vbus-out-gpios = <&pm8350_gpios 8 GPIO_ACTIVE_HIGH>;
 
-		pinctrl-names = "default";
+		/*pinctrl-names = "default";
 		pinctrl-0 = <&vbus_det
 			     &qup_uart18_pin
-			     &vbus_boost>;
+			     &vbus_boost>;*/
 	};
 
 	pmic-glink {

@@ -244,8 +244,6 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-                pinctrl-names = "default";
-                pinctrl-0 = <&usb_phy_ps>;
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;
@@ -701,25 +699,6 @@
         };
 };
 
-&i2c13 {
-       status ="okay";
-       clock-frequency = <400000>;
-
-       fsa4480: typec-fsa4480@42 {
-               compatible = "fcs,fsa4480";
-               reg = <0x42>;
-               interrupts-extended = <&tlmm 116 IRQ_TYPE_EDGE_BOTH>;
-               vcc-supply = <&vreg_bob>;
-               mode-switch;
-               orientation-switch;
-               port {
-                        fsa4480_sbu_mux: endpoint {
-                                remote-endpoint = <&pmic_glink_sbu>;
-                        };
-               };
-       };
-};
-
 &i2c19 {
        status ="okay";
        clock-frequency = <400000>;
@@ -749,6 +728,20 @@
                sound-name-prefix = "Bottom";
                #sound-dai-cells = <1>;
                status = "okay";
+       };
+
+       fsa4480: typec-fsa4480@42 {
+               compatible = "fcs,fsa4480";
+               reg = <0x42>;
+               interrupts-extended = <&tlmm 116 IRQ_TYPE_EDGE_BOTH>;
+               vcc-supply = <&vreg_bob>;
+               mode-switch;
+               orientation-switch;
+               port {
+                        fsa4480_sbu_mux: endpoint {
+                                remote-endpoint = <&pmic_glink_sbu>;
+                        };
+               };
        };
 };
 
@@ -1291,21 +1284,21 @@
                 drive-strength = <2>;
         };
 
-	usb_phy_ps: usb-phy-ps-state {
+	/*usb_phy_ps: usb-phy-ps-state {
 		usbphy_default: usbphy-default-state {
 			pins = "gpio81";
 			function = "usb_phy";
 			bias-disable;
 			drive-strength = <2>;
 		};
-		/*usbphy_gpio: usbphy-gpio-state {
+		usbphy_gpio: usbphy-gpio-state {
 			pins = "gpio81";
 			function = "gpio";
 			drive-strength = <2>;
 			bias-disable;
 			input-enable;
-		};*/
-	};
+		};
+	};*/
 
         qup_uart18_pin: qup-uart18-pin-state {
                 usb2_id: usb2-id-pin {

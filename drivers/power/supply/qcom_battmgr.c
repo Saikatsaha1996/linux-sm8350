@@ -260,8 +260,6 @@ struct qcom_battmgr_status {
 
 	unsigned int discharge_time;
 	unsigned int charge_time;
-        //unsigned int bc_get;
-        //unsigned int bc_set;
 };
 
 struct qcom_battmgr_ac {
@@ -350,98 +348,8 @@ static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcod
 		.value = cpu_to_le32(value),
 	};
 
-	//pr_info("qcom_battmgr: Request property opcode=%#x, property=%#x, value=%d\n",
-		//opcode, property, value);
-
 	return qcom_battmgr_request(battmgr, &request, sizeof(request));
 }
-
-/* First update working */
-
-/*static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
-{
-    int rc;
-
-    pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
-
-    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
-    if (rc < 0) {
-        pr_err("qcom_battmgr: Failed to request BC_CHG_STATUS_GET, rc=%d\n", rc);
-        return rc;
-    }
-    wait_for_completion(&battmgr->ack);
-    return battmgr->status.bc_get;
-}
-
-static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
-{
-    int rc;
-
-    pr_info("qcom_battmgr: Setting BC_CHG_STATUS_SET to %d\n", status);
-
-    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
-    if (rc < 0) {
-        pr_err("qcom_battmgr: Failed to set charge status, rc = %d\n", rc);
-        return rc;
-    }
-
-    battmgr->status.bc_set = status;
-    pr_info("qcom_battmgr: Charge status successfully set to %d\n", battmgr->status.bc_set);
-
-    return 0;
-}*/
-
-/* 2nd update not tested */
-
-/*static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
-{
-    int rc;
-
-    pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
-
-    mutex_lock(&battmgr->lock); // ✅ Prevent race conditions
-
-    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
-    if (rc < 0) {
-        pr_err("qcom_battmgr: Failed to request BC_CHG_STATUS_GET, rc=%d\n", rc);
-        mutex_unlock(&battmgr->lock);
-        return rc;
-    }
-    if (!wait_for_completion_timeout(&battmgr->ack, HZ)) {
-        pr_err("qcom_battmgr: Timeout waiting for BC_CHG_STATUS_GET response\n");
-        mutex_unlock(&battmgr->lock);
-        return -ETIMEDOUT;
-    }
-
-    rc = battmgr->status.bc_get; // ✅ Read the updated status
-    mutex_unlock(&battmgr->lock);
-
-    return rc;
-}
-
-static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
-{
-    int rc;
-
-    pr_info("qcom_battmgr: Setting BC_CHG_STATUS_SET to %d\n", status);
-
-    mutex_lock(&battmgr->lock); // ✅ Ensure thread safety
-
-    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
-    if (rc < 0) {
-        pr_err("qcom_battmgr: Failed to set charge status, rc = %d\n", rc);
-        mutex_unlock(&battmgr->lock);
-        return rc;
-    }
-
-    battmgr->status.bc_set = status; // ✅ Store the new status
-    mutex_unlock(&battmgr->lock);
-
-    pr_info("qcom_battmgr: Charge status successfully set to %d\n", status);
-
-    return 0;
-}
-*/
 
 static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 {
@@ -451,8 +359,6 @@ static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 		.hdr.opcode = cpu_to_le32(BATTMGR_BAT_STATUS),
 		.battery_id = cpu_to_le32(0),
 	};
-
-	//pr_info("qcom_battmgr: Requesting battery status update\n");
 
 	return qcom_battmgr_request(battmgr, &request, sizeof(request));
 }
@@ -593,16 +499,12 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 	if (ret < 0)
 		return ret;
 
-	/* Debug logging for issue tracking */
-	//pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
-		//psp, battmgr->usb.online, battmgr->status.status);
-
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
-		if (battmgr->usb.online) // Check USB power status
+		if (battmgr->usb.online)
 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
 		else
-			val->intval = battmgr->status.status; // Keep original status handling
+			val->intval = battmgr->status.status;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
 		val->intval = battmgr->info.charge_type;
@@ -1067,17 +969,6 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
-    /*case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59 oplus OEM kernel
-        //pr_info("qcom_battmgr: Received charging status update (0x59)\n");
-        power_supply_changed(battmgr->bat_psy);
-        break;
-    case BC_CHG_STATUS_SET:  // Fix unknown notification 0x60 oplus OEM kernel
-        //pr_info("qcom_battmgr: Charging status set (0x60)\n");
-        power_supply_changed(battmgr->bat_psy);
-        if (battmgr->usb_psy) {
-            power_supply_changed(battmgr->usb_psy);
-        }
-        break;*/
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
         break;
@@ -1298,14 +1189,6 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		case BATT_POWER_NOW:
 			battmgr->status.power_now = le32_to_cpu(resp->intval.value);
 			break;
-		/*case BC_CHG_STATUS_GET:
-                        battmgr->status.bc_get = le32_to_cpu(resp->intval.value);
-                        pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_get);
-                        break;
-		case BC_CHG_STATUS_SET:
-                        battmgr->status.bc_set = le32_to_cpu(resp->intval.value);  // ✅ Store the value
-                        pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_set);
-                        break;*/
 		default:
 			dev_warn(battmgr->dev, "unknown property %#x\n", property);
 			break;
@@ -1328,7 +1211,6 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		switch (property) {
                 case USB_ONLINE:
                         battmgr->usb.online = le32_to_cpu(resp->intval.value);
-                        //pr_info("qcom_battmgr: USB Online status = %d\n", battmgr->usb.online);
                         break;
 		case USB_VOLT_NOW:
 			battmgr->usb.voltage_now = le32_to_cpu(resp->intval.value);

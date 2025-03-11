@@ -260,8 +260,8 @@ struct qcom_battmgr_status {
 
 	unsigned int discharge_time;
 	unsigned int charge_time;
-        unsigned int bc_get;
-        unsigned int bc_set;
+        //unsigned int bc_get;
+        //unsigned int bc_set;
 };
 
 struct qcom_battmgr_ac {
@@ -311,13 +311,11 @@ struct qcom_battmgr {
 	struct qcom_battmgr_wireless wireless;
 
 	struct work_struct enable_work;
-
 	/*
 	 * @lock is used to prevent concurrent power supply requests to the
 	 * firmware, as it then stops responding.
 	 */
 	struct mutex lock;
-       // struct delayed_work cid_status_change_work;
 };
 
 static int qcom_battmgr_request(struct qcom_battmgr *battmgr, void *data, size_t len)
@@ -596,8 +594,8 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 		return ret;
 
 	/* Debug logging for issue tracking */
-	pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
-		psp, battmgr->usb.online, battmgr->status.status);
+	//pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
+		//psp, battmgr->usb.online, battmgr->status.status);
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:

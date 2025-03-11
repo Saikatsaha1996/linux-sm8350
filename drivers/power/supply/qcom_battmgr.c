@@ -350,8 +350,8 @@ static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcod
 		.value = cpu_to_le32(value),
 	};
 
-	pr_info("qcom_battmgr: Request property opcode=%#x, property=%#x, value=%d\n",
-		opcode, property, value);
+	//pr_info("qcom_battmgr: Request property opcode=%#x, property=%#x, value=%d\n",
+		//opcode, property, value);
 
 	return qcom_battmgr_request(battmgr, &request, sizeof(request));
 }
@@ -452,7 +452,7 @@ static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 		.battery_id = cpu_to_le32(0),
 	};
 
-	pr_info("qcom_battmgr: Requesting battery status update\n");
+	//pr_info("qcom_battmgr: Requesting battery status update\n");
 
 	return qcom_battmgr_request(battmgr, &request, sizeof(request));
 }
@@ -1054,10 +1054,12 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         fallthrough;
     case NOTIF_BAT_STATUS:
     case NOTIF_BAT_PROPERTY:
+    case BC_CHG_STATUS_GET:
         power_supply_changed(battmgr->bat_psy);
         pr_info("qcom_battmgr: Battery status notification received\n");
         break;
     case NOTIF_USB_PROPERTY:
+    case BC_CHG_STATUS_SET:
         power_supply_changed(battmgr->usb_psy);
         pr_info("qcom_battmgr: USB property notification received\n");
         break;
@@ -1065,18 +1067,17 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
-    case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59 oplus OEM kernel
-        pr_info("qcom_battmgr: Received charging status update (0x59)\n");
+    /*case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59 oplus OEM kernel
+        //pr_info("qcom_battmgr: Received charging status update (0x59)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
     case BC_CHG_STATUS_SET:  // Fix unknown notification 0x60 oplus OEM kernel
-        pr_info("qcom_battmgr: Charging status set (0x60)\n");
+        //pr_info("qcom_battmgr: Charging status set (0x60)\n");
         power_supply_changed(battmgr->bat_psy);
-    /* Handle USB resume if required */
         if (battmgr->usb_psy) {
             power_supply_changed(battmgr->usb_psy);
         }
-        break;
+        break;*/
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
         break;

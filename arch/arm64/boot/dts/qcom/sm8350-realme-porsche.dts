@@ -232,7 +232,7 @@
                 id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
                 pinctrl-0 = <&usb_id_pin>;
                 pinctrl-names = "default";
-        }
+        };
 
 	pmic-glink {
 		compatible = "qcom,sm8350-pmic-glink", "qcom,pmic-glink";
@@ -1282,7 +1282,7 @@
         usb_id_pin: usb-id-pin-state {
                 pins = "gpio51";
                 function = "gpio";
-                drive-strength = <8>;
+                drive-strength = <2>;
                 bias-pull-up;
                 //input-enable;
                 //bias-disable;

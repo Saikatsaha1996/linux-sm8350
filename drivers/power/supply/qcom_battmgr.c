@@ -26,13 +26,13 @@ enum qcom_battmgr_variant {
 #define BATTMGR_REQUEST_NOTIFICATION	0x4
 
 //#define BC_CID_DETECT                   0x52
-#define BC_CHG_STATUS_GET		0x59
-#define BC_CHG_STATUS_SET		0x60
 
 #define BATTMGR_NOTIFICATION		0x7
 #define NOTIF_BAT_PROPERTY		0x30
 #define NOTIF_USB_PROPERTY		0x32
 #define NOTIF_WLS_PROPERTY		0x34
+#define BC_CHG_STATUS_GET		0x59
+#define BC_CHG_STATUS_SET		0x60
 #define NOTIF_BAT_INFO			0x81
 #define NOTIF_BAT_STATUS		0x80
 
@@ -260,7 +260,8 @@ struct qcom_battmgr_status {
 
 	unsigned int discharge_time;
 	unsigned int charge_time;
-        unsigned int bc_status;
+        unsigned int bc_get;
+        unsigned int bc_set;
 };
 
 struct qcom_battmgr_ac {
@@ -373,7 +374,7 @@ static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
     wait_for_completion(&battmgr->ack);
 
     /* Return the actual status value stored in battmgr->status.bc_status */
-    return battmgr->status.bc_status;
+    return battmgr->status.bc_get;
 }
 
 static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
@@ -388,8 +389,8 @@ static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
         return rc;
     }
 
-    battmgr->status.bc_status = status;  // ✅ Store the new status
-    pr_info("qcom_battmgr: Charge status successfully set to %d\n", battmgr->status.bc_status);
+    battmgr->status.bc_set = status;  // ✅ Store the new status
+    pr_info("qcom_battmgr: Charge status successfully set to %d\n", battmgr->status.bc_set);
 
     return 0;
 }
@@ -545,7 +546,7 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 		return ret;
 
 	/* Debug logging for issue tracking */
-	pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
+	//pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
 		psp, battmgr->usb.online, battmgr->status.status);
 
 	switch (psp) {
@@ -1016,13 +1017,17 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
-    case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59
+    case BC_CHG_STATUS_GET:  // Fix unknown notification 0x59 oplus OEM kernel
         pr_info("qcom_battmgr: Received charging status update (0x59)\n");
         power_supply_changed(battmgr->bat_psy);
         break;
-    case BC_CHG_STATUS_SET:  // Fix unknown notification 0x60
+    case BC_CHG_STATUS_SET:  // Fix unknown notification 0x60 oplus OEM kernel
         pr_info("qcom_battmgr: Charging status set (0x60)\n");
         power_supply_changed(battmgr->bat_psy);
+    /* Handle USB resume if required */
+        if (battmgr->usb_psy) {
+            power_supply_changed(battmgr->usb_psy);
+        }
         break;
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
@@ -1274,7 +1279,7 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		switch (property) {
                 case USB_ONLINE:
                         battmgr->usb.online = le32_to_cpu(resp->intval.value);
-                        pr_info("qcom_battmgr: USB Online status = %d\n", battmgr->usb.online);
+                        //pr_info("qcom_battmgr: USB Online status = %d\n", battmgr->usb.online);
                         break;
 		case USB_VOLT_NOW:
 			battmgr->usb.voltage_now = le32_to_cpu(resp->intval.value);

@@ -358,7 +358,9 @@ static int qcom_battmgr_request_property(struct qcom_battmgr *battmgr, int opcod
 	return qcom_battmgr_request(battmgr, &request, sizeof(request));
 }
 
-static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
+/* First update working */
+
+/*static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
 {
     int rc;
 
@@ -369,11 +371,7 @@ static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
         pr_err("qcom_battmgr: Failed to request BC_CHG_STATUS_GET, rc=%d\n", rc);
         return rc;
     }
-
-    /* Wait for response to be processed */
     wait_for_completion(&battmgr->ack);
-
-    /* Return the actual status value stored in battmgr->status.bc_status */
     return battmgr->status.bc_get;
 }
 
@@ -389,11 +387,63 @@ static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
         return rc;
     }
 
-    battmgr->status.bc_set = status;  // ✅ Store the new status
+    battmgr->status.bc_set = status;
     pr_info("qcom_battmgr: Charge status successfully set to %d\n", battmgr->status.bc_set);
 
     return 0;
+}*/
+
+/* 2nd update not tested */
+
+/*static int qcom_battmgr_get_bc_status(struct qcom_battmgr *battmgr)
+{
+    int rc;
+
+    pr_info("qcom_battmgr: Requesting BC_CHG_STATUS_GET\n");
+
+    mutex_lock(&battmgr->lock); // ✅ Prevent race conditions
+
+    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_GET, BC_CHG_STATUS_GET, 0);
+    if (rc < 0) {
+        pr_err("qcom_battmgr: Failed to request BC_CHG_STATUS_GET, rc=%d\n", rc);
+        mutex_unlock(&battmgr->lock);
+        return rc;
+    }
+    if (!wait_for_completion_timeout(&battmgr->ack, HZ)) {
+        pr_err("qcom_battmgr: Timeout waiting for BC_CHG_STATUS_GET response\n");
+        mutex_unlock(&battmgr->lock);
+        return -ETIMEDOUT;
+    }
+
+    rc = battmgr->status.bc_get; // ✅ Read the updated status
+    mutex_unlock(&battmgr->lock);
+
+    return rc;
 }
+
+static int qcom_battmgr_set_bc_status(struct qcom_battmgr *battmgr, int status)
+{
+    int rc;
+
+    pr_info("qcom_battmgr: Setting BC_CHG_STATUS_SET to %d\n", status);
+
+    mutex_lock(&battmgr->lock); // ✅ Ensure thread safety
+
+    rc = qcom_battmgr_request_property(battmgr, BATTMGR_BAT_PROPERTY_SET, BC_CHG_STATUS_SET, status);
+    if (rc < 0) {
+        pr_err("qcom_battmgr: Failed to set charge status, rc = %d\n", rc);
+        mutex_unlock(&battmgr->lock);
+        return rc;
+    }
+
+    battmgr->status.bc_set = status; // ✅ Store the new status
+    mutex_unlock(&battmgr->lock);
+
+    pr_info("qcom_battmgr: Charge status successfully set to %d\n", status);
+
+    return 0;
+}
+*/
 
 static int qcom_battmgr_update_status(struct qcom_battmgr *battmgr)
 {
@@ -1249,14 +1299,14 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		case BATT_POWER_NOW:
 			battmgr->status.power_now = le32_to_cpu(resp->intval.value);
 			break;
-		case BC_CHG_STATUS_GET:
+		/*case BC_CHG_STATUS_GET:
                         battmgr->status.bc_get = le32_to_cpu(resp->intval.value);
                         pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_get);
                         break;
 		case BC_CHG_STATUS_SET:
                         battmgr->status.bc_set = le32_to_cpu(resp->intval.value);  // ✅ Store the value
                         pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_set);
-                        break;
+                        break;*/
 		default:
 			dev_warn(battmgr->dev, "unknown property %#x\n", property);
 			break;

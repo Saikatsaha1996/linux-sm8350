@@ -546,7 +546,7 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 		return ret;
 
 	/* Debug logging for issue tracking */
-	//pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
+	pr_info("qcom_battmgr: psp=%d, usb_online=%d, status=%d\n",
 		psp, battmgr->usb.online, battmgr->status.status);
 
 	switch (psp) {
@@ -1250,12 +1250,12 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			battmgr->status.power_now = le32_to_cpu(resp->intval.value);
 			break;
 		case BC_CHG_STATUS_GET:
-                        battmgr->status.bc_status = le32_to_cpu(resp->intval.value);
-                        pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_status);
+                        battmgr->status.bc_get = le32_to_cpu(resp->intval.value);
+                        pr_info("qcom_battmgr: BC_CHG_STATUS_GET received = %d\n", battmgr->status.bc_get);
                         break;
 		case BC_CHG_STATUS_SET:
-                        battmgr->status.bc_status = le32_to_cpu(resp->intval.value);  // ✅ Store the value
-                        pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_status);
+                        battmgr->status.bc_set = le32_to_cpu(resp->intval.value);  // ✅ Store the value
+                        pr_info("qcom_battmgr: BC_CHG_STATUS_SET received = %d\n", battmgr->status.bc_set);
                         break;
 		default:
 			dev_warn(battmgr->dev, "unknown property %#x\n", property);

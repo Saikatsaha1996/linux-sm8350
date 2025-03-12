@@ -227,13 +227,13 @@
 		};
 	};
 
-        /*usb_id: usb-id {
+        usb_id: usb-id {
                 compatible = "linux,extcon-usb-gpio";
                 id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
                 pinctrl-0 = <&usb_id_pin>;
                 pinctrl-names = "default";
-                usb-role-switch;
-        };*/
+                //usb-role-switch;
+        };
 
         otg_supply: otg-supply-regulator {
                 compatible = "regulator-fixed";
@@ -242,6 +242,8 @@
                 regulator-max-microvolt = <5000000>; /* 5V */
                 gpio = <&pm8350c_gpios 1 GPIO_ACTIVE_HIGH>, <&pm8350c_gpios 2 GPIO_ACTIVE_HIGH>;
                 enable-active-high;
+                regulator-always-on;
+                regulator-boot-on;
         };
 
 	pmic-glink {
@@ -257,12 +259,12 @@
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-				port@0 {
+				/*port@0 {
 					reg = <0>;
 					pmic_glink_hs_in: endpoint {
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
-				};
+				};*/
 
 				port@2 {
 					reg = <2>;
@@ -1460,23 +1462,23 @@
 };
 
 &usb_1_dwc3 {
-       dr_mode = "otg";
+       dr_mode = "host";
        maximum-speed = "high-speed";
        phys = <&usb_1_hsphy>;
        phy-names = "usb2-phy";
        snps,usb2-lpm-disable;
-       usb-role-switch;
+       //usb-role-switch;
 };
 
-&usb_1_dwc3_hs {
+/*&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};
+};*/
 
 &usb_1_hsphy {
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
-        //extcon = <&usb_id>;
+        extcon = <&usb_id>;
         vbus-supply = <&otg_supply>;
         qcom,param-override-seq = <0x63 0x6c 0x0f 0x70 0x17 0x74>;
         qcom,param-override-seq-host = <0x67 0x6c 0x0f 0x70 0x14 0x74>;

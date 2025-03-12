@@ -1188,7 +1188,7 @@
                 output-high;
         };
 
-        switch_gpio: switch-gpio-state {
+        otg_switch_gpio: otg-switch-gpio-state {
                 pins = "gpio2";
                 function = "normal";
                 bias-disable;
@@ -1203,7 +1203,7 @@
                 output-low;
                 drive-strength = <3>;
         };
-        dischg_disable: dischg-disable-state {
+        dischg_enable: dischg-enable-state {
                 pins = "gpio9";
                 function = "normal";
                 bias-disable;

@@ -232,13 +232,11 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-                qcom,chargerid-switch-gpio = <&tlmm 7 GPIO_ACTIVE_HIGH>;
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
-                        qcom,ccdetect-gpio = <&tlmm 14 GPIO_ACTIVE_HIGH>;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -1183,19 +1181,6 @@
 };
 
 &pm8350c_gpios {
-        otg_enable: otg-enable-state {
-                pins = "gpio1";
-                function = "normal";
-                bias-disable;
-                output-high;
-        };
-
-        otg_switch_gpio: otg-switch-gpio-state {
-                pins = "gpio2";
-                function = "normal";
-                bias-disable;
-                output-high;
-        };
 
         dischg_disable: dischg-disable-state {
                 pins = "gpio9";

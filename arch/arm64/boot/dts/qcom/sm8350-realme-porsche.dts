@@ -232,6 +232,7 @@
                 id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
                 pinctrl-0 = <&usb_id_pin>;
                 pinctrl-names = "default";
+                usb-role-switch;
         };
 
 	pmic-glink {
@@ -247,12 +248,12 @@
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-				port@0 {
+				/*port@0 {
 					reg = <0>;
 					pmic_glink_hs_in: endpoint {
 						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
-				};
+				};*/
 
 				port@2 {
 					reg = <2>;
@@ -1185,20 +1186,39 @@
 		bias-high-impedance;
 		bias-disable;
 	};
-        vbus_boost: vbus-boost-default {
-		pins = "gpio8";
-		function = "normal";
-		output-low;
-		power-source = <0>;
-	};
+};
 
-	vbus_det: vbus-det-default {
-		pins = "gpio9";
-		function = "normal";
-		input-enable;
-		bias-disable;
-		power-source = <0>;
-	};
+&pm8350c_gpios {
+        otg_enable: otg-enable-state {
+                pins = "gpio1";
+                function = "normal";
+                bias-disable;
+                output-high;
+        };
+
+        switch_gpio: switch-gpio-state {
+                pins = "gpio2";
+                function = "normal";
+                bias-disable;
+                output-high;
+        };
+
+        dischg_disable: dischg-disable-state {
+                pins = "gpio9";
+                function = "normal";
+                bias-disable;
+                power-source = <0>;
+                output-low;
+                drive-strength = <3>;
+        };
+        dischg_disable: dischg-disable-state {
+                pins = "gpio9";
+                function = "normal";
+                bias-disable;
+                power-source = <0>;
+                output-high;
+                drive-strength = <3>;
+        };
 };
 
 &tlmm {
@@ -1284,8 +1304,6 @@
                 function = "gpio";
                 drive-strength = <2>;
                 bias-pull-up;
-                //input-enable;
-                //bias-disable;
         };
 
         qup_uart18_default: qup-uart18-default-state {
@@ -1441,9 +1459,9 @@
        usb-role-switch;
 };
 
-&usb_1_dwc3_hs {
+/*&usb_1_dwc3_hs {
 	remote-endpoint = <&pmic_glink_hs_in>;
-};
+};*/
 
 &usb_1_hsphy {
 	vdda-pll-supply = <&pm8350_l5>;

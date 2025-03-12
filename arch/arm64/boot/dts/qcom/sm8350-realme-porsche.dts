@@ -99,12 +99,12 @@
 		regulator-boot-on;
 	};
 
-        usb_id: usb-id {
+        /*usb_id: usb-id {
                 compatible = "linux,extcon-usb-gpio";
                 id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
                 pinctrl-0 = <&usb_id_pin>;
                 pinctrl-names = "default";
-        };
+        };*/
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
@@ -239,13 +239,13 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-                chargerid-switch-gpios = <&tlmm 7 0x00>;
+                //chargerid-switch-gpios = <&tlmm 7 0x00>;
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
-                        ccdetect-gpios = <&tlmm 14 0x00>;
+                        //ccdetect-gpios = <&tlmm 14 0x00>;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -1457,7 +1457,7 @@
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
-        extcon = <&usb_id>;
+        //extcon = <&usb_id>;
         qcom,param-override-seq = <0x63 0x6c 0x0f 0x70 0x17 0x74>;
         qcom,param-override-seq-host = <0x67 0x6c 0x0f 0x70 0x14 0x74>;
         status = "okay";

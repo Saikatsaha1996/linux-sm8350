@@ -49,7 +49,7 @@
 		ranges;
 		stdout-path = "display0";
 
-		framebuffer0: framebuffer@e4d00000 {
+		/*framebuffer0: framebuffer@e4d00000 {
 			compatible = "simple-framebuffer";
 			reg = <0x0 0xe4d00000 0x0 0x02300000>;
 			width = <1080>;
@@ -58,7 +58,7 @@
 			format = "a8r8g8b8";
 			clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
 				 <&gcc GCC_DISP_SF_AXI_CLK>;
-		};
+		};*/
 	};
 
         reserved_memory: reserved-memory {
@@ -98,13 +98,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
-        /*usb_id: usb-id {
-                compatible = "linux,extcon-usb-gpio";
-                id-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
-                pinctrl-0 = <&usb_id_pin>;
-                pinctrl-names = "default";
-        };*/
 
         panel_supply_vddr: panel-gpio-regulator@1 {
                 compatible = "regulator-fixed";
@@ -239,13 +232,11 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-                //chargerid-switch-gpios = <&tlmm 7 0x00>;
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
-                        //ccdetect-gpios = <&tlmm 14 0x00>;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -1154,7 +1145,7 @@
 		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
 		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
 
-		qcom,ath11k-calibration-variant = "Realme_Gt_2";
+		qcom,ath11k-calibration-variant = "REALME_GT_2";
 	};
 };
 
@@ -1190,7 +1181,6 @@
 };
 
 &pm8350c_gpios {
-
         dischg_disable: dischg-disable-state {
                 pins = "gpio9";
                 function = "normal";
@@ -1199,6 +1189,7 @@
                 output-low;
                 drive-strength = <3>;
         };
+
         dischg_enable: dischg-enable-state {
                 pins = "gpio9";
                 function = "normal";
@@ -1434,8 +1425,6 @@
 };
 
 &usb_1 {
-	/delete-property/ interconnects;
-	/delete-property/ interconnect-names;
         qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
@@ -1457,7 +1446,6 @@
 	vdda-pll-supply = <&pm8350_l5>;
 	vdda18-supply = <&pm8350c_l1>;
 	vdda33-supply = <&pm8350_l2>;
-        //extcon = <&usb_id>;
         qcom,param-override-seq = <0x63 0x6c 0x0f 0x70 0x17 0x74>;
         qcom,param-override-seq-host = <0x67 0x6c 0x0f 0x70 0x14 0x74>;
         status = "okay";

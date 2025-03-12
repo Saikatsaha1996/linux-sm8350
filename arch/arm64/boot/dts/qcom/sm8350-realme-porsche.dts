@@ -232,11 +232,13 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
                 orientation-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
+                chargerid-switch-gpios = <&tlmm 7 0x00>;
 		connector@0 {
 			compatible = "usb-c-connector";
 			reg = <0>;
 			power-role = "dual";
 			data-role = "dual";
+                        ccdetect-gpios = <&tlmm 14 0x00>;
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -1425,6 +1427,9 @@
 };
 
 &usb_1 {
+	/delete-property/ interconnects;
+	/delete-property/ interconnect-names;
+        /delete-property/ extcon;
         qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };

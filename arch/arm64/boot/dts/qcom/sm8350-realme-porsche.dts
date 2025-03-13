@@ -49,7 +49,7 @@
 		ranges;
 		stdout-path = "display0";
 
-		/*framebuffer0: framebuffer@e4d00000 {
+		framebuffer0: framebuffer@e4d00000 {
 			compatible = "simple-framebuffer";
 			reg = <0x0 0xe4d00000 0x0 0x02300000>;
 			width = <1080>;
@@ -58,7 +58,7 @@
 			format = "a8r8g8b8";
 			clocks = <&gcc GCC_DISP_HF_AXI_CLK>,
 				 <&gcc GCC_DISP_SF_AXI_CLK>;
-		};*/
+		};
 	};
 
         reserved_memory: reserved-memory {
@@ -244,6 +244,14 @@
 					reg = <0>;
 					pmic_glink_hs_in: endpoint {
 						remote-endpoint = <&usb_1_dwc3_hs>;
+					};
+				};
+
+				port@1 {
+					reg = <1>;
+
+					pmic_glink_ss_in: endpoint {
+						remote-endpoint = <&usb_1_qmpphy_out>;
 					};
 				};
 
@@ -1424,7 +1432,7 @@
         status = "okay";
 };
 
-&usb_1 {
+/*&usb_1 {
         qcom,select-utmi-as-pipe-clk;
         status = "okay";
 };
@@ -1449,6 +1457,35 @@
         qcom,param-override-seq = <0x63 0x6c 0x0f 0x70 0x17 0x74>;
         qcom,param-override-seq-host = <0x67 0x6c 0x0f 0x70 0x14 0x74>;
         status = "okay";
+};*/
+
+&usb_1 {
+        status = "okay";
+};
+
+&usb_1_dwc3 {
+       dr_mode = "host";
+};
+
+&usb_1_dwc3_hs {
+	remote-endpoint = <&pmic_glink_hs_in>;
+};
+
+&usb_1_hsphy {
+	vdda-pll-supply = <&pm8350_l5>;
+	vdda18-supply = <&pm8350c_l1>;
+	vdda33-supply = <&pm8350_l2>;
+        status = "okay";
+};
+
+&usb_1_qmpphy {
+	vdda-phy-supply = <&pm8350_l6>;
+	vdda-pll-supply = <&pm8350_l1>;
+        status = "okay";
+};
+
+&usb_1_qmpphy_out {
+	remote-endpoint = <&pmic_glink_ss_in>;
 };
 
 &ipa {

@@ -142,7 +142,7 @@
         wcnss_regulator: wcnss-wlan-regulator {
                 compatible = "regulator-fixed";
                 regulator-name = "wcnss_regulator";
-                regulator-min-microvolt = <1800000>;
+                regulator-min-microvolt = <1900000>;
                 regulator-max-microvolt = <1900000>;
 		regulator-boot-on;
 		regulator-always-on;
@@ -1442,33 +1442,6 @@
 	vdda-pll-max-microamp = <19000>;
         status = "okay";
 };
-
-/*&usb_1 {
-        qcom,select-utmi-as-pipe-clk;
-        status = "okay";
-};
-
-&usb_1_dwc3 {
-       dr_mode = "otg";
-       maximum-speed = "high-speed";
-       phys = <&usb_1_hsphy>;
-       phy-names = "usb2-phy";
-       snps,usb2-lpm-disable;
-       usb-role-switch;
-};
-
-&usb_1_dwc3_hs {
-	remote-endpoint = <&pmic_glink_hs_in>;
-};
-
-&usb_1_hsphy {
-	vdda-pll-supply = <&pm8350_l5>;
-	vdda18-supply = <&pm8350c_l1>;
-	vdda33-supply = <&pm8350_l2>;
-        qcom,param-override-seq = <0x63 0x6c 0x0f 0x70 0x17 0x74>;
-        qcom,param-override-seq-host = <0x67 0x6c 0x0f 0x70 0x14 0x74>;
-        status = "okay";
-};*/
 
 &usb_1 {
         status = "okay";

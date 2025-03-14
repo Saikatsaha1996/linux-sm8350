@@ -147,8 +147,6 @@
 
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-                //xo-clk-gpios = <&tlmm 201 GPIO_ACTIVE_LOW>;
-                //swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
 
 		vddio-supply = <&pm8350_s10>;
 		vddaon-supply = <&pm8350_s12>;
@@ -1323,7 +1321,7 @@
 			pins = "gpio94";
 			function = "gpio";
 			drive-strength = <2>;
-			bias-disable;
+			bias-pull-down;
 		};
 
 		clkreq-pins {
@@ -1356,20 +1354,6 @@
                 output-high;
                 bias-pull-up;
         };
-
-	/*xo_clk: xo-clk-state {
-		pins = "gpio201";
-		function = "gpio";
-		drive-strength = <2>;
-                output-low;
-		bias-pull-down;
-	};
-
-	sw_ctrl: sw-ctrl-pins {
-		pins = "gpio153";
-		function = "gpio";
-		bias-pull-up;
-	};*/
 
 	speaker_default_top: speaker-top-state {
 		active-pins {

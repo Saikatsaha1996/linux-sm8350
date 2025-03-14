@@ -139,70 +139,78 @@
                 regulator-max-microvolt = <1800000>;
         };
 
-	wcn6855-pmu {
-		compatible = "qcom,wcn6855-pmu";
+        wlan_supply: wlan-regulator {
+                compatible = "regulator-fixed";
+                regulator-name = "wlan_supply";
+                regulator-min-microvolt = <1900000>;
+                regulator-max-microvolt = <1900000>;
+                regulator-boot-on;
+                enable-active-high;
+                wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&wcnss_sleep>;
+        };
+
+        qca6390-pmu {
+                compatible = "qcom,qca6390-pmu";
 
                 pinctrl-names = "default";
-                pinctrl-0 = <&bt_en>, <&wcnss_sleep>, <&wlan_en>;
+                pinctrl-0 = <&bt_en>, <&wlan_en>;
+
+		vddaon-supply = <&pm8350_s12>;
+		vddpmu-supply = <&pm8350_s12>;
+                vddrfa0p95-supply = <&pm8350_s12>;
+                vddrfa1p3-supply = <&pm8350_s12>;
+                vddrfa1p9-supply = <&pm8350c_s1>;
+                vddpcie1p3-supply = <&wlan_supply>;
+                vddpcie1p9-supply = <&pm8350c_s1>;
+                vddio-supply = <&pm8350_s10>;
 
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
-                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
-                xo-clk-gpios = <&tlmm 201 GPIO_ACTIVE_HIGH>;
 
-		vddio-supply = <&pm8350_s10>;
-		vddaon-supply = <&pm8350_s12>;
-		vddpmu-supply = <&pm8350_s12>;
-		vddpmumx-supply = <&pm8350_s12>;
-		vddpmucx-supply = <&pm8350_s12>;
-		vddrfa0p95-supply = <&pm8350_s12>;
-		vddrfa1p3-supply = <&pm8350_s11>;
-                vddrfa1p9-supply = <&pm8350c_s1>;
-		vddpcie1p3-supply = <&pm8350_s11>;
-		vddpcie1p9-supply = <&pm8350c_s1>;
+                regulators {
+                        vreg_pmu_rfa_cmn: ldo0 {
+                                regulator-name = "vreg_pmu_rfa_cmn";
+                        };
 
-		regulators {
-			vreg_pmu_rfa_cmn_0p8: ldo0 {
-				regulator-name = "vreg_pmu_rfa_cmn_0p8";
-			};
+                        vreg_pmu_aon_0p59: ldo1 {
+                                regulator-name = "vreg_pmu_aon_0p59";
+                        };
 
-			vreg_pmu_aon_0p8: ldo1 {
-				regulator-name = "vreg_pmu_aon_0p8";
-			};
+                        vreg_pmu_wlcx_0p8: ldo2 {
+                                regulator-name = "vreg_pmu_wlcx_0p8";
+                        };
 
-			vreg_pmu_wlcx_0p8: ldo2 {
-				regulator-name = "vreg_pmu_wlcx_0p8";
-			};
+                        vreg_pmu_wlmx_0p85: ldo3 {
+                                regulator-name = "vreg_pmu_wlmx_0p85";
+                        };
 
-			vreg_pmu_wlmx_0p8: ldo3 {
-				regulator-name = "vreg_pmu_wlmx_0p8";
-			};
+                        vreg_pmu_btcmx_0p85: ldo4 {
+                                regulator-name = "vreg_pmu_btcmx_0p85";
+                        };
 
-			vreg_pmu_btcmx_0p8: ldo4 {
-				regulator-name = "vreg_pmu_btcmx_0p8";
-			};
+                        vreg_pmu_rfa_0p8: ldo5 {
+                                regulator-name = "vreg_pmu_rfa_0p8";
+                        };
 
-			vreg_pmu_pcie_1p8: ldo5 {
-				regulator-name = "vreg_pmu_pcie_1p8";
-			};
+                        vreg_pmu_rfa_1p2: ldo6 {
+                                regulator-name = "vreg_pmu_rfa_1p2";
+                        };
 
-			vreg_pmu_pcie_0p9: ldo6 {
-				regulator-name = "vreg_pmu_pcie_0p9";
-			};
+                        vreg_pmu_rfa_1p7: ldo7 {
+                                regulator-name = "vreg_pmu_rfa_1p7";
+                        };
 
-			vreg_pmu_rfa_0p8: ldo7 {
-				regulator-name = "vreg_pmu_rfa_0p8";
-			};
+                        vreg_pmu_pcie_0p9: ldo8 {
+                                regulator-name = "vreg_pmu_pcie_0p9";
+                        };
 
-			vreg_pmu_rfa_1p2: ldo8 {
-				regulator-name = "vreg_pmu_rfa_1p2";
-			};
-
-			vreg_pmu_rfa_1p7: ldo9 {
-				regulator-name = "vreg_pmu_rfa_1p7";
-			};
-		};
-	};
+                        vreg_pmu_pcie_1p8: ldo9 {
+                                regulator-name = "vreg_pmu_pcie_1p8";
+                        };
+                };
+        };
 
         gpio_keys {
 		compatible = "gpio-keys";
@@ -744,18 +752,14 @@
         pinctrl-0 = <&qup_uart18_default>;
 
         bluetooth {
-		compatible = "qcom,wcn6855-bt";
+                compatible = "qcom,qca6390-bt";
 
-		vddrfacmn-supply = <&vreg_pmu_rfa_cmn_0p8>;
-		vddaon-supply = <&vreg_pmu_aon_0p8>;
-		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-		vddwlmx-supply = <&vreg_pmu_wlmx_0p8>;
-		vddbtcmx-supply = <&vreg_pmu_btcmx_0p8>;
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddbtcmx-supply = <&vreg_pmu_btcmx_0p85>;
 		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
 		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-		vddrfa1p8-supply = <&vreg_pmu_rfa_1p7>;
-
-		max-speed = <3200000>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
         };
 };
 
@@ -1138,18 +1142,18 @@
 
 &pcieport0 {
 	wifi@0 {
-		compatible = "pci17cb,1103";
+		compatible = "pci17cb,1101";
 		reg = <0x10000 0x0 0x0 0x0 0x0>;
 
-		vddrfacmn-supply = <&vreg_pmu_rfa_cmn_0p8>;
-		vddaon-supply = <&vreg_pmu_aon_0p8>;
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
 		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
-		vddwlmx-supply = <&vreg_pmu_wlmx_0p8>;
-		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
-		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
 		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
 		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
-		vddrfa1p8-supply = <&vreg_pmu_rfa_1p7>;
+		vddrfa1p7-supply = <&vreg_pmu_rfa_1p7>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
 
 		qcom,ath11k-calibration-variant = "REALME_GT2";
 	};
@@ -1276,6 +1280,30 @@
 		bias-pull-down;
 	};
 
+	bt_en: bt-en-state {
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <8>;
+                output-high;
+		bias-pull-up;
+	};
+
+        wlan_en: wlan-en-state {
+                pins = "gpio64";
+                function = "gpio";
+                drive-strength = <8>;
+                output-high;
+                bias-pull-up;
+        };
+
+	wcnss_sleep: wcnss-sleep-state {
+		pins = "gpio201";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-down;
+		output-low;
+	};
+
         fsa_def: fsa4480-default {
                 pins = "gpio116";
                 function = "gpio";
@@ -1340,30 +1368,6 @@
 			bias-pull-up;
 		};
         };
-
-	bt_en: bt-en-state {
-		pins = "gpio65";
-		function = "gpio";
-		drive-strength = <16>;
-                output-high;
-		bias-pull-up;
-	};
-
-        wlan_en: wlan-en-state {
-                pins = "gpio64";
-                function = "gpio";
-                drive-strength = <16>;
-                output-high;
-                bias-pull-up;
-        };
-
-	wcnss_sleep: wcnss-sleep-state {
-		pins = "gpio201";
-		function = "gpio";
-		drive-strength = <16>;
-		bias-pull-down;
-		output-low;
-	};
 
 	speaker_default_top: speaker-top-state {
 		active-pins {

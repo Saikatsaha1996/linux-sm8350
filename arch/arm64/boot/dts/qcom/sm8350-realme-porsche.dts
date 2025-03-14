@@ -147,7 +147,7 @@
 
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
-                //xo-clk-gpios = <&tlmm 201 GPIO_ACTIVE_HIGH>;
+                xo-clk-gpios = <&tlmm 201 GPIO_ACTIVE_HIGH>;
 
 		vddio-supply = <&pm8350_s10>;
 		vddaon-supply = <&pm8350_s12>;

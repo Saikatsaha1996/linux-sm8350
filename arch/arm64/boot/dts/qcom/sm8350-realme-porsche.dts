@@ -144,10 +144,10 @@
 
                 pinctrl-names = "default";
                 pinctrl-0 = <&bt_en>, <&wcnss_sleep>, <&wlan_en>;
-                pinctrl-0 = <&bt_en>, <&wlan_en>;
 
-                bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
+                swctrl-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
                 xo-clk-gpios = <&tlmm 201 GPIO_ACTIVE_HIGH>;
 
 		vddio-supply = <&pm8350_s10>;

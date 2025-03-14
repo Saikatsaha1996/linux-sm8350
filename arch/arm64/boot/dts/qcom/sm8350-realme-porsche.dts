@@ -143,10 +143,11 @@
 		compatible = "qcom,wcn6855-pmu";
 
                 pinctrl-names = "default";
-                pinctrl-0 = <&bt_en>, <&wlan_en>;
+                pinctrl-0 = <&bt_en>, <&wcnss_sleep>, <&wlan_en>;
 
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
+                //xo-clk-gpios = <&tlmm 201 GPIO_ACTIVE_HIGH>;
 
 		vddio-supply = <&pm8350_s10>;
 		vddaon-supply = <&pm8350_s12>;
@@ -1342,7 +1343,7 @@
 	bt_en: bt-en-state {
 		pins = "gpio65";
 		function = "gpio";
-		drive-strength = <2>;
+		drive-strength = <16>;
                 output-high;
 		bias-pull-up;
 	};
@@ -1350,10 +1351,18 @@
         wlan_en: wlan-en-state {
                 pins = "gpio64";
                 function = "gpio";
-                drive-strength = <2>;
+                drive-strength = <16>;
                 output-high;
                 bias-pull-up;
         };
+
+	/*wcnss_sleep: wcnss-sleep-state {
+		pins = "gpio201";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-pull-down;
+		output-low;
+	};*/
 
 	speaker_default_top: speaker-top-state {
 		active-pins {

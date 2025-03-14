@@ -154,7 +154,7 @@
 		compatible = "qcom,wcn6855-pmu";
 
                 pinctrl-names = "default";
-                pinctrl-0 = <&bt_default>, <&wlan_default>;
+                pinctrl-0 = <&bt_default>, <&sw_ctrl>, <&wlan_default>;
 
                 bt-enable-gpios = <&tlmm 65 GPIO_ACTIVE_HIGH>;
                 wlan-enable-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
@@ -1352,33 +1352,31 @@
         };
 
 	bt_default: bt-default-state {
-		bt-en-pins {
-			pins = "gpio65";
-			function = "gpio";
-			drive-strength = <16>;
-			bias-disable;
-		};
+		pins = "gpio65";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-pull-up;
+	};
 
-		sw-ctrl-pins {
-			pins = "gpio153";
-			function = "gpio";
-			bias-pull-down;
-		};
+	sw_ctrl: sw-ctrl-pins {
+		pins = "gpio153";
+		function = "gpio";
+		bias-pull-up;
 	};
 
         wlan_default: wlan-default-state {
                 pins = "gpio64";
                 function = "gpio";
                 drive-strength = <16>;
-                bias-pull-down;
+                bias-pull-up;
         };
 
 	wcnss_en: wcnss-en-state {
 		pins = "gpio201";
 		function = "gpio";
 		drive-strength = <16>;
-                output-low;
-		bias-pull-down;
+                output-high;
+		bias-pull-up;
 	};
 
 	speaker_default_top: speaker-top-state {

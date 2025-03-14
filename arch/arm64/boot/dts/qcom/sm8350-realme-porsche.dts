@@ -144,8 +144,6 @@
                 regulator-name = "wcnss_regulator";
                 regulator-min-microvolt = <1900000>;
                 regulator-max-microvolt = <1900000>;
-		regulator-boot-on;
-		regulator-always-on;
                 enable-active-high;
                 wcnss-gpio = <&tlmm 201 GPIO_ACTIVE_HIGH>;
                 pinctrl-names = "default";

@@ -1357,13 +1357,13 @@
                 bias-pull-up;
         };
 
-	/*wcnss_sleep: wcnss-sleep-state {
+	wcnss_sleep: wcnss-sleep-state {
 		pins = "gpio201";
 		function = "gpio";
 		drive-strength = <16>;
 		bias-pull-down;
 		output-low;
-	};*/
+	};
 
 	speaker_default_top: speaker-top-state {
 		active-pins {

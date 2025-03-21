@@ -1167,10 +1167,10 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			battmgr->info.cycle_count = le32_to_cpu(resp->intval.value);
 			break;
 		case BATT_CHG_FULL_DESIGN:
-                        battmgr->info.design_capacity = le32_to_cpu(resp->intval.value) * 1000;
+                        battmgr->info.design_capacity = le32_to_cpu(resp->intval.value)// * 1000;
                         break;
                 case BATT_CHG_FULL:
-                        battmgr->info.last_full_capacity = le32_to_cpu(resp->intval.value) * 1000;
+                        battmgr->info.last_full_capacity = le32_to_cpu(resp->intval.value)// * 1000;
                         break;
 		case BATT_MODEL_NAME:
 			strscpy(battmgr->info.model_number, resp->strval.model, BATTMGR_STRING_LEN);

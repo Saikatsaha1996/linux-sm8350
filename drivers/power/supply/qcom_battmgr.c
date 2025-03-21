@@ -29,6 +29,9 @@ enum qcom_battmgr_variant {
 #define NOTIF_BAT_PROPERTY		0x30
 #define NOTIF_USB_PROPERTY		0x32
 #define NOTIF_WLS_PROPERTY		0x34
+#define USB_CID_DETECT                  0x52
+#define BC_CHG_STATUS_GET               0x59
+#define BC_CHG_STATUS_SET               0x60
 #define NOTIF_BAT_INFO			0x81
 #define NOTIF_BAT_STATUS		0x80
 
@@ -270,6 +273,7 @@ struct qcom_battmgr_usb {
 	unsigned int current_max;
 	unsigned int current_limit;
 	unsigned int usb_type;
+        bool cid_detected;
 };
 
 struct qcom_battmgr_wireless {
@@ -497,6 +501,9 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
+	        //if (battmgr->usb.online) {
+                //val->intval = POWER_SUPPLY_STATUS_CHARGING;
+                //} else {
 		val->intval = battmgr->status.status;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
@@ -720,6 +727,7 @@ static const u8 sm8350_usb_prop_map[] = {
 	[POWER_SUPPLY_PROP_CURRENT_MAX] = USB_CURR_MAX,
 	[POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT] = USB_INPUT_CURR_LIMIT,
 	[POWER_SUPPLY_PROP_USB_TYPE] = USB_TYPE,
+        [POWER_SUPPLY_PROP_USB_CID_STATUS] = USB_CID_DETECT,
 };
 
 static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
@@ -738,6 +746,22 @@ static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
 	mutex_unlock(&battmgr->lock);
 
 	return ret;
+}
+
+static bool check_cid_status(struct qcom_battmgr *battmgr)
+{
+    static unsigned int status = 0;
+    int ret;
+    u32 value = 0;
+
+    ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_CID_DETECT, 0);
+    if (ret) {
+        pr_err("qcom_battmgr: Failed to read CID status\n");
+        return false;
+    }
+
+    status = value;
+    return status != 0;
 }
 
 static int qcom_battmgr_usb_get_property(struct power_supply *psy,
@@ -779,6 +803,9 @@ static int qcom_battmgr_usb_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_USB_TYPE:
 		val->intval = battmgr->usb.usb_type;
 		break;
+	case POWER_SUPPLY_PROP_USB_CID_STATUS:
+                val->intval = battmgr->usb.cid_detected;
+                break;
 	default:
 		return -EINVAL;
 	}
@@ -816,6 +843,7 @@ static const enum power_supply_property sm8350_usb_props[] = {
 	POWER_SUPPLY_PROP_CURRENT_MAX,
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 	POWER_SUPPLY_PROP_USB_TYPE,
+        POWER_SUPPLY_PROP_USB_CID_STATUS,
 };
 
 static const struct power_supply_desc sm8350_usb_psy_desc = {
@@ -931,36 +959,42 @@ static const struct power_supply_desc sm8350_wls_psy_desc = {
 };
 
 static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
-				      const struct qcom_battmgr_message *msg,
-				      int len)
+                                      const struct qcom_battmgr_message *msg,
+                                      int len)
 {
-	size_t payload_len = len - sizeof(struct pmic_glink_hdr);
-	unsigned int notification;
+    size_t payload_len = len - sizeof(struct pmic_glink_hdr);
+    unsigned int notification;
 
-	if (payload_len != sizeof(msg->notification)) {
-		dev_warn(battmgr->dev, "ignoring notification with invalid length\n");
-		return;
-	}
+    if (payload_len != sizeof(msg->notification)) {
+        dev_warn(battmgr->dev, "Ignoring notification with invalid length\n");
+        return;
+    }
 
-	notification = le32_to_cpu(msg->notification);
-	switch (notification) {
-	case NOTIF_BAT_INFO:
-		battmgr->info.valid = false;
-		fallthrough;
-	case NOTIF_BAT_STATUS:
-	case NOTIF_BAT_PROPERTY:
-		power_supply_changed(battmgr->bat_psy);
-		break;
-	case NOTIF_USB_PROPERTY:
-		power_supply_changed(battmgr->usb_psy);
-		break;
-	case NOTIF_WLS_PROPERTY:
-		power_supply_changed(battmgr->wls_psy);
-		break;
-	default:
-		dev_err(battmgr->dev, "unknown notification: %#x\n", notification);
-		break;
-	}
+    notification = le32_to_cpu(msg->notification);
+    switch (notification) {
+    case NOTIF_BAT_INFO:
+        battmgr->info.valid = false;
+        fallthrough;
+    case NOTIF_BAT_STATUS:
+    case NOTIF_BAT_PROPERTY:
+    case BC_CHG_STATUS_GET:
+        power_supply_changed(battmgr->bat_psy);
+        break;
+    case NOTIF_USB_PROPERTY:
+    case BC_CHG_STATUS_SET:
+        power_supply_changed(battmgr->usb_psy);
+        break;
+    case USB_CID_DETECT:
+        battmgr->usb.cid_detected = check_cid_status(battmgr);
+        power_supply_changed(battmgr->usb_psy);
+        break;
+    case NOTIF_WLS_PROPERTY:
+        power_supply_changed(battmgr->wls_psy);
+        break;
+    default:
+        dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
+        break;
+    }
 }
 
 static void qcom_battmgr_sc8280xp_strcpy(char *dest, const char *src)
@@ -1217,6 +1251,9 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		case USB_TYPE:
 			battmgr->usb.usb_type = le32_to_cpu(resp->intval.value);
 			break;
+		case USB_CID_DETECT:
+		        battmgr->usb.cid_detected = le32_to_cpu(resp->intval.value);
+		        break;
 		default:
 			dev_warn(battmgr->dev, "unknown property %#x\n", property);
 			break;

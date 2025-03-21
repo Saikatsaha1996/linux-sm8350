@@ -25,12 +25,13 @@ enum qcom_battmgr_variant {
 
 #define BATTMGR_REQUEST_NOTIFICATION	0x4
 
-//#define BC_CID_DETECT                   0x52
-
 #define BATTMGR_NOTIFICATION		0x7
 #define NOTIF_BAT_PROPERTY		0x30
 #define NOTIF_USB_PROPERTY		0x32
 #define NOTIF_WLS_PROPERTY		0x34
+
+#define BC_CID_DETECT                   0x52
+
 #define BC_CHG_STATUS_GET		0x59
 #define BC_CHG_STATUS_SET		0x60
 #define NOTIF_BAT_INFO			0x81
@@ -274,6 +275,7 @@ struct qcom_battmgr_usb {
 	unsigned int current_max;
 	unsigned int current_limit;
 	unsigned int usb_type;
+        bool cid_detected;
 };
 
 struct qcom_battmgr_wireless {
@@ -727,6 +729,7 @@ static const u8 sm8350_usb_prop_map[] = {
 	[POWER_SUPPLY_PROP_CURRENT_MAX] = USB_CURR_MAX,
 	[POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT] = USB_INPUT_CURR_LIMIT,
 	[POWER_SUPPLY_PROP_USB_TYPE] = USB_TYPE,
+        [POWER_SUPPLY_PROP_USB_CID_STATUS] = USB_CID_STATUS,
 };
 
 static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
@@ -741,7 +744,8 @@ static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
 	prop = sm8350_usb_prop_map[psp];
 
 	mutex_lock(&battmgr->lock);
-	ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, prop, 0);
+	//ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, prop, 0);
+	ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, prop, &battmgr->usb);
 	mutex_unlock(&battmgr->lock);
 
 	return ret;
@@ -786,6 +790,9 @@ static int qcom_battmgr_usb_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_USB_TYPE:
 		val->intval = battmgr->usb.usb_type;
 		break;
+	case POWER_SUPPLY_PROP_USB_CID_STATUS:
+                val->intval = battmgr->usb.cid_detected;
+                break;
 	default:
 		return -EINVAL;
 	}
@@ -823,6 +830,7 @@ static const enum power_supply_property sm8350_usb_props[] = {
 	POWER_SUPPLY_PROP_CURRENT_MAX,
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 	POWER_SUPPLY_PROP_USB_TYPE,
+        POWER_SUPPLY_PROP_USB_CID_STATUS,
 };
 
 static const struct power_supply_desc sm8350_usb_psy_desc = {
@@ -965,6 +973,10 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         power_supply_changed(battmgr->usb_psy);
         pr_info("qcom_battmgr: USB property notification received\n");
         break;
+    case BC_CID_DETECT:
+	battmgr->usb.cid_detected = check_cid_status(battmgr);
+	power_supply_changed(battmgr->usb_psy);
+	break;
     case NOTIF_WLS_PROPERTY:
         power_supply_changed(battmgr->wls_psy);
         pr_info("qcom_battmgr: Wireless charging notification received\n");
@@ -973,6 +985,20 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
         break;
     }
+}
+
+static bool check_cid_status(struct qcom_battmgr *battmgr)
+{
+    unsigned int status;
+    int ret;
+
+    ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_CID_STATUS, &status);
+    if (ret) {
+        pr_err("qcom_battmgr: Failed to read CID status\n");
+        return false;
+    }
+
+    return (status == CID_CONNECTED);
 }
 
 static void qcom_battmgr_sc8280xp_strcpy(char *dest, const char *src)

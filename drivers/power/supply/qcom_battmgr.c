@@ -29,9 +29,11 @@ enum qcom_battmgr_variant {
 #define NOTIF_BAT_PROPERTY		0x30
 #define NOTIF_USB_PROPERTY		0x32
 #define NOTIF_WLS_PROPERTY		0x34
+
 #define USB_CID_DETECT                  0x52
-#define BC_CHG_STATUS_GET               0x59
-#define BC_CHG_STATUS_SET               0x60
+
+#define BC_CHG_STATUS_GET		0x59
+#define BC_CHG_STATUS_SET		0x60
 #define NOTIF_BAT_INFO			0x81
 #define NOTIF_BAT_STATUS		0x80
 
@@ -309,7 +311,7 @@ struct qcom_battmgr {
 	struct qcom_battmgr_wireless wireless;
 
 	struct work_struct enable_work;
-
+        struct delayed_work cid_status_work;
 	/*
 	 * @lock is used to prevent concurrent power supply requests to the
 	 * firmware, as it then stops responding.
@@ -492,6 +494,7 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 	if (!battmgr->service_up)
 		return -EAGAIN;
 
+	/* Update battery status based on platform */
 	if (battmgr->variant == QCOM_BATTMGR_SC8280XP)
 		ret = qcom_battmgr_bat_sc8280xp_update(battmgr, psp);
 	else
@@ -501,10 +504,10 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
-	        //if (battmgr->usb.online) {
-                //val->intval = POWER_SUPPLY_STATUS_CHARGING;
-                //} else {
-		val->intval = battmgr->status.status;
+		if (battmgr->usb.online)
+			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+		else
+			val->intval = battmgr->status.status;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
 		val->intval = battmgr->info.charge_type;
@@ -750,18 +753,19 @@ static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
 
 static bool check_cid_status(struct qcom_battmgr *battmgr)
 {
-    static unsigned int status = 0;
-    int ret;
-    u32 value = 0;
+    return battmgr->usb.cid_detected;  // ✅ Returns `false` if not detected
+}
 
-    ret = qcom_battmgr_request_property(battmgr, BATTMGR_USB_PROPERTY_GET, USB_CID_DETECT, 0);
-    if (ret) {
-        pr_err("qcom_battmgr: Failed to read CID status\n");
-        return false;
-    }
+static void qcom_battmgr_cid_status_work(struct work_struct *work)
+{
+    struct qcom_battmgr *battmgr = container_of(to_delayed_work(work), struct qcom_battmgr, cid_status_work);
 
-    status = value;
-    return status != 0;
+    battmgr->usb.cid_detected = check_cid_status(battmgr); // Read actual CID status
+
+    dev_info(battmgr->dev, "USB CID status updated: %s\n",
+             battmgr->usb.cid_detected ? "Detected" : "Not Detected");
+
+    power_supply_changed(battmgr->usb_psy);
 }
 
 static int qcom_battmgr_usb_get_property(struct power_supply *psy,
@@ -979,17 +983,20 @@ static void qcom_battmgr_notification(struct qcom_battmgr *battmgr,
     case NOTIF_BAT_PROPERTY:
     case BC_CHG_STATUS_GET:
         power_supply_changed(battmgr->bat_psy);
+        pr_info("qcom_battmgr: Battery status notification received\n");
         break;
     case NOTIF_USB_PROPERTY:
     case BC_CHG_STATUS_SET:
         power_supply_changed(battmgr->usb_psy);
+        pr_info("qcom_battmgr: USB property notification received\n");
         break;
     case USB_CID_DETECT:
-        battmgr->usb.cid_detected = check_cid_status(battmgr);
-        power_supply_changed(battmgr->usb_psy);
+        dev_info(battmgr->dev, "USB CID status changed, scheduling work\n");
+        schedule_delayed_work(&battmgr->cid_status_work, 0);
         break;
     case NOTIF_WLS_PROPERTY:
         power_supply_changed(battmgr->wls_psy);
+        pr_info("qcom_battmgr: Wireless charging notification received\n");
         break;
     default:
         dev_err(battmgr->dev, "Unknown notification: %#x\n", notification);
@@ -1162,8 +1169,9 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			battmgr->info.present = le32_to_cpu(resp->intval.value);
 			break;
 		case BATT_CHG_TYPE:
-			battmgr->info.charge_type = le32_to_cpu(resp->intval.value);
-			break;
+                        battmgr->info.charge_type = le32_to_cpu(resp->intval.value);
+                        pr_info("qcom_battmgr: Charge type = %d\n", battmgr->info.charge_type);
+                        break;
 		case BATT_CAPACITY:
 			battmgr->status.percent = le32_to_cpu(resp->intval.value) / 100;
 			break;
@@ -1230,9 +1238,9 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 			goto out_complete;
 
 		switch (property) {
-		case USB_ONLINE:
-			battmgr->usb.online = le32_to_cpu(resp->intval.value);
-			break;
+                case USB_ONLINE:
+                        battmgr->usb.online = le32_to_cpu(resp->intval.value);
+                        break;
 		case USB_VOLT_NOW:
 			battmgr->usb.voltage_now = le32_to_cpu(resp->intval.value);
 			break;
@@ -1251,9 +1259,10 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
 		case USB_TYPE:
 			battmgr->usb.usb_type = le32_to_cpu(resp->intval.value);
 			break;
-		case USB_CID_DETECT:
-		        battmgr->usb.cid_detected = le32_to_cpu(resp->intval.value);
-		        break;
+                case USB_CID_DETECT:
+                        battmgr->usb.cid_detected = le32_to_cpu(resp->intval.value);
+                        dev_info(battmgr->dev, "USB CID detected: %d\n", battmgr->usb.cid_detected);
+                        break;
 		default:
 			dev_warn(battmgr->dev, "unknown property %#x\n", property);
 			break;
@@ -1383,7 +1392,7 @@ static int qcom_battmgr_probe(struct auxiliary_device *adev,
 	INIT_WORK(&battmgr->enable_work, qcom_battmgr_enable_worker);
 	mutex_init(&battmgr->lock);
 	init_completion(&battmgr->ack);
-
+	INIT_DELAYED_WORK(&battmgr->cid_status_work, qcom_battmgr_cid_status_work);
 	match = of_match_device(qcom_battmgr_of_variants, dev->parent);
 	if (match)
 		battmgr->variant = (unsigned long)match->data;

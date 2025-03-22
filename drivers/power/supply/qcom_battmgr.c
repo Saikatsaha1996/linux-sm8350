@@ -504,10 +504,10 @@ static int qcom_battmgr_bat_get_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
-		if (battmgr->usb.online)
-			val->intval = POWER_SUPPLY_STATUS_CHARGING;
-		else
-			val->intval = battmgr->status.status;
+		//if (battmgr->usb.online)
+			//val->intval = POWER_SUPPLY_STATUS_CHARGING;
+		//else
+		val->intval = battmgr->status.status;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
 		val->intval = battmgr->info.charge_type;
